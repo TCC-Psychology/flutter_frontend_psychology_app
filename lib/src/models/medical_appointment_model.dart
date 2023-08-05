@@ -34,4 +34,9 @@ class MedicalAppointment {
       _$MedicalAppointmentFromJson(json);
 
   Map<String, dynamic> toJson() => _$MedicalAppointmentToJson(this);
+
+  @override
+  String toString() {
+    return 'MedicalAppointment - Client: $client'; // Retorne uma representação significativa do objeto.
+  }
 }
