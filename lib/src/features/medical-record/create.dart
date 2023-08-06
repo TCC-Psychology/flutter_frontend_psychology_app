@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../models/client_model.dart';
 import '../../models/medical_appointment_model.dart';
 import '../../models/medical_record_model.dart';
+import '../../models/user_model.dart';
 import '../../shared/services/medical_appointment_service.dart';
+import '../../shared/services/medical_record_service.dart';
 import '../../shared/services/psychologist_service.dart';
+import '../../shared/services/user.service.dart';
 
 class MedicalRecordCreateForm extends StatefulWidget {
   const MedicalRecordCreateForm({super.key});
@@ -16,29 +19,50 @@ class MedicalRecordCreateForm extends StatefulWidget {
 class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   final PsychologistService psychologistService = PsychologistService();
   final MedicalAppointmentService medicalAppointmentService = MedicalAppointmentService();
+  final UserService userService = UserService();
+  final MedicalRecordService medicalRecordService = MedicalRecordService();
   
   //TODO - AUTENTICAÇÃO
   var psychologistLogged = '1';
 
   List<MedicalAppointment> psychologistMedicalConsultation = [];
   List<Client> clients = [];
+  List<User> users = [];
   int _selectedValueClient = -1;
 
  @override
-  void initState() {
+  void initState() {    
     super.initState();
+
     loadMedicalAppointments();
   }
 
   Future<void> loadMedicalAppointments() async {
-    await fetchMedicalAppointments();
+      await fetchMedicalAppointments();
+      await fetchClientsFromMedicalAppointments();
+      await fetchUsersForClients();
 
+      setState(() {});
+  }
+
+  Future<void> fetchClientsFromMedicalAppointments() async {
     for (MedicalAppointment consultation in psychologistMedicalConsultation) {
       clients.add(consultation.client);
     }
   }
 
+  Future<void> fetchUsersForClients() async {
+    for (Client client in clients) {
+      var user = await userService.fetchUser(client.userId.toString());
+      if (user != null) {
+        users.add(user);
+      } else {
+        print("Não tem possibilidade, se não é erro de BD");
+      }
+    }
+  }
 
+  
   final _formKey = GlobalKey<FormState>();
   String notes = '';
   String theme = '';
@@ -59,6 +83,24 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () {
+                        _showAddModal(context);
+                      },
+                    ),
+                    SizedBox(width: 16),
+                    IconButton(
+                      icon: Icon(Icons.link),
+                      onPressed: () {
+                        _showLinkModal(context);
+                      },
+                    ),
+                  ],
+                ),
                 DropdownButtonFormField<int>(
                   onChanged: (newValue) {
                     setState(() {
@@ -69,8 +111,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                       ? []
                       : clients.map((client) {
                           return DropdownMenuItem<int>(
-                            value: client.id,
-                            child: Text(client.fatherName),
+                            value: users.firstWhere((user) => user.id == client.userId).id,
+                            child: Text(users.firstWhere((user) => user.id == client.userId).name),
                           );
                         }).toList(),
                   decoration: const InputDecoration(labelText: 'Selecione um paciente'),
@@ -141,9 +183,10 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
 
                       //TODO - AUTENTICAÇÃO
                       var psychologist = await psychologistService.fetchPsychologistById(psychologistLogged);
-                      
+                      print(_selectedValueClient);
+                      var clientSelected =  clients.firstWhere((c) => c.userId == _selectedValueClient);
+                      print (clientSelected);
                       MedicalRecord medicalRecord = MedicalRecord(
-                        id: 1, // Substitua pelo valor correto do ID, se aplicável
                         createdAt: DateTime.now(), // Substitua pela data correta
                         updatedAt: DateTime.now(), // Substitua pela data correta
                         notes: notes,
@@ -151,8 +194,10 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         mood: mood,
                         objective: objective,
                         evolutionRecord: evolutionRecord,
-                        psychologist: psychologist
+                        psychologist: psychologist,
+                        client: clients.firstWhere((client) => client.userId == _selectedValueClient)
                       );
+                      var id = await medicalRecordService.createMedicalRecord(medicalRecord);
                     }
                   },
                   child: const Text('Salvar'),
@@ -170,6 +215,67 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         await medicalAppointmentService.fetchMedicalAppointmentList(psychologistLogged, 'null');
     
     psychologistMedicalConsultation = fetchedmedicalAppointments;
-    setState(() {});
+  }
+
+  void _showAddModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Adicionar Cliente'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Nome'),
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Número'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para salvar o novo cliente
+                  Navigator.of(context).pop();
+                },
+                child: Text('Salvar'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLinkModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Link CPF'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: 'CPF'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Lógica para pesquisar o CPF
+                  Navigator.of(context).pop();
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.search),
+                    SizedBox(width: 8),
+                    Text('Pesquisar'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

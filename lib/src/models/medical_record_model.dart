@@ -6,7 +6,7 @@ part 'medical_record_model.g.dart';
 
 @JsonSerializable()
 class MedicalRecord {
-  final int id;
+  final int? id;
   final DateTime createdAt;
   final DateTime updatedAt;
   final String notes;
@@ -14,11 +14,11 @@ class MedicalRecord {
   final String mood;
   final String objective;
   final String evolutionRecord;
-  final Client? client;
+  final Client client;
   final Psychologist psychologist;
 
   MedicalRecord({
-    required this.id,
+    this.id,
     required this.createdAt,
     required this.updatedAt,
     required this.notes,
@@ -26,7 +26,7 @@ class MedicalRecord {
     required this.mood,
     required this.objective,
     required this.evolutionRecord,
-    this.client,
+    required this.client,
     required this.psychologist,
   });
 
@@ -34,4 +34,6 @@ class MedicalRecord {
       _$MedicalRecordFromJson(json);
 
   Map<String, dynamic> toJson() => _$MedicalRecordToJson(this);
+
+  Map<String, dynamic> creatToJson() => _$MedicalRecordCreatToJson(this);
 }

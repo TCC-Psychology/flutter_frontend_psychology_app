@@ -37,7 +37,8 @@ class PsychologistService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-        return Psychologist.fromJson(jsonDecode(res.body));
+      
+    return Psychologist.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
        Psychologist psychologist = Psychologist(
