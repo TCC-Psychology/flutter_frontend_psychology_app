@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class MedicalRecordService {
   Future<int> createMedicalRecord(MedicalRecord medicalAppointment) async {
     try {
-      int clientId = medicalAppointment.client.id; 
+      int? clientId = medicalAppointment.client.id; 
       int psychologistId = medicalAppointment.psychologist.id; 
 
       final res = await http.post(
