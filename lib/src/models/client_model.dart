@@ -1,27 +1,36 @@
+import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'client_model.g.dart';
 
 @JsonSerializable()
 class Client {
-  final int id;
-  final String religion;
-  final RelationshipStatus relationshipStatus;
-  final String fatherName;
-  final String fatherOccupation;
-  final String motherName;
-  final String motherOccupation;
-  final int userId;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  final String? religion;
+  final RelationshipStatus? relationshipStatus;
+  final String? fatherName;
+  final String? fatherOccupation;
+  final String? motherName;
+  final String? motherOccupation;
+
+  @JsonKey(includeToJson: false)
+  final User? user;
+
+  @JsonKey(includeToJson: false)
+  final int? userId;
 
   Client({
-    required this.id,
-    required this.religion,
-    required this.relationshipStatus,
-    required this.fatherName,
-    required this.fatherOccupation,
-    required this.motherName,
-    required this.motherOccupation,
-    required this.userId,
+    this.id,
+    this.religion,
+    this.relationshipStatus,
+    this.fatherName,
+    this.fatherOccupation,
+    this.motherName,
+    this.motherOccupation,
+    this.userId,
+    this.user,
   });
 
   factory Client.fromJson(Map<String, dynamic> json) => _$ClientFromJson(json);

@@ -7,38 +7,53 @@ part 'user_model.g.dart';
 
 @JsonSerializable()
 class User {
-  final int id;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
   final String name;
   final String cpf;
-  final DateTime birthDate;
-  final String imageUrl;
-  final String city;
-  final String state;
-  final String cep;
+
+  final DateTime? birthDate;
+  final String? imageUrl;
+  final String? city;
+  final String? state;
+  final String? cep;
   final String phone;
-  final String description;
+  final String? description;
   final String email;
   final String password;
-  final String gender;
+  final String? gender;
+
+  @JsonKey(includeToJson: false)
   final Client? client;
+
+  @JsonKey(includeToJson: false)
+  final int? clientId;
+
+  @JsonKey(includeToJson: false)
   final Psychologist? psychologist;
 
+  @JsonKey(includeToJson: false)
+  final int? psychologistId;
+
   User({
-    required this.id,
+    this.id,
     required this.name,
     required this.cpf,
-    required this.birthDate,
-    required this.imageUrl,
-    required this.city,
-    required this.state,
-    required this.cep,
+    this.birthDate,
+    this.imageUrl,
+    this.city,
+    this.state,
+    this.cep,
     required this.phone,
-    required this.description,
+    this.description,
     required this.email,
     required this.password,
-    required this.gender,
+    this.gender,
     this.client,
+    this.clientId,
     this.psychologist,
+    this.psychologistId,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
