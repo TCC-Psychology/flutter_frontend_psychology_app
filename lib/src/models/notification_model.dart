@@ -6,22 +6,40 @@ part 'notification_model.g.dart';
 
 @JsonSerializable()
 class Notification {
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
   final String description;
   final bool viewed;
+
+  @JsonKey(includeToJson: false)
   final Client? client;
+
+  @JsonKey(includeToJson: false)
+  final int? clientId;
+
+  @JsonKey(includeToJson: false)
   final Psychologist? psychologist;
 
+  @JsonKey(includeToJson: false)
+  final int? psychologistId;
+
   Notification({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
     required this.description,
     required this.viewed,
     this.client,
+    this.clientId,
     this.psychologist,
+    this.psychologistId,
   });
 
   factory Notification.fromJson(Map<String, dynamic> json) =>
