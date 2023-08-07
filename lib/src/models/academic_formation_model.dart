@@ -5,26 +5,38 @@ part 'academic_formation_model.g.dart';
 
 @JsonSerializable()
 class AcademicFormation {
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
   final String institution;
   final String course;
-  final String description;
+  final String? description;
   final DateTime startDate;
   final DateTime endDate;
-  final Psychologist psychologist;
+
+  @JsonKey(includeToJson: false)
+  final Psychologist? psychologist;
+
+  @JsonKey(includeToJson: false)
+  final int? psychologistId;
 
   AcademicFormation({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
     required this.institution,
     required this.course,
-    required this.description,
+    this.description,
     required this.startDate,
     required this.endDate,
-    required this.psychologist,
+    this.psychologist,
+    this.psychologistId,
   });
 
   factory AcademicFormation.fromJson(Map<String, dynamic> json) =>

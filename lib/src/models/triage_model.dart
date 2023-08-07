@@ -6,22 +6,34 @@ part 'triage_model.g.dart';
 
 @JsonSerializable()
 class Triage {
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
   final String chiefComplaint;
   final String triggeringFacts;
   final String currentSymptoms;
-  final MedicalAppointment medicalAppointments;
+
+  @JsonKey(includeToJson: false)
+  final MedicalAppointment? medicalAppointments;
+
+  @JsonKey(includeToJson: false)
+  final String? medicalAppointmentId;
 
   Triage({
-    required this.id,
+    this.id,
     required this.createdAt,
     required this.updatedAt,
     required this.chiefComplaint,
     required this.triggeringFacts,
     required this.currentSymptoms,
-    required this.medicalAppointments,
+    this.medicalAppointments,
+    this.medicalAppointmentId,
   });
 
   factory Triage.fromJson(Map<String, dynamic> json) => _$TriageFromJson(json);

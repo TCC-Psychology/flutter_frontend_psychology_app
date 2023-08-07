@@ -8,26 +8,44 @@ part 'medical_appointment_model.g.dart';
 
 @JsonSerializable()
 class MedicalAppointment {
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
   final DateTime date;
-  final String status;
-  final String appointmentType;
+  final AppointmentStatus status;
+  final AppointmentType appointmentType;
   final Triage? triage;
-  final Client client;
-  final Psychologist psychologist;
+
+  @JsonKey(includeToJson: false)
+  final Client? client;
+
+  @JsonKey(includeToJson: false)
+  final int? clientId;
+
+  @JsonKey(includeToJson: false)
+  final Psychologist? psychologist;
+
+  @JsonKey(includeToJson: false)
+  final int? psychologistId;
 
   MedicalAppointment({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
     required this.date,
     required this.status,
     required this.appointmentType,
     this.triage,
-    required this.client,
-    required this.psychologist,
+    this.client,
+    this.clientId,
+    this.psychologist,
+    this.psychologistId,
   });
 
   factory MedicalAppointment.fromJson(Map<String, dynamic> json) =>
@@ -39,4 +57,25 @@ class MedicalAppointment {
   String toString() {
     return 'MedicalAppointment - Client: $client'; // Retorne uma representação significativa do objeto.
   }
+}
+
+enum AppointmentType {
+  @JsonValue('Online')
+  online,
+  @JsonValue('Presencial')
+  presencial
+}
+
+enum AppointmentStatus {
+  @JsonValue('Pendente')
+  pending,
+
+  @JsonValue('Confirmado')
+  confirmed,
+
+  @JsonValue('Reagendado')
+  rescheduled,
+
+  @JsonValue('Cancelado')
+  canceled
 }

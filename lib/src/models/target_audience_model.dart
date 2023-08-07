@@ -5,14 +5,22 @@ part 'target_audience_model.g.dart';
 
 @JsonSerializable()
 class TargetAudience {
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
   final String tag;
+
+  @JsonKey(includeToJson: false)
   final List<Psychologist> psychologists;
 
   TargetAudience({
-    required this.id,
+    this.id,
     required this.createdAt,
     required this.updatedAt,
     required this.tag,

@@ -6,34 +6,49 @@ part 'medical_record_model.g.dart';
 
 @JsonSerializable()
 class MedicalRecord {
+  @JsonKey(includeIfNull: false)
   final int? id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String notes;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
+  final String? notes;
   final String theme;
   final String mood;
   final String objective;
   final String evolutionRecord;
-  final Client client;
-  final Psychologist psychologist;
+  @JsonKey(includeToJson: false)
+  final Client? client;
+
+  @JsonKey(includeToJson: false)
+  final int? clientId;
+
+  @JsonKey(includeToJson: false)
+  final Psychologist? psychologist;
+
+  @JsonKey(includeToJson: false)
+  final int? psychologistId;
 
   MedicalRecord({
     this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.notes,
+    this.createdAt,
+    this.updatedAt,
+    this.notes,
     required this.theme,
     required this.mood,
     required this.objective,
     required this.evolutionRecord,
-    required this.client,
-    required this.psychologist,
+    this.client,
+    this.clientId,
+    this.psychologist,
+    this.psychologistId,
   });
 
   factory MedicalRecord.fromJson(Map<String, dynamic> json) =>
       _$MedicalRecordFromJson(json);
 
   Map<String, dynamic> toJson() => _$MedicalRecordToJson(this);
-
-  Map<String, dynamic> creatToJson() => _$MedicalRecordCreatToJson(this);
 }

@@ -5,18 +5,26 @@ part 'segment_of_activity_model.g.dart';
 
 @JsonSerializable()
 class SegmentOfActivity {
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
   final String segment;
-  final List<Psychologist> psychologists;
+
+  @JsonKey(includeToJson: false)
+  final List<Psychologist>? psychologists;
 
   SegmentOfActivity({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
     required this.segment,
-    required this.psychologists,
+    this.psychologists,
   });
 
   factory SegmentOfActivity.fromJson(Map<String, dynamic> json) =>
