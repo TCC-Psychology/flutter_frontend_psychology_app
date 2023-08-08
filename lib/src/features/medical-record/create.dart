@@ -81,7 +81,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         await medicalAppointmentService.fetchMedicalAppointmentList(psychologistLogged, 'null');
     //AQUI - RETIRA E DEIXAR SOMENTE ME 1 VARIAVEL
     psychologistMedicalConsultation = fetchedmedicalAppointments;
-    print(psychologistMedicalConsultation);
   }
 
   Future<void> fetchUsersForClients() async {
@@ -270,6 +269,14 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         });
                       },
                     ),
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: 'Email'),
+                      onChanged: (value) {
+                        setState(() {
+                          _email = value;
+                        });
+                      },
+                    ),
                     const SizedBox(height: 30,),
                     ElevatedButton(
                       onPressed: () {
@@ -352,27 +359,19 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           child: Column(
             children: [
               DropdownButtonFormField<RelationshipStatus>(
-              value: _relationshipStatus,
-              onChanged: (newValue) {
-                setState(() {
-                  _relationshipStatus = newValue!;
-                });
-              },
-              decoration: const InputDecoration(labelText: 'Tipo de relacionamento'),
-              items: relationshipStatusList.map((status) {
-                return DropdownMenuItem<RelationshipStatus>(
-                  value: status,
-                  child: Text(status.toString().split('.').last),
-                );
-              }).toList(),
-            ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Status do relacionamento'),
-                onChanged: (value) {
+                value: _relationshipStatus,
+                onChanged: (newValue) {
                   setState(() {
-                    _relationshipStatus = value as RelationshipStatus?;
+                    _relationshipStatus = newValue!;
                   });
                 },
+                decoration: const InputDecoration(labelText: 'Tipo de relacionamento'),
+                items: relationshipStatusList.map((status) {
+                  return DropdownMenuItem<RelationshipStatus>(
+                    value: status,
+                    child: Text(status.toString().split('.').last),
+                  );
+                }).toList(),
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Religião'),
@@ -482,14 +481,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                   });
                 },
               ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Email'),
-                onChanged: (value) {
-                  setState(() {
-                    _email = value;
-                  });
-                },
-              ),
             ],
           ),
         );
@@ -502,12 +493,12 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       name: _nome,
       cpf: _cpf,
       birthDate: _birthDate,
-      imageUrl: null,
+      imageUrl: '',
       city: _city,
       state: _state,
       cep: _cep,
       phone: _phone,
-      description: null,
+      description: '',
       email: _email,
       //Essa senha nao pode ser preenchida pelo psicologo, ter que ser qualquer uma e dps dar a permissao pro user alterar
       password: 'SenhaQualquer',
@@ -524,8 +515,11 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     );
 
     //TODO - Mostrar uma mensagem por user se o id é de sucesso dizendo que foi cadastrado.
-    await userService.createUserAndClient(user, client);
+    var userCriado = await userService.createUserAndClient(user, client);
+    print(userCriado?.toJson());
+    var userId = userCriado?.id?.toString() ?? "valor_padrao";
 
+    var clientCriado = await clientService.fetchClientForUserId(userId);
     //TODO - Deixar psicologo global após (autenticação)
     var psychologist = await psychologistService.fetchPsychologistById(psychologistLogged);
 
@@ -533,11 +527,11 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       date: DateTime.now(), 
       status: AppointmentStatus.confirmed, 
       appointmentType: AppointmentType.presencial,
-      clientId: client.id,
+      clientId: clientCriado?.id,
       psychologistId: psychologist.id
     );
     
-    await medicalAppointmentService.createMedicalAppointment(medicalAppointment);
+    var sucesso = await medicalAppointmentService.createMedicalAppointment(medicalAppointment);
     
     loadPageUtilities();
     

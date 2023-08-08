@@ -40,10 +40,10 @@ class UserService {
     return null;
   }
 
-  Future<int> createUserAndClient(User user, Client client) async {
+  Future<User?> createUserAndClient(User user, Client client) async {
     try {
       final res = await http.post(
-        Uri.parse('$uri/createUserAndClient'),
+        Uri.parse('$uri/users/createUserAndClient'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -52,15 +52,10 @@ class UserService {
           'client': client.toJson(),
         }),
       );
-
-      if (res.statusCode == 200) {
-        return 1;
-      } else {
-        return 0;
-      }
+      print(res.body);
+      return User.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
-      return -1;
     }
   }
 }

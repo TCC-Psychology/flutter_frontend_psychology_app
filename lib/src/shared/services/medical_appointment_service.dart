@@ -17,8 +17,6 @@ class MedicalAppointmentService {
         },
       );
       List<dynamic> body = jsonDecode(res.body);
-      print(res);
-      print(body);
       medicalAppointmentList = body.map((dynamic item) => MedicalAppointment.fromJson(item)).toList();
     } catch (e) {
       print(e);
