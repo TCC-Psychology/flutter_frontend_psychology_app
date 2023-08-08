@@ -5,26 +5,20 @@ import 'package:flutter_frontend_psychology_app/src/models/medical_record_model.
 import 'package:http/http.dart' as http;
 
 class MedicalRecordService {
-  Future<int> createMedicalRecord(MedicalRecord medicalAppointment) async {
+  Future<int> createMedicalRecord(MedicalRecord medicalRecord) async {
     try {
-      int? clientId = medicalAppointment.client.id; 
-      int psychologistId = medicalAppointment.psychologist.id; 
+      int? clientId = medicalRecord.clientId; 
+      int? psychologistId = medicalRecord.psychologistId; 
 
       final res = await http.post(
         Uri.parse('$uri/medical-record/$psychologistId/$clientId'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(medicalAppointment.creatToJson()),
+        body: jsonEncode(medicalRecord.toJson()),
       );
 
-      print(res);
-
-      if (res.statusCode == 200) {
-        return 1;
-      } else {
-        return 0;
-      }
+      return 1;
     } catch (e) {
       print(e);
       return -1;

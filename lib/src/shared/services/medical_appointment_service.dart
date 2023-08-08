@@ -17,12 +17,33 @@ class MedicalAppointmentService {
         },
       );
       List<dynamic> body = jsonDecode(res.body);
-
+      print(res);
+      print(body);
       medicalAppointmentList = body.map((dynamic item) => MedicalAppointment.fromJson(item)).toList();
     } catch (e) {
       print(e);
     }
 
     return medicalAppointmentList;
+  }
+
+  Future<int> createMedicalAppointment(MedicalAppointment medicalAppointment) async {
+    try {
+      int? clientId = medicalAppointment.clientId; 
+      int? psychologistId = medicalAppointment.psychologistId; 
+
+      final res = await http.post(
+        Uri.parse('$uri/medical-appointment/$clientId/$psychologistId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(medicalAppointment.toJson()),
+      );
+
+      return 1;
+    } catch (e) {
+      print(e);
+      return -1;
+    }
   }
 }

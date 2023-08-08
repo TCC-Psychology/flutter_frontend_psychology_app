@@ -19,9 +19,6 @@ class PsychologistService {
 
       psychologistList =
           body.map((dynamic item) => Psychologist.fromJson(item)).toList();
-
-      print(res);
-      print(psychologistList);
     } catch (e) {
       print(e);
     }

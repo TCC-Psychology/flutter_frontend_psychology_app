@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 
 class UserService {
-  Future<User?> fetchUser(String userId) async {
+  Future<User?> fetchUserForUserId(String userId) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/users/$userId'),
@@ -23,7 +23,24 @@ class UserService {
     return null;
   }
 
-  Future<int> createUserAndClient(UserCreate userCreate, ClientCreate client) async {
+  Future<User?> fetchUserForClientId(String clientId) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/users/getUserByClientId/$clientId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      return User.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+    }
+
+    return null;
+  }
+
+  Future<int> createUserAndClient(User user, Client client) async {
     try {
       final res = await http.post(
         Uri.parse('$uri/createUserAndClient'),
@@ -31,7 +48,7 @@ class UserService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
-          'user': userCreate.toJson(),
+          'user': user.toJson(),
           'client': client.toJson(),
         }),
       );

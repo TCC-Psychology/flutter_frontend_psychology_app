@@ -60,36 +60,3 @@ class User {
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
-
-@JsonSerializable()
-class UserCreate {
-  final String name;
-  final String cpf;
-  final DateTime? birthDate;
-  final String? imageUrl;
-  final String? city;
-  final String? state;
-  final String? cep;
-  final String phone;
-  final String? description;
-  final String? email;
-  final String password;
-  final String? gender;
-
-  UserCreate({
-    required this.name,
-    required this.cpf,
-    this.birthDate,
-    this.imageUrl,
-    this.city,
-    this.state,
-    this.cep,
-    required this.phone,
-    this.description,
-    this.email,
-    required this.password,
-    this.gender,
-  });
-
-  Map<String, dynamic> toJson() => _$UserCreateToJson(this);
-}
