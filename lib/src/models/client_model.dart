@@ -38,27 +38,6 @@ class Client {
   Map<String, dynamic> toJson() => _$ClientToJson(this);
 }
 
-@JsonSerializable()
-class ClientCreate {
-  final String? religion;
-  final RelationshipStatus? relationshipStatus;
-  final String? fatherName;
-  final String? fatherOccupation;
-  final String? motherName;
-  final String? motherOccupation;
-
-  ClientCreate({
-    required this.religion,
-    required this.relationshipStatus,
-    required this.fatherName,
-    required this.fatherOccupation,
-    required this.motherName,
-    required this.motherOccupation,
-  });
-
-  Map<String, dynamic> toJson() => _$ClientCreateToJson(this);
-}
-
 enum RelationshipStatus {
   @JsonValue('single')
   single,

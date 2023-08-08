@@ -41,16 +41,6 @@ Map<String, dynamic> _$ClientToJson(Client instance) {
   return val;
 }
 
-    Map<String, dynamic> _$ClientCreateToJson(ClientCreate instance) => <String, dynamic>{
-      'religion': instance.religion,
-      'relationshipStatus':
-          _$RelationshipStatusEnumMap[instance.relationshipStatus]!,
-      'fatherName': instance.fatherName,
-      'fatherOccupation': instance.fatherOccupation,
-      'motherName': instance.motherName,
-      'motherOccupation': instance.motherOccupation,
-    };
-
 const _$RelationshipStatusEnumMap = {
   RelationshipStatus.single: 'single',
   RelationshipStatus.married: 'married',

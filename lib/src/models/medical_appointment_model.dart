@@ -60,22 +60,22 @@ class MedicalAppointment {
 }
 
 enum AppointmentType {
-  @JsonValue('Online')
+  @JsonValue('ONLINE')
   online,
-  @JsonValue('Presencial')
+  @JsonValue('PRESENCIAL')
   presencial
 }
 
 enum AppointmentStatus {
-  @JsonValue('Pendente')
+  @JsonValue('PENDING')
   pending,
 
-  @JsonValue('Confirmado')
+  @JsonValue('CONFIRMED')
   confirmed,
 
-  @JsonValue('Reagendado')
+  @JsonValue('RESCHEDULED')
   rescheduled,
 
-  @JsonValue('Cancelado')
+  @JsonValue('CANCELED')
   canceled
 }
