@@ -29,3 +29,24 @@ class PsychologistService {
     return psychologistList;
   }
 }
+
+Future<Psychologist> fetchPsychologistById(String id) async {
+  try {
+    final res = await http.get(
+      Uri.parse('$uri/psychologist/$id'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    return Psychologist.fromJson(jsonDecode(res.body));
+  } catch (e) {
+    print(e);
+    Psychologist psychologist = Psychologist(
+      id: 1,
+      certificationNumber: '1',
+      userId: 1,
+    );
+    return psychologist;
+  }
+}
