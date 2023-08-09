@@ -6,22 +6,40 @@ part 'review_model.g.dart';
 
 @JsonSerializable()
 class Review {
-  final int id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String description;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? createdAt;
+
+  @JsonKey(includeToJson: false)
+  final DateTime? updatedAt;
+
+  final String? description;
   final int rating;
-  final Client client;
-  final Psychologist psychologist;
+
+  @JsonKey(includeToJson: false)
+  final Client? client;
+
+  @JsonKey(includeToJson: false)
+  final int? clientId;
+
+  @JsonKey(includeToJson: false)
+  final Psychologist? psychologist;
+
+  @JsonKey(includeToJson: false)
+  final int? psychologistId;
 
   Review({
-    required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.description,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
+    this.description,
     required this.rating,
-    required this.client,
-    required this.psychologist,
+    this.client,
+    this.clientId,
+    this.psychologist,
+    this.psychologistId,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);

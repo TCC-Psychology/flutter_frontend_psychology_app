@@ -1,17 +1,26 @@
+import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'psychologist_model.g.dart';
 
 @JsonSerializable()
 class Psychologist {
-  final int id;
-  final String certificationNumber;
-  final int userId;
+  @JsonKey(includeIfNull: false)
+  final int? id;
+
+  final String? certificationNumber;
+
+  @JsonKey(includeToJson: false)
+  final int? userId;
+
+  @JsonKey(includeToJson: false)
+  final User? user;
 
   Psychologist({
-    required this.id,
-    required this.certificationNumber,
-    required this.userId,
+    this.id,
+    this.certificationNumber,
+    this.userId,
+    this.user,
   });
 
   factory Psychologist.fromJson(Map<String, dynamic> json) =>

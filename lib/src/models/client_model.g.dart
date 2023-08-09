@@ -7,28 +7,39 @@ part of 'client_model.dart';
 // **************************************************************************
 
 Client _$ClientFromJson(Map<String, dynamic> json) => Client(
-      id: json['id'] as int,
-      religion: json['religion'] as String,
-      relationshipStatus:
-          $enumDecode(_$RelationshipStatusEnumMap, json['relationshipStatus']),
-      fatherName: json['fatherName'] as String,
-      fatherOccupation: json['fatherOccupation'] as String,
-      motherName: json['motherName'] as String,
-      motherOccupation: json['motherOccupation'] as String,
-      userId: json['userId'] as int,
+      id: json['id'] as int?,
+      religion: json['religion'] as String?,
+      relationshipStatus: $enumDecodeNullable(
+          _$RelationshipStatusEnumMap, json['relationshipStatus']),
+      fatherName: json['fatherName'] as String?,
+      fatherOccupation: json['fatherOccupation'] as String?,
+      motherName: json['motherName'] as String?,
+      motherOccupation: json['motherOccupation'] as String?,
+      userId: json['userId'] as int?,
+      user: json['user'] == null
+          ? null
+          : User.fromJson(json['user'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$ClientToJson(Client instance) => <String, dynamic>{
-      'id': instance.id,
-      'religion': instance.religion,
-      'relationshipStatus':
-          _$RelationshipStatusEnumMap[instance.relationshipStatus]!,
-      'fatherName': instance.fatherName,
-      'fatherOccupation': instance.fatherOccupation,
-      'motherName': instance.motherName,
-      'motherOccupation': instance.motherOccupation,
-      'userId': instance.userId,
-    };
+Map<String, dynamic> _$ClientToJson(Client instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('id', instance.id);
+  val['religion'] = instance.religion;
+  val['relationshipStatus'] =
+      _$RelationshipStatusEnumMap[instance.relationshipStatus];
+  val['fatherName'] = instance.fatherName;
+  val['fatherOccupation'] = instance.fatherOccupation;
+  val['motherName'] = instance.motherName;
+  val['motherOccupation'] = instance.motherOccupation;
+  return val;
+}
 
 const _$RelationshipStatusEnumMap = {
   RelationshipStatus.single: 'single',

@@ -8,20 +8,29 @@ part of 'segment_of_activity_model.dart';
 
 SegmentOfActivity _$SegmentOfActivityFromJson(Map<String, dynamic> json) =>
     SegmentOfActivity(
-      id: json['id'] as int,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      id: json['id'] as int?,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
       segment: json['segment'] as String,
-      psychologists: (json['psychologists'] as List<dynamic>)
-          .map((e) => Psychologist.fromJson(e as Map<String, dynamic>))
+      psychologists: (json['psychologists'] as List<dynamic>?)
+          ?.map((e) => Psychologist.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$SegmentOfActivityToJson(SegmentOfActivity instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
-      'segment': instance.segment,
-      'psychologists': instance.psychologists,
-    };
+Map<String, dynamic> _$SegmentOfActivityToJson(SegmentOfActivity instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('id', instance.id);
+  val['segment'] = instance.segment;
+  return val;
+}
