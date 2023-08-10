@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../main.dart';
 import '../../models/client_model.dart';
 import '../../models/medical_appointment_model.dart';
 import '../../models/medical_record_model.dart';
@@ -34,10 +35,9 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   int _selectedValueUserId = -1;
   String notes = '';
   String theme = '';
-  String mood = '';
   String objective = '';
   String evolutionRecord = '';
-
+  int selectedMood = 1;
   //Using in creatClientForPsychologist
   final TextEditingController _datePickerController = TextEditingController();
   List<RelationshipStatus> relationshipStatusList = RelationshipStatus.values;
@@ -60,8 +60,11 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   String _gender = '';
   String _email = '';
   bool _showAdditionalUserFields = false;
-  
 
+  User? fetchedUser;
+  String cpfValue = '';
+  
+ final GlobalKey<State> _dialogKey = GlobalKey<State>();
  @override
   void initState() {    
     super.initState();
@@ -173,26 +176,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                   onSaved: (value) => objective = value!,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Registro de evolução'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira o registro de evolução';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => evolutionRecord = value!,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Humor'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira o humor';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => mood = value!,
-                ),
-                TextFormField(
                   decoration: const InputDecoration(labelText: 'Notas'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -202,6 +185,82 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                   },
                   onSaved: (value) => notes = value!,
                 ),
+                const SizedBox(height: 10),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Humor',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedMood = 1;
+                        });
+                      },
+                      child: Icon(
+                        selectedMood == 1 ? Icons.sentiment_very_dissatisfied : Icons.sentiment_very_dissatisfied_outlined,
+                        color: selectedMood == 1 ? Colors.red : Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedMood = 2;
+                        });
+                      },
+                      child: Icon(
+                        selectedMood == 2 ? Icons.sentiment_dissatisfied : Icons.sentiment_dissatisfied_outlined,
+                        color: selectedMood == 2 ? Colors.orange : Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedMood = 3;
+                        });
+                      },
+                      child: Icon(
+                        selectedMood == 3 ? Icons.sentiment_neutral : Icons.sentiment_neutral_outlined,
+                        color: selectedMood == 3 ? Colors.yellow : Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedMood = 4;
+                        });
+                      },
+                      child: Icon(
+                        selectedMood == 4 ? Icons.sentiment_satisfied : Icons.sentiment_satisfied_outlined,
+                        color: selectedMood == 4 ? Colors.lightGreen : Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedMood = 5;
+                        });
+                      },
+                      child: Icon(
+                        selectedMood == 5 ? Icons.sentiment_very_satisfied : Icons.sentiment_very_satisfied_outlined,
+                        color: selectedMood == 5 ? Colors.green : Colors.grey,
+                        size: 50,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
@@ -214,7 +273,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         id: null,
                         notes: notes,
                         theme: theme,
-                        mood: mood,
+                        mood: selectedMood.toString(),
                         objective: objective,
                         evolutionRecord: evolutionRecord,
                         psychologistId: psychologist.id,
@@ -230,6 +289,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomMenu(),
     );
   }
 
@@ -240,6 +300,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              key: _dialogKey,
               title: const Text('Adicionar Cliente'),
               content: SingleChildScrollView(
                 child: Column(
@@ -317,35 +378,49 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       },
     );
   }
-  
+
   void _showLinkModal(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Relacionar pessoa cadastrada a você.'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'CPF'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Lógica para pesquisar o CPF
-                  Navigator.of(context).pop();
-                },
-                child: const Row(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              key: _dialogKey,
+              title: const Text('Adicionar Cliente'),
+              content: SingleChildScrollView(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.search),
-                    SizedBox(width: 8),
-                    Text('Pesquisar'),
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: 'CPF'),
+                      onChanged: (newValue) {
+                        setState(() {
+                          cpfValue = newValue;
+                        });
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        var user = await userService.fetchUserByProperties(cpfValue);
+                        fetchedUser = user;
+                        setState(() {});
+                      },
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.search),
+                          SizedBox(width: 8),
+                          Text('Pesquisar'),
+                        ],
+                      ),
+                    ),
+                    if (fetchedUser != null) _showUserFeteched(fetchedUser!),
                   ],
                 ),
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -488,6 +563,59 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     );
   }
 
+  Widget _showUserFeteched(User fetchedUser) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          TextFormField(
+            decoration: const InputDecoration(labelText: 'Nome'),
+            initialValue: fetchedUser.name,
+            readOnly: true,
+          ),
+          TextFormField(
+            decoration: const InputDecoration(labelText: 'Telefone'),
+            initialValue: fetchedUser.phone,
+            readOnly: true,
+          ),
+          TextFormField(
+            decoration: const InputDecoration(labelText: 'CPF'),
+            initialValue: fetchedUser.cpf,
+            readOnly: true,
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              print(fetchedUser.id);
+              var psychologist = await psychologistService.fetchPsychologistById(psychologistLogged);
+              var client = await clientService.fetchClientForUserId(fetchedUser.id!.toString());
+              print(client);
+              MedicalAppointment medicalAppointment = MedicalAppointment(
+                date: DateTime.now(), 
+                status: AppointmentStatus.confirmed, 
+                appointmentType: AppointmentType.presencial,
+                clientId: client?.id!,
+                psychologistId: psychologist.id
+              );
+
+              var id = await medicalAppointmentService.createMedicalAppointment(medicalAppointment);
+    
+              if (id == 1) {
+                Navigator.of(_dialogKey.currentContext!).pop();
+
+                _showSuccessModal(context);
+              }
+
+              loadPageUtilities();
+              
+              setState((){});
+            },
+            child: Text('Relacionar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   Future<void> _saveClientData() async {
     User user = User(
       name: _nome,
@@ -500,7 +628,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       phone: _phone,
       description: '',
       email: _email,
-      //Essa senha nao pode ser preenchida pelo psicologo, ter que ser qualquer uma e dps dar a permissao pro user alterar
       password: 'SenhaQualquer',
       gender: _gender,
     );
@@ -514,7 +641,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       motherOccupation: _motherOccupation,
     );
 
-    //TODO - Mostrar uma mensagem por user se o id é de sucesso dizendo que foi cadastrado.
     var userCriado = await userService.createUserAndClient(user, client);
     print(userCriado?.toJson());
     var userId = userCriado?.id?.toString() ?? "valor_padrao";
@@ -531,10 +657,32 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       psychologistId: psychologist.id
     );
     
-    var sucesso = await medicalAppointmentService.createMedicalAppointment(medicalAppointment);
+    var id = await medicalAppointmentService.createMedicalAppointment(medicalAppointment);
     
+    if (id == 1) {
+      Navigator.of(_dialogKey.currentContext!).pop();
+
+      _showSuccessModal(context);
+    }
+
     loadPageUtilities();
     
     setState((){});
+  }
+
+  void _showSuccessModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(const Duration(seconds: 3), () {
+          Navigator.of(context).pop();
+        });
+
+        return const AlertDialog(
+          title: Center(child: Text('Successo')),
+          content: Center(child: Text('Usuario criado.')),
+        );
+      },
+    );
   }
 }
