@@ -40,6 +40,57 @@ class UserService {
     return null;
   }
 
+  Future<User?> fetchUserByPsychologistId(String psychologistId) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/users/getUserByPsychologistId/$psychologistId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      return User.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+    }
+
+    return null;
+  }
+
+  Future<User?> fetchUserByProperties(String cpf) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/users/getUserByProperties/$cpf'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      return User.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+    }
+
+    return null;
+  }
+
+  Future<bool> canLogin(String phone, String password) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/users/login/$phone/$password'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      print (res.body);
+      final bool result = json.decode(res.body);
+      return result;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
   Future<User?> createUserAndClient(User user, Client client) async {
     try {
       final res = await http.post(
@@ -57,5 +108,6 @@ class UserService {
     } catch (e) {
       print(e);
     }
+    return null;
   }
 }
