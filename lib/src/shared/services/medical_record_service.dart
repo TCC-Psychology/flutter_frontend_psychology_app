@@ -24,4 +24,22 @@ class MedicalRecordService {
       return -1;
     }
   }
+
+  Future<List<MedicalRecord>> fetchMedicalRecordtList(String psychologistId, String clientId) async {
+    List<MedicalRecord> medicalRecord= [];
+
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/medical-record/$clientId/$psychologistId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      List<dynamic> body = jsonDecode(res.body);
+      medicalRecord = body.map((dynamic item) => MedicalRecord.fromJson(item)).toList();
+    } catch (e) {
+      print(e);
+    }
+    return medicalRecord;
+  }
 }

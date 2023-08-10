@@ -13,7 +13,7 @@ class ClientService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-
+      print (res.body);
       return Client.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
