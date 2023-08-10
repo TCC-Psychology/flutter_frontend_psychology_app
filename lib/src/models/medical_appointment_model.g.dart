@@ -45,7 +45,7 @@ Map<String, dynamic> _$MedicalAppointmentToJson(MedicalAppointment instance) {
   val['date'] = instance.date.toIso8601String();
   val['status'] = _$AppointmentStatusEnumMap[instance.status]!;
   val['appointmentType'] = _$AppointmentTypeEnumMap[instance.appointmentType]!;
-  val['triage'] = instance.triage;
+  writeNotNull('triage', instance.triage);
   return val;
 }
 
