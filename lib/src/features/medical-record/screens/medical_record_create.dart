@@ -1,57 +1,55 @@
 import 'package:flutter/material.dart';
 
-import '../../../main.dart';
-import '../../models/client_model.dart';
-import '../../models/medical_appointment_model.dart';
-import '../../models/medical_record_model.dart';
-import '../../models/user_model.dart';
-import '../../shared/services/client_service.dart';
-import '../../shared/services/medical_appointment_service.dart';
-import '../../shared/services/medical_record_service.dart';
-import '../../shared/services/psychologist_service.dart';
-import '../../shared/services/user.service.dart';
-import 'index-medical-record.dart';
+import '../../../../main.dart';
+import '../../../models/client_model.dart';
+import '../../../models/medical_appointment_model.dart';
+import '../../../models/medical_record_model.dart';
+import '../../../models/user_model.dart';
+import '../../../shared/services/client_service.dart';
+import '../../../shared/services/medical_appointment_service.dart';
+import '../../../shared/services/medical_record_service.dart';
+import '../../../shared/services/psychologist_service.dart';
+import '../../../shared/services/user.service.dart';
+import 'medical_record_screen.dart';
 
 class MedicalRecordCreateForm extends StatefulWidget {
   const MedicalRecordCreateForm({super.key});
 
   @override
-  _MedicalRecordCreateFormState createState() => _MedicalRecordCreateFormState();
+  _MedicalRecordCreateFormState createState() =>
+      _MedicalRecordCreateFormState();
 }
 
 class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
-  final MedicalAppointmentService medicalAppointmentService = MedicalAppointmentService();
+  final MedicalAppointmentService medicalAppointmentService =
+      MedicalAppointmentService();
   final MedicalRecordService medicalRecordService = MedicalRecordService();
   final PsychologistService psychologistService = PsychologistService();
   final ClientService clientService = ClientService();
   final UserService userService = UserService();
-  
+
   //TODO - AUTENTICAÇÃO
   var psychologistLogged = '1';
 
-  //Using un creatMedicalRecord
+  final GlobalKey<State> _dialogKey = GlobalKey<State>();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _datePickerController = TextEditingController();
+  List<RelationshipStatus> relationshipStatusList = RelationshipStatus.values;
   List<MedicalAppointment> psychologistMedicalConsultation = [];
   List<User> users = [];
-  final _formKey = GlobalKey<FormState>();
   int _selectedValueUserId = -1;
+  int selectedMood = 1;
+  RelationshipStatus? _relationshipStatus;
   String notes = '';
   String theme = '';
   String objective = '';
   String evolutionRecord = '';
-  int selectedMood = 1;
-  //Using in creatClientForPsychologist
-  final TextEditingController _datePickerController = TextEditingController();
-  List<RelationshipStatus> relationshipStatusList = RelationshipStatus.values;
-  RelationshipStatus? _relationshipStatus;
-  DateTime? _birthDate ;
+  DateTime? _birthDate;
   String _religion = '';
   String _fatherName = '';
   String _fatherOccupation = '';
   String _motherName = '';
   String _motherOccupation = '';
-  bool _showAdditionalClientFields = false;
-
-  //Using in creatUserForPsycholigist
   String _nome = '';
   String _cpf = '';
   String _phone = '';
@@ -61,41 +59,41 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   String _gender = '';
   String _email = '';
   bool _showAdditionalUserFields = false;
-
-  User? fetchedUser;
+  bool _showAdditionalClientFields = false;
+  User? userTypeClientSearched;
   String cpfValue = '';
-  
- final GlobalKey<State> _dialogKey = GlobalKey<State>();
- @override
-  void initState() {    
+
+  @override
+  void initState() {
     super.initState();
 
     loadPageUtilities();
   }
 
   Future<void> loadPageUtilities() async {
-      await fetchMedicalAppointments();
-      await fetchUsersForClients();
+    await fetchMedicalAppointments();
+    await fetchUsersByClients();
 
-      setState(() {});
+    setState(() {});
   }
 
   fetchMedicalAppointments() async {
-    var fetchedmedicalAppointments =
-        await medicalAppointmentService.fetchMedicalAppointmentList(psychologistLogged, 'null');
-    //AQUI - RETIRA E DEIXAR SOMENTE ME 1 VARIAVEL
-    psychologistMedicalConsultation = fetchedmedicalAppointments;
+    psychologistMedicalConsultation = await medicalAppointmentService
+        .fetchMedicalAppointmentList(psychologistLogged, 'null');
   }
 
-  Future<void> fetchUsersForClients() async {
+  Future<void> fetchUsersByClients() async {
     users = [];
-    for (MedicalAppointment medicalAppointment in psychologistMedicalConsultation) {
-      var user = await userService.fetchUserForClientId(medicalAppointment.clientId.toString());
+    for (MedicalAppointment medicalAppointment
+        in psychologistMedicalConsultation) {
+      var user = await userService
+          .fetchUserByClientId(medicalAppointment.clientId.toString());
 
       if (user != null) {
         users.add(user);
       } else {
-        print("Fazer algo que mostre um erro e que é necessario reiniciar o app, pq seria impossivel nao ter user aqui");
+        print(
+            "Fazer algo que mostre um erro e que é necessario reiniciar o app, pq seria impossivel nao ter user aqui");
       }
     }
   }
@@ -146,7 +144,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                             child: Text(user.name),
                           );
                         }).toList(),
-                  decoration: const InputDecoration(labelText: 'Selecione um paciente'),
+                  decoration:
+                      const InputDecoration(labelText: 'Selecione um paciente'),
                   validator: (value) {
                     if (users.isEmpty) {
                       return 'Não há pacientes relacionados disponíveis.';
@@ -179,12 +178,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                 ),
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Notas'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira as notas';
-                    }
-                    return null;
-                  },
                   onSaved: (value) => notes = value!,
                 ),
                 const SizedBox(height: 10),
@@ -207,7 +200,9 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         });
                       },
                       child: Icon(
-                        selectedMood == 1 ? Icons.sentiment_very_dissatisfied : Icons.sentiment_very_dissatisfied_outlined,
+                        selectedMood == 1
+                            ? Icons.sentiment_very_dissatisfied
+                            : Icons.sentiment_very_dissatisfied_outlined,
                         color: selectedMood == 1 ? Colors.red : Colors.grey,
                         size: 50,
                       ),
@@ -219,7 +214,9 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         });
                       },
                       child: Icon(
-                        selectedMood == 2 ? Icons.sentiment_dissatisfied : Icons.sentiment_dissatisfied_outlined,
+                        selectedMood == 2
+                            ? Icons.sentiment_dissatisfied
+                            : Icons.sentiment_dissatisfied_outlined,
                         color: selectedMood == 2 ? Colors.orange : Colors.grey,
                         size: 50,
                       ),
@@ -231,7 +228,9 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         });
                       },
                       child: Icon(
-                        selectedMood == 3 ? Icons.sentiment_neutral : Icons.sentiment_neutral_outlined,
+                        selectedMood == 3
+                            ? Icons.sentiment_neutral
+                            : Icons.sentiment_neutral_outlined,
                         color: selectedMood == 3 ? Colors.yellow : Colors.grey,
                         size: 50,
                       ),
@@ -243,8 +242,11 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         });
                       },
                       child: Icon(
-                        selectedMood == 4 ? Icons.sentiment_satisfied : Icons.sentiment_satisfied_outlined,
-                        color: selectedMood == 4 ? Colors.lightGreen : Colors.grey,
+                        selectedMood == 4
+                            ? Icons.sentiment_satisfied
+                            : Icons.sentiment_satisfied_outlined,
+                        color:
+                            selectedMood == 4 ? Colors.lightGreen : Colors.grey,
                         size: 50,
                       ),
                     ),
@@ -255,7 +257,9 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         });
                       },
                       child: Icon(
-                        selectedMood == 5 ? Icons.sentiment_very_satisfied : Icons.sentiment_very_satisfied_outlined,
+                        selectedMood == 5
+                            ? Icons.sentiment_very_satisfied
+                            : Icons.sentiment_very_satisfied_outlined,
                         color: selectedMood == 5 ? Colors.green : Colors.grey,
                         size: 50,
                       ),
@@ -269,23 +273,29 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                       _formKey.currentState!.save();
 
                       //TODO - Deixar psicologo global após (autenticação)
-                      var psychologist = await psychologistService.fetchPsychologistById(psychologistLogged);
-                      var client = await clientService.fetchClientForUserId(_selectedValueUserId.toString());
-                      MedicalRecord medicalRecord = MedicalRecord(
-                        id: null,
-                        notes: notes,
-                        theme: theme,
-                        mood: selectedMood.toString(),
-                        objective: objective,
-                        evolutionRecord: evolutionRecord,
-                        psychologistId: psychologist.id,
-                        clientId: client?.id
-                      );
-                      var id = await medicalRecordService.createMedicalRecord(medicalRecord);
+                      var psychologist = await psychologistService
+                          .fetchPsychologistById(psychologistLogged);
+                      var client = await clientService
+                          .fetchClientByUserId(_selectedValueUserId.toString());
 
+                      MedicalRecord medicalRecord = MedicalRecord(
+                          id: null,
+                          notes: notes,
+                          theme: theme,
+                          mood: selectedMood.toString(),
+                          objective: objective,
+                          evolutionRecord: evolutionRecord,
+                          psychologistId: psychologist!.id,
+                          clientId: client?.id);
+
+                      var id = await medicalRecordService
+                          .createMedicalRecord(medicalRecord);
+
+                      // ignore: use_build_context_synchronously
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => MedicalRecordIndex()), // Replace with the actual route
+                        MaterialPageRoute(
+                            builder: (context) => const MedicalRecordScreen()),
                       );
                     }
                   },
@@ -296,7 +306,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomMenu(),
+      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 
@@ -330,7 +340,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                       },
                     ),
                     TextFormField(
-                      decoration: const InputDecoration(labelText: 'Número Celular'),
+                      decoration:
+                          const InputDecoration(labelText: 'Número Celular'),
                       onChanged: (value) {
                         setState(() {
                           _phone = value;
@@ -345,31 +356,41 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         });
                       },
                     ),
-                    const SizedBox(height: 30,),
+                    const SizedBox(
+                      height: 30,
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _showAdditionalUserFields = !_showAdditionalUserFields;
+                          _showAdditionalUserFields =
+                              !_showAdditionalUserFields;
                         });
                       },
                       child: Text(_showAdditionalUserFields
                           ? 'Ocultar campos usuario adicionais'
                           : 'Mostrar campos usuario adicionais'),
                     ),
-                    if (_showAdditionalUserFields) _buildAdditionalFieldsUserForm(),
-                    const SizedBox(height: 30,),
+                    if (_showAdditionalUserFields)
+                      _buildAdditionalFieldsUserForm(),
+                    const SizedBox(
+                      height: 30,
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _showAdditionalClientFields = !_showAdditionalClientFields;
+                          _showAdditionalClientFields =
+                              !_showAdditionalClientFields;
                         });
                       },
                       child: Text(_showAdditionalClientFields
                           ? 'Ocultar campos paciente adicionais'
                           : 'Mostrar campos paciente adicionais'),
                     ),
-                    if (_showAdditionalClientFields) _buildAdditionalFieldsClientForm(),
-                    const SizedBox(height: 10,),
+                    if (_showAdditionalClientFields)
+                      _buildAdditionalFieldsClientForm(),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         _saveClientData();
@@ -394,7 +415,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           builder: (context, setState) {
             return AlertDialog(
               key: _dialogKey,
-              title: const Text('Adicionar Cliente'),
+              title: const Text('Relacionar Paciente'),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -409,8 +430,9 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        var user = await userService.fetchUserByProperties(cpfValue);
-                        fetchedUser = user;
+                        var user =
+                            await userService.fetchUserByProperties(cpfValue);
+                        userTypeClientSearched = user;
                         setState(() {});
                       },
                       child: const Row(
@@ -422,7 +444,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         ],
                       ),
                     ),
-                    if (fetchedUser != null) _showUserFeteched(fetchedUser!),
+                    if (userTypeClientSearched != null)
+                      _showUserFeteched(userTypeClientSearched!),
                   ],
                 ),
               ),
@@ -433,7 +456,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     );
   }
 
-  //TODO - Depois retirar esse SingleChildScrollView PARA VER SE DA ERRO
   Widget _buildAdditionalFieldsClientForm() {
     return StatefulBuilder(
       builder: (context, setState) {
@@ -447,7 +469,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                     _relationshipStatus = newValue!;
                   });
                 },
-                decoration: const InputDecoration(labelText: 'Tipo de relacionamento'),
+                decoration:
+                    const InputDecoration(labelText: 'Tipo de relacionamento'),
                 items: relationshipStatusList.map((status) {
                   return DropdownMenuItem<RelationshipStatus>(
                     value: status,
@@ -502,10 +525,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     );
   }
 
-  String _formatDate(DateTime date) {
-    return "${date.day}/${date.month}/${date.year}";
-  }
-
   Widget _buildAdditionalFieldsUserForm() {
     return StatefulBuilder(
       builder: (context, setState) {
@@ -515,18 +534,20 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
               TextFormField(
                 controller: _datePickerController,
                 readOnly: true,
-                decoration: const InputDecoration(labelText: 'Data de nascimento'),
+                decoration:
+                    const InputDecoration(labelText: 'Data de nascimento'),
                 onTap: () async {
                   DateTime? pickedDate = await showDatePicker(
                     context: context,
-                    initialDate: _birthDate  ?? DateTime.now(),
+                    initialDate: _birthDate ?? DateTime.now(),
                     firstDate: DateTime(1900),
                     lastDate: DateTime.now(),
                   );
                   if (pickedDate != null) {
                     setState(() {
-                      _birthDate  = pickedDate;
-                      _datePickerController.text = _formatDate(pickedDate); // Usa a função para formatar a data
+                      _birthDate = pickedDate;
+                      _datePickerController.text = _formatDate(
+                          pickedDate); // Usa a função para formatar a data
                     });
                   }
                 },
@@ -570,41 +591,42 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     );
   }
 
-  Widget _showUserFeteched(User fetchedUser) {
+  Widget _showUserFeteched(User userTypeClientSearched) {
     return SingleChildScrollView(
       child: Column(
         children: [
           TextFormField(
             decoration: const InputDecoration(labelText: 'Nome'),
-            initialValue: fetchedUser.name,
+            initialValue: userTypeClientSearched.name,
             readOnly: true,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Telefone'),
-            initialValue: fetchedUser.phone,
+            initialValue: userTypeClientSearched.phone,
             readOnly: true,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'CPF'),
-            initialValue: fetchedUser.cpf,
+            initialValue: userTypeClientSearched.cpf,
             readOnly: true,
           ),
           ElevatedButton(
             onPressed: () async {
-              print(fetchedUser.id);
-              var psychologist = await psychologistService.fetchPsychologistById(psychologistLogged);
-              var client = await clientService.fetchClientForUserId(fetchedUser.id!.toString());
-              print(client);
-              MedicalAppointment medicalAppointment = MedicalAppointment(
-                date: DateTime.now(), 
-                status: AppointmentStatus.confirmed, 
-                appointmentType: AppointmentType.presencial,
-                clientId: client?.id!,
-                psychologistId: psychologist.id
-              );
+              var psychologist = await psychologistService
+                  .fetchPsychologistById(psychologistLogged);
+              var client = await clientService
+                  .fetchClientByUserId(userTypeClientSearched.id!.toString());
 
-              var id = await medicalAppointmentService.createMedicalAppointment(medicalAppointment);
-    
+              MedicalAppointment medicalAppointment = MedicalAppointment(
+                  date: DateTime.now(),
+                  status: AppointmentStatus.confirmed,
+                  appointmentType: AppointmentType.presencial,
+                  clientId: client?.id!,
+                  psychologistId: psychologist!.id);
+
+              var id = await medicalAppointmentService
+                  .createMedicalAppointment(medicalAppointment);
+
               if (id == 1) {
                 Navigator.of(_dialogKey.currentContext!).pop();
 
@@ -612,16 +634,19 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
               }
 
               loadPageUtilities();
-              
-              setState((){});
+
+              setState(() {});
             },
-            child: Text('Relacionar'),
+            child: const Text('Relacionar'),
           ),
         ],
       ),
     );
   }
 
+  String _formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
 
   Future<void> _saveClientData() async {
     User user = User(
@@ -635,7 +660,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       phone: _phone,
       description: '',
       email: _email,
-      password: 'SenhaQualquer',
+      password: 'password',
       gender: _gender,
     );
 
@@ -648,24 +673,23 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       motherOccupation: _motherOccupation,
     );
 
-    var userCriado = await userService.createUserAndClient(user, client);
-    print(userCriado?.toJson());
-    var userId = userCriado?.id?.toString() ?? "valor_padrao";
+    var userCreated = await userService.createUserAndClient(user, client);
+    var userId = userCreated!.id!.toString();
 
-    var clientCriado = await clientService.fetchClientForUserId(userId);
-    //TODO - Deixar psicologo global após (autenticação)
-    var psychologist = await psychologistService.fetchPsychologistById(psychologistLogged);
+    var clientCreated = await clientService.fetchClientByUserId(userId);
+    var psychologist =
+        await psychologistService.fetchPsychologistById(psychologistLogged);
 
     MedicalAppointment medicalAppointment = MedicalAppointment(
-      date: DateTime.now(), 
-      status: AppointmentStatus.confirmed, 
-      appointmentType: AppointmentType.presencial,
-      clientId: clientCriado?.id,
-      psychologistId: psychologist.id
-    );
-    
-    var id = await medicalAppointmentService.createMedicalAppointment(medicalAppointment);
-    
+        date: DateTime.now(),
+        status: AppointmentStatus.confirmed,
+        appointmentType: AppointmentType.presencial,
+        clientId: clientCreated!.id,
+        psychologistId: psychologist!.id);
+
+    var id = await medicalAppointmentService
+        .createMedicalAppointment(medicalAppointment);
+
     if (id == 1) {
       Navigator.of(_dialogKey.currentContext!).pop();
 
@@ -673,8 +697,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     }
 
     loadPageUtilities();
-    
-    setState((){});
+
+    setState(() {});
   }
 
   void _showSuccessModal(BuildContext context) {
@@ -687,7 +711,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
 
         return const AlertDialog(
           title: Center(child: Text('Successo')),
-          content: Center(child: Text('Usuario criado.')),
+          content: Center(child: Text('Paciente relacionado.')),
         );
       },
     );

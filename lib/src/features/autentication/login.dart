@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import '../../shared/services/user.service.dart';
 import '../psychologist_search/screens/psychologist_search_screen.dart';
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   UserService userService = UserService();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   String phone = '';
   String password = '';
   String _message = '';
@@ -28,18 +30,16 @@ class _LoginPageState extends State<LoginPage> {
     phone = _phoneController.text;
     password = _passwordController.text;
 
-    // Simulating an API call
-    bool isValidCredentials = await userService.canLogin(phone, password);
-    
+    bool isValidCredentials = await userService.canLogin(phone, password);    
 
     setState(() {
       if (isValidCredentials) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PsychologistSearchScreen()), // Replace with the actual route
+          MaterialPageRoute(builder: (context) => const PsychologistSearchScreen()),
         );
       } else {
-        _message = 'Telefone ou senha invalidos';
+        _message = 'Telefone ou senha inválidos.';
       }
     });
   }
@@ -53,18 +53,17 @@ class _LoginPageState extends State<LoginPage> {
             const Text(
               'Nome aplicativo',
               style: TextStyle(
-                fontSize: 24.0, // Ajuste o tamanho do texto conforme necessário
-                // Outras propriedades de estilo, como cor, fontWeight, etc.
+                fontSize: 24.0, 
               ),
             ),
             const SizedBox(height: 120),
-            Container(
+            SizedBox(
               width: 200,
               height: 200,
               child: Image.asset('assets/images/logo.png'),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
                 controller: _phoneController,
                 decoration: InputDecoration(
@@ -74,9 +73,9 @@ class _LoginPageState extends State<LoginPage> {
                 onChanged: (_) => _onChange(),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -87,10 +86,10 @@ class _LoginPageState extends State<LoginPage> {
                 onChanged: (_) => _onChange(),
               ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: _login, child: Text('Login')),
-            SizedBox(height: 20),
-            Text(_message, style: TextStyle(color: Colors.red)),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: _login, child: const Text('Login')),
+            const SizedBox(height: 20),
+            Text(_message, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

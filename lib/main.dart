@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/autentication/login.dart';
-import 'package:flutter_frontend_psychology_app/src/features/medical-record/index-medical-record.dart';
+import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
 
 void main() {
@@ -63,7 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class BottomMenu extends StatelessWidget {
+class HorizontalMenu extends StatelessWidget {
+  const HorizontalMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -71,31 +73,33 @@ class BottomMenu extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => (PsychologistSearchScreen())), // Replace with the actual route
+                MaterialPageRoute(
+                    builder: (context) => (const PsychologistSearchScreen())),
               );
             },
           ),
           IconButton(
-            icon: Icon(Icons.assignment),
+            icon: const Icon(Icons.assignment),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MedicalRecordIndex()), // Replace with the actual route
+                MaterialPageRoute(
+                    builder: (context) => const MedicalRecordScreen()),
               );
             },
           ),
           IconButton(
-            icon: Icon(Icons.star),
+            icon: const Icon(Icons.notification_important),
             onPressed: () {
               // Handle icon button press
             },
           ),
           IconButton(
-            icon: Icon(Icons.more_horiz),
+            icon: const Icon(Icons.person),
             onPressed: () {
               // Handle icon button press
             },
@@ -105,5 +109,3 @@ class BottomMenu extends StatelessWidget {
     );
   }
 }
-
-

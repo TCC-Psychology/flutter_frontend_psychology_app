@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 
-import '../../../main.dart';
-import '../../models/medical_appointment_model.dart';
-import '../../models/medical_record_model.dart';
-import '../../models/user_model.dart';
-import '../../shared/services/client_service.dart';
-import '../../shared/services/medical_appointment_service.dart';
-import '../../shared/services/medical_record_service.dart';
-import '../../shared/services/psychologist_service.dart';
-import '../../shared/services/user.service.dart';
-import 'create.dart';
+import '../../../../main.dart';
+import '../../../models/medical_appointment_model.dart';
+import '../../../models/medical_record_model.dart';
+import '../../../models/user_model.dart';
+import '../../../shared/services/client_service.dart';
+import '../../../shared/services/medical_appointment_service.dart';
+import '../../../shared/services/medical_record_service.dart';
+import '../../../shared/services/psychologist_service.dart';
+import '../../../shared/services/user.service.dart';
+import 'medical_record_create.dart';
 
-class MedicalRecordIndex extends StatefulWidget {
-  const MedicalRecordIndex({super.key});
+class MedicalRecordScreen extends StatefulWidget {
+  const MedicalRecordScreen({super.key});
 
   @override
-  _MedicalRecordIndexState createState() => _MedicalRecordIndexState();
+  _MedicalRecordScreenState createState() => _MedicalRecordScreenState();
 }
 
-class _MedicalRecordIndexState extends State<MedicalRecordIndex> {
-  final MedicalAppointmentService medicalAppointmentService = MedicalAppointmentService();
+class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
+  final MedicalAppointmentService medicalAppointmentService =
+      MedicalAppointmentService();
   final MedicalRecordService medicalRecordService = MedicalRecordService();
   final PsychologistService psychologistService = PsychologistService();
   final ClientService clientService = ClientService();
   final UserService userService = UserService();
-  
+
   //TODO - AUTENTICAÇÃO
   var psychologistLoggedId = '1';
 
@@ -33,35 +34,37 @@ class _MedicalRecordIndexState extends State<MedicalRecordIndex> {
   List<User> users = [];
   List<MedicalRecord> medicalRecorList = [];
   int _selectedValueUserId = -1;
- @override
-  void initState() {    
+
+  @override
+  void initState() {
     super.initState();
 
     loadPageUtilities();
   }
 
   Future<void> loadPageUtilities() async {
-      await fetchMedicalAppointments();
-      await fetchUsersForClients();
+    await fetchMedicalAppointments();
+    await fetchUsersByClients();
 
-      setState(() {});
+    setState(() {});
   }
 
   fetchMedicalAppointments() async {
-    var fetchedmedicalAppointments =
-        await medicalAppointmentService.fetchMedicalAppointmentList(psychologistLoggedId, 'null');
-        //AQUI - RETIRA E DEIXAR SOMENTE ME 1 VARIAVEL
-        psychologistMedicalConsultation = fetchedmedicalAppointments;
+    psychologistMedicalConsultation = await medicalAppointmentService
+        .fetchMedicalAppointmentList(psychologistLoggedId, 'null');
   }
 
-  Future<void> fetchUsersForClients() async {
-    for (MedicalAppointment medicalAppointment in psychologistMedicalConsultation) {
-      var user = await userService.fetchUserForClientId(medicalAppointment.clientId.toString());
+  Future<void> fetchUsersByClients() async {
+    for (MedicalAppointment medicalAppointment
+        in psychologistMedicalConsultation) {
+      var user = await userService
+          .fetchUserByClientId(medicalAppointment.clientId.toString());
 
       if (user != null) {
         users.add(user);
       } else {
-        print("Fazer algo que mostre um erro e que é necessario reiniciar o app, pq seria impossivel nao ter user aqui");
+        print(
+            "Fazer algo que mostre um erro e que é necessario reiniciar o app, pq seria impossivel nao ter user aqui");
       }
     }
   }
@@ -85,19 +88,24 @@ class _MedicalRecordIndexState extends State<MedicalRecordIndex> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MedicalRecordCreateForm()), // Replace with the actual route
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const MedicalRecordCreateForm()),
                     );
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
                   onChanged: (newValue) async {
                     _selectedValueUserId = newValue!;
-    
-                    var client = await clientService.fetchClientForUserId(_selectedValueUserId!.toString());
-                    medicalRecorList = await medicalRecordService.fetchMedicalRecordtList(psychologistLoggedId, client!.id!.toString());
-    
-                    setState((){});
+
+                    var client = await clientService
+                        .fetchClientByUserId(_selectedValueUserId!.toString());
+                    medicalRecorList =
+                        await medicalRecordService.fetchMedicalRecordtList(
+                            psychologistLoggedId, client!.id!.toString());
+
+                    setState(() {});
                   },
                   items: users.isEmpty
                       ? []
@@ -107,7 +115,8 @@ class _MedicalRecordIndexState extends State<MedicalRecordIndex> {
                             child: Text(user.name),
                           );
                         }).toList(),
-                  decoration: const InputDecoration(labelText: 'Selecione um paciente'),
+                  decoration:
+                      const InputDecoration(labelText: 'Selecione um paciente'),
                   validator: (value) {
                     if (users.isEmpty) {
                       return 'Não há pacientes relacionados disponíveis.';
@@ -118,46 +127,48 @@ class _MedicalRecordIndexState extends State<MedicalRecordIndex> {
                   },
                   onSaved: (value) => _selectedValueUserId = value!,
                 ),
-                if (medicalRecorList.length != 0) _buildShowMedicalRecord(),
+                if (medicalRecorList.isNotEmpty) _buildShowMedicalRecord(),
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: BottomMenu(),
+      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 
   Widget _buildShowMedicalRecord() {
     return SingleChildScrollView(
       child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+        constraints:
+            BoxConstraints(minHeight: MediaQuery.of(context).size.height),
         child: Column(
           children: medicalRecorList.map((medicalRecord) {
             return SizedBox(
               height: 200,
               width: MediaQuery.of(context).size.width,
               child: Card(
-                margin: EdgeInsets.symmetric(vertical: 8.0),
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
                 elevation: 2.0,
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Tema: ${medicalRecord.theme ?? "N/A"}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          'Tema: ${medicalRecord.theme}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 8.0),
-                        Text('Objetivo: ${medicalRecord.objective ?? "N/A"}'),
-                        SizedBox(height: 8.0),
-                        Text('Registro de Evolução: ${medicalRecord.evolutionRecord ?? "N/A"}'),
-                        SizedBox(height: 8.0),
-                        Text('Notas: ${medicalRecord.notes ?? "N/A"}'),
-                        SizedBox(height: 8.0),
-                        Text('Humor:'),
+                        const SizedBox(height: 8.0),
+                        Text('Objetivo: ${medicalRecord.objective}'),
+                        const SizedBox(height: 8.0),
+                        Text(
+                            'Registro de Evolução: ${medicalRecord.evolutionRecord}'),
+                        const SizedBox(height: 8.0),
+                        Text('Notas: ${medicalRecord.notes ?? ""}'),
+                        const SizedBox(height: 8.0),
+                        const Text('Humor:'),
                         _getMoodIcon(int.parse(medicalRecord.mood)),
                       ],
                     ),
