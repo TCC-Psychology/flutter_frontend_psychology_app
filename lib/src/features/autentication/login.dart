@@ -30,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
     // Simulating an API call
     bool isValidCredentials = await userService.canLogin(phone, password);
+    
 
     setState(() {
       if (isValidCredentials) {
@@ -46,15 +47,22 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-        centerTitle: true,
-      ),
       body: Center(
         child: Column(
-          children: <Widget>[
-            Image.asset('lib/assets/simbolo_psicologia.png'), // Caminho da imagem
-            SizedBox(height: 20), // Espaçamento
+          children: [
+            const Text(
+              'Nome aplicativo',
+              style: TextStyle(
+                fontSize: 24.0, // Ajuste o tamanho do texto conforme necessário
+                // Outras propriedades de estilo, como cor, fontWeight, etc.
+              ),
+            ),
+            const SizedBox(height: 120),
+            Container(
+              width: 200,
+              height: 200,
+              child: Image.asset('assets/images/logo.png'),
+            ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(

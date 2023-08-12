@@ -10,6 +10,7 @@ import '../../shared/services/medical_appointment_service.dart';
 import '../../shared/services/medical_record_service.dart';
 import '../../shared/services/psychologist_service.dart';
 import '../../shared/services/user.service.dart';
+import 'index-medical-record.dart';
 
 class MedicalRecordCreateForm extends StatefulWidget {
   const MedicalRecordCreateForm({super.key});
@@ -87,6 +88,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   }
 
   Future<void> fetchUsersForClients() async {
+    users = [];
     for (MedicalAppointment medicalAppointment in psychologistMedicalConsultation) {
       var user = await userService.fetchUserForClientId(medicalAppointment.clientId.toString());
 
@@ -280,6 +282,11 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                         clientId: client?.id
                       );
                       var id = await medicalRecordService.createMedicalRecord(medicalRecord);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MedicalRecordIndex()), // Replace with the actual route
+                      );
                     }
                   },
                   child: const Text('Salvar'),
