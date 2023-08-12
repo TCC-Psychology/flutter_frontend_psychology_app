@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend_psychology_app/src/models/client_model.dart';
 
 import '../../../../main.dart';
 import '../../../models/medical_appointment_model.dart';
@@ -100,7 +101,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                     _selectedValueUserId = newValue!;
 
                     var client = await clientService
-                        .fetchClientByUserId(_selectedValueUserId!.toString());
+                        .fetchClientByUserId(_selectedValueUserId.toString());
                     medicalRecorList =
                         await medicalRecordService.fetchMedicalRecordtList(
                             psychologistLoggedId, client!.id!.toString());
@@ -144,33 +145,44 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
             BoxConstraints(minHeight: MediaQuery.of(context).size.height),
         child: Column(
           children: medicalRecorList.map((medicalRecord) {
-            return SizedBox(
-              height: 200,
-              width: MediaQuery.of(context).size.width,
-              child: Card(
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
-                elevation: 2.0,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Tema: ${medicalRecord.theme}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text('Objetivo: ${medicalRecord.objective}'),
-                        const SizedBox(height: 8.0),
-                        Text(
-                            'Registro de Evolução: ${medicalRecord.evolutionRecord}'),
-                        const SizedBox(height: 8.0),
-                        Text('Notas: ${medicalRecord.notes ?? ""}'),
-                        const SizedBox(height: 8.0),
-                        const Text('Humor:'),
-                        _getMoodIcon(int.parse(medicalRecord.mood)),
-                      ],
+            return GestureDetector(
+              onTap: () async {
+                var chosenUser = users
+                    .singleWhere((user) => user.id == _selectedValueUserId);
+                var clientUser = await clientService
+                    .fetchClientByUserId(chosenUser.id.toString());
+                // ignore: use_build_context_synchronously
+                _showMedicalRecordUserClientDetailed(
+                    context, chosenUser, clientUser!, medicalRecord);
+              },
+              child: SizedBox(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                child: Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  elevation: 2.0,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Tema: ${medicalRecord.theme}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text('Objetivo: ${medicalRecord.objective}'),
+                          const SizedBox(height: 8.0),
+                          Text(
+                              'Registro de Evolução: ${medicalRecord.evolutionRecord}'),
+                          const SizedBox(height: 8.0),
+                          Text('Notas: ${medicalRecord.notes ?? ""}'),
+                          const SizedBox(height: 8.0),
+                          const Text('Humor:'),
+                          _getMoodIcon(int.parse(medicalRecord.mood)),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -215,6 +227,250 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
     return Icon(
       iconData,
       color: color,
+    );
+  }
+
+  void _showMedicalRecordUserClientDetailed(BuildContext context, User user,
+      Client client, MedicalRecord medicalRecord) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Dialog(
+            child: SingleChildScrollView(
+              child: DefaultTabController(
+                length: 3,
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Prontuário do Paciente',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16.0),
+                      const TabBar(
+                        tabs: [
+                          Tab(icon: Icon(Icons.person)),
+                          Tab(icon: Icon(Icons.task)),
+                          Tab(icon: Icon(Icons.info)),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+                      SingleChildScrollView(
+                        child: Container(
+                          //aqui
+                          height: 400,
+                          child: TabBarView(
+                            children: [
+                              SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      'Nome',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(user.name,
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'CPF',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(user.cpf,
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Data de Nascimento',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                        user.birthDate != null
+                                            ? user.birthDate.toString()
+                                            : '',
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Telefone',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(user.phone,
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'E-mail',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(user.email,
+                                        style: const TextStyle(fontSize: 18)),
+                                  ],
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      'Tema',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(medicalRecord.theme,
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Objetivo',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(medicalRecord.objective,
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Evolução',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(medicalRecord.evolutionRecord,
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Notas',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(medicalRecord.notes ?? '',
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Humor',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    _getMoodIcon(int.parse(medicalRecord.mood)),
+                                  ],
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      'Religião',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(client.religion ?? '',
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Estado Civil',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                        client.relationshipStatus != null
+                                            ? client.relationshipStatus
+                                                .toString()
+                                            : '',
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Nome do Pai',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(client.fatherName ?? '',
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Profissão do Pai',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(client.fatherOccupation ?? '',
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Nome da Mãe',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(client.motherName ?? '',
+                                        style: const TextStyle(fontSize: 18)),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'Profissão da Mãe',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(client.motherOccupation ?? '',
+                                        style: const TextStyle(fontSize: 18)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      SingleChildScrollView(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Fechar'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
