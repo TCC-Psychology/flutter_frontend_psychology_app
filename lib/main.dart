@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/autentication/login.dart';
+import 'package:flutter_frontend_psychology_app/src/features/medical-record/index-medical-record.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
 
 void main() {
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       builder: EasyLoading.init(),
-      home: const PsychologistSearchScreen(),
+      home: LoginPage(),
     );
   }
 }
@@ -60,3 +62,48 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+class BottomMenu extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => (PsychologistSearchScreen())), // Replace with the actual route
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.assignment),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MedicalRecordIndex()), // Replace with the actual route
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.star),
+            onPressed: () {
+              // Handle icon button press
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.more_horiz),
+            onPressed: () {
+              // Handle icon button press
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+

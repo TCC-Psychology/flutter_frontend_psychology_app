@@ -45,18 +45,18 @@ Map<String, dynamic> _$MedicalAppointmentToJson(MedicalAppointment instance) {
   val['date'] = instance.date.toIso8601String();
   val['status'] = _$AppointmentStatusEnumMap[instance.status]!;
   val['appointmentType'] = _$AppointmentTypeEnumMap[instance.appointmentType]!;
-  val['triage'] = instance.triage;
+  writeNotNull('triage', instance.triage);
   return val;
 }
 
 const _$AppointmentStatusEnumMap = {
-  AppointmentStatus.pending: 'Pendente',
-  AppointmentStatus.confirmed: 'Confirmado',
-  AppointmentStatus.rescheduled: 'Reagendado',
-  AppointmentStatus.canceled: 'Cancelado',
+  AppointmentStatus.pending: 'PENDING',
+  AppointmentStatus.confirmed: 'CONFIRMED',
+  AppointmentStatus.rescheduled: 'RESCHEDULED',
+  AppointmentStatus.canceled: 'CANCELED',
 };
 
 const _$AppointmentTypeEnumMap = {
-  AppointmentType.online: 'Online',
-  AppointmentType.presencial: 'Presencial',
+  AppointmentType.online: 'ONLINE',
+  AppointmentType.presencial: 'PRESENCIAL',
 };

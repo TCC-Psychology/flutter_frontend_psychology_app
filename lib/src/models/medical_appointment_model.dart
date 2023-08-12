@@ -20,6 +20,8 @@ class MedicalAppointment {
   final DateTime date;
   final AppointmentStatus status;
   final AppointmentType appointmentType;
+  
+  @JsonKey(includeToJson: false)
   final Triage? triage;
 
   @JsonKey(includeToJson: false)
@@ -52,25 +54,30 @@ class MedicalAppointment {
       _$MedicalAppointmentFromJson(json);
 
   Map<String, dynamic> toJson() => _$MedicalAppointmentToJson(this);
+
+  @override
+  String toString() {
+    return 'MedicalAppointment - Client: $client'; // Retorne uma representação significativa do objeto.
+  }
 }
 
 enum AppointmentType {
-  @JsonValue('Online')
+  @JsonValue('ONLINE')
   online,
-  @JsonValue('Presencial')
+  @JsonValue('PRESENCIAL')
   presencial
 }
 
 enum AppointmentStatus {
-  @JsonValue('Pendente')
+  @JsonValue('PENDING')
   pending,
 
-  @JsonValue('Confirmado')
+  @JsonValue('CONFIRMED')
   confirmed,
 
-  @JsonValue('Reagendado')
+  @JsonValue('RESCHEDULED')
   rescheduled,
 
-  @JsonValue('Cancelado')
+  @JsonValue('CANCELED')
   canceled
 }
