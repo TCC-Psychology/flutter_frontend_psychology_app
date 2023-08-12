@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 class MedicalRecordService {
   Future<int> createMedicalRecord(MedicalRecord medicalRecord) async {
     try {
-      int? clientId = medicalRecord.clientId; 
-      int? psychologistId = medicalRecord.psychologistId; 
+      int clientId = medicalRecord.clientId!;
+      int psychologistId = medicalRecord.psychologistId!;
 
       final res = await http.post(
         Uri.parse('$uri/medical-record/$psychologistId/$clientId'),
@@ -25,8 +25,9 @@ class MedicalRecordService {
     }
   }
 
-  Future<List<MedicalRecord>> fetchMedicalRecordtList(String psychologistId, String clientId) async {
-    List<MedicalRecord> medicalRecord= [];
+  Future<List<MedicalRecord>> fetchMedicalRecordtList(
+      String psychologistId, String clientId) async {
+    List<MedicalRecord> medicalRecord = [];
 
     try {
       final res = await http.get(
@@ -36,7 +37,8 @@ class MedicalRecordService {
         },
       );
       List<dynamic> body = jsonDecode(res.body);
-      medicalRecord = body.map((dynamic item) => MedicalRecord.fromJson(item)).toList();
+      medicalRecord =
+          body.map((dynamic item) => MedicalRecord.fromJson(item)).toList();
     } catch (e) {
       print(e);
     }

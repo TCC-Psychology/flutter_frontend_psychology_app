@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 
 class UserService {
-  Future<User?> fetchUserForUserId(String userId) async {
+  Future<User?> fetchUserByUserId(String userId) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/users/$userId'),
@@ -23,7 +23,7 @@ class UserService {
     return null;
   }
 
-  Future<User?> fetchUserForClientId(String clientId) async {
+  Future<User?> fetchUserByClientId(String clientId) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/users/getUserByClientId/$clientId'),
@@ -82,7 +82,7 @@ class UserService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-      print (res.body);
+      print(res.body);
       final bool result = json.decode(res.body);
       return result;
     } catch (e) {
@@ -103,7 +103,6 @@ class UserService {
           'client': client.toJson(),
         }),
       );
-      print(res.body);
       return User.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);

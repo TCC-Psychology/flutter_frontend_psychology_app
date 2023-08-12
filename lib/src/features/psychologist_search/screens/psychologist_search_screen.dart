@@ -33,47 +33,47 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
       backgroundColor: background,
       body: SafeArea(
         child: psychologists.isEmpty
-            ? Center(
+            ? const Center(
                 child: Text('Nenhum psicólogo encontrado.'),
               )
             : ListView.builder(
-  itemCount: psychologists.length,
-  itemBuilder: (context, index) {
-    return FutureBuilder<User?>(
-      future: userService.fetchUserByPsychologistId(psychologists[index].id!.toString()),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // or any loading indicator
-        }
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-        var psychologist = psychologists[index];
-        var user = snapshot.data;
-        return GestureDetector(
-          onTap: () async {
-            _openPsychologistModal(context, psychologist);
-          },
-          child: Card(
-            // ... rest of your card widget
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Nome: ${user!.name}'),
-                Text('Telefone: ${user!.phone}'),
-                Text('Localização: ${user!.city}, ${user!.state}'),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  },
-),
-
+                itemCount: psychologists.length,
+                itemBuilder: (context, index) {
+                  return FutureBuilder<User?>(
+                    future: userService.fetchUserByPsychologistId(
+                        psychologists[index].id!.toString()),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator(); // or any loading indicator
+                      }
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+                      var psychologist = psychologists[index];
+                      var user = snapshot.data;
+                      return GestureDetector(
+                        onTap: () async {
+                          _openPsychologistModal(context, psychologist);
+                        },
+                        child: Card(
+                          // ... rest of your card widget
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('Nome: ${user!.name}'),
+                              Text('Telefone: ${user.phone}'),
+                              Text('Localização: ${user.city}, ${user.state}'),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
       ),
-      bottomNavigationBar: BottomMenu(),
+      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 
@@ -86,9 +86,10 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
     EasyLoading.dismiss();
   }
 
-  
-  Future<void> _openPsychologistModal(BuildContext context, Psychologist psychologist) async {
-    var user = await userService.fetchUserByPsychologistId(psychologist.id.toString());
+  Future<void> _openPsychologistModal(
+      BuildContext context, Psychologist psychologist) async {
+    var user =
+        await userService.fetchUserByPsychologistId(psychologist.id.toString());
 
     // ignore: use_build_context_synchronously
     showModalBottomSheet(
@@ -108,68 +109,72 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
             ),
             body: TabBarView(
               children: [
-                // Profile Tab
                 Center(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center, // Centralize o conteúdo
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(height: 16.0),
+                        const SizedBox(height: 16.0),
                         Center(
-                          child: Text('${user!.name}', style: TextStyle(fontSize: 20)),
+                          child: Text(user!.name,
+                              style: const TextStyle(fontSize: 20)),
                         ),
                         Center(
-                          child: Text('Número de Certificação: ${psychologist.certificationNumber}', style: TextStyle(fontSize: 16)),
+                          child: Text(
+                              'Número de Certificação: ${psychologist.certificationNumber ?? "N/A"}',
+                              style: const TextStyle(fontSize: 16)),
                         ),
-                        SizedBox(height: 16.0),
+                        const SizedBox(height: 16.0),
                         Center(
-                          child: Text('Telefone: ${user!.phone}', style: TextStyle(fontSize: 16)),
+                          child: Text('Telefone: ${user.phone}',
+                              style: const TextStyle(fontSize: 16)),
                         ),
-                        Center(child: SizedBox(height: 16.0)),
-                        Text('CPF: ${user!.cpf}', style: TextStyle(fontSize: 16)),
+                        const Center(child: SizedBox(height: 16.0)),
+                        Text('CPF: ${user.cpf}',
+                            style: const TextStyle(fontSize: 16)),
                       ],
                     ),
                   ),
                 ),
-                // Location Tab
                 SingleChildScrollView(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Center(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center, // Centralize o conteúdo
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Center(
-                          child: Text('CEP: ${user.cep ?? "N/A"}', style: TextStyle(fontSize: 16)),
+                          child: Text('CEP: ${user.cep ?? "N/A"}',
+                              style: const TextStyle(fontSize: 16)),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Center(
-                          child: Text('Cidade: ${user.city ?? "N/A"}', style: TextStyle(fontSize: 16)),
+                          child: Text('Cidade: ${user.city ?? "N/A"}',
+                              style: const TextStyle(fontSize: 16)),
                         ),
-                        SizedBox(height: 10),
-                        Text('Estado: ${user.state ?? "N/A"}', style: TextStyle(fontSize: 16)),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
+                        Text('Estado: ${user.state ?? "N/A"}',
+                            style: const TextStyle(fontSize: 16)),
+                        const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () {
                             // Lógica para obter rota quando o botão for pressionado
                             // Isso pode envolver integração com APIs de mapas, por exemplo
                             // Substitua este comentário com o código necessário
                           },
-                          child: Text('Obter Rota', style: TextStyle(fontSize: 16)),
+                          child: const Text('Obter Rota',
+                              style: TextStyle(fontSize: 16)),
                         ),
                       ],
                     ),
                   ),
                 ),
-                // Tags Tab
                 const SingleChildScrollView(
                   padding: EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Display tags here when available
-                    ],
+                    children: [],
                   ),
                 ),
               ],
