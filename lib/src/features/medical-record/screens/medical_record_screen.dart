@@ -96,37 +96,39 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<int>(
-                  onChanged: (newValue) async {
-                    _selectedValueUserId = newValue!;
+                SingleChildScrollView(
+                  child: DropdownButtonFormField<int>(
+                    onChanged: (newValue) async {
+                      _selectedValueUserId = newValue!;
 
-                    var client = await clientService
-                        .fetchClientByUserId(_selectedValueUserId.toString());
-                    medicalRecorList =
-                        await medicalRecordService.fetchMedicalRecordtList(
-                            psychologistLoggedId, client!.id!.toString());
+                      var client = await clientService
+                          .fetchClientByUserId(_selectedValueUserId.toString());
+                      medicalRecorList =
+                          await medicalRecordService.fetchMedicalRecordtList(
+                              psychologistLoggedId, client!.id!.toString());
 
-                    setState(() {});
-                  },
-                  items: users.isEmpty
-                      ? []
-                      : users.map((user) {
-                          return DropdownMenuItem<int>(
-                            value: user.id,
-                            child: Text(user.name),
-                          );
-                        }).toList(),
-                  decoration:
-                      const InputDecoration(labelText: 'Selecione um paciente'),
-                  validator: (value) {
-                    if (users.isEmpty) {
-                      return 'Não há pacientes relacionados disponíveis.';
-                    } else if (value == -1) {
-                      return 'Por favor, selecione um paciente';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => _selectedValueUserId = value!,
+                      setState(() {});
+                    },
+                    items: users.isEmpty
+                        ? []
+                        : users.map((user) {
+                            return DropdownMenuItem<int>(
+                              value: user.id,
+                              child: Text(user.name),
+                            );
+                          }).toList(),
+                    decoration: const InputDecoration(
+                        labelText: 'Selecione um paciente'),
+                    validator: (value) {
+                      if (users.isEmpty) {
+                        return 'Não há pacientes relacionados disponíveis.';
+                      } else if (value == -1) {
+                        return 'Por favor, selecione um paciente';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) => _selectedValueUserId = value!,
+                  ),
                 ),
                 if (medicalRecorList.isNotEmpty) _buildShowMedicalRecord(),
               ],
@@ -456,19 +458,76 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                       ),
                       const SizedBox(height: 16.0),
                       SingleChildScrollView(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Fechar'),
-                        ),
-                      ),
+                          child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // Lógica para a ação do botão com o ícone de lápis
+                            },
+                            child: Icon(Icons.edit), // Ícone de lápis
+                          ),
+                          SizedBox(width: 16), // Espaço entre os botões
+
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close), // Ícone de fechar (X)
+                          ),
+                          const SizedBox(width: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              _showDeleteConfirmation(
+                                  context, medicalRecord.id!);
+                            },
+                            child: const Icon(Icons.delete),
+                          ),
+                        ],
+                      )),
                     ],
                   ),
                 ),
               ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, int medicalRecordId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Excluir item"),
+          content: const Text("Tem certeza de que deseja excluir este item?"),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                await medicalRecordService.deleteMedicalRecord(medicalRecordId);
+
+                var client = await clientService
+                    .fetchClientByUserId(_selectedValueUserId.toString());
+                medicalRecorList =
+                    await medicalRecordService.fetchMedicalRecordtList(
+                        psychologistLoggedId, client!.id!.toString());
+
+                setState(() {});
+
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text("Sim"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o modal
+              },
+              child: const Text("Não"),
+            ),
+          ],
         );
       },
     );

@@ -44,4 +44,27 @@ class MedicalRecordService {
     }
     return medicalRecord;
   }
+
+  Future<int> deleteMedicalRecord(int id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$uri/medical-record/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Sucesso
+        return 1;
+      } else {
+        // Algo deu errado no servidor, você pode tratar diferentes códigos de erro aqui
+        return response.statusCode;
+      }
+    } catch (e) {
+      // Ocorreu uma exceção, algo deu errado na comunicação
+      print(e);
+      return -1;
+    }
+  }
 }
