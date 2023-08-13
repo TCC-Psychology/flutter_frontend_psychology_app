@@ -19,7 +19,6 @@ class PsychologistService {
 
       psychologistList =
           body.map((dynamic item) => Psychologist.fromJson(item)).toList();
-          print (psychologistList);
     } catch (e) {
       print(e);
     }
@@ -27,7 +26,7 @@ class PsychologistService {
     return psychologistList;
   }
 
-  Future<Psychologist> fetchPsychologistById(String id) async {
+  Future<Psychologist?> fetchPsychologistById(String id) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/psychologist/$id'),
@@ -35,16 +34,11 @@ class PsychologistService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-      
-    return Psychologist.fromJson(jsonDecode(res.body));
+
+      return Psychologist.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
-       Psychologist psychologist = Psychologist(
-        id: 1,
-        certificationNumber: '1', 
-        userId: 1,
-       );
-      return psychologist;
+      return null;
     }
   }
 }
