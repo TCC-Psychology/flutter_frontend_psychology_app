@@ -47,12 +47,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   DropdownButtonFormField(
                     value: userType,
                     decoration: ProjectInputDecorations.textFieldDecoration(
-                        labelText: "Tipo de usuário", prefixIcon: Icons.person),
+                      labelText: "Tipo de usuário",
+                    ),
                     items: const [
                       DropdownMenuItem(child: Text("Cliente"), value: "client"),
                       DropdownMenuItem(
-                          child: const Text("Psicólogo"),
-                          value: "psychologist"),
+                        value: "psychologist",
+                        child: Text("Psicólogo"),
+                      ),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -62,6 +64,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(
                     height: 20,
+                  ),
+                  TextFormField(
+                    controller: nameController,
+                    decoration: ProjectInputDecorations.textFieldDecoration(
+                        labelText: "Name", prefixIcon: Icons.person),
+                    validator: (value) =>
+                        AuthValidator.validateGeneric(value, "name"),
+                  ),
+                  const SizedBox(
+                    height: 5,
                   ),
                   TextFormField(
                     controller: emailController,
