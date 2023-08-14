@@ -18,6 +18,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController cpfController = TextEditingController();
 
+  String? registerErrorMessage;
+
   final AuthService authService = AuthService();
 
   String userType = "client";
@@ -100,18 +102,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 30,
                   ),
                   ElevatedButton(
-                      onPressed: () async {
-                        String email = emailController.text.trim();
-                        String password = passwordController.text;
+                    onPressed: () async {
+                      String email = emailController.text.trim();
+                      String password = passwordController.text;
 
-                        if (_key.currentState!.validate()) {
-                          String? error =
-                              await authService.signUp(email, password);
+                      if (_key.currentState!.validate()) {
+                        String? error =
+                            await authService.signUp(email, password);
+                        setState(() {
+                          registerErrorMessage = error;
+                        });
 
-                          print(error);
-                        }
-                      },
-                      child: const Text("Registrar"))
+                        print(error);
+                      }
+                    },
+                    child: const Text("Registrar"),
+                  ),
+                  if (registerErrorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        registerErrorMessage!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
                 ],
               )),
         ),
