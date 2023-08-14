@@ -62,7 +62,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text('Nome: ${user!.name}'),
-                              Text('Telefone: ${user.phone}'),
+                              // Text('Telefone: ${user.phone}'),
                               Text('Localização: ${user.city}, ${user.state}'),
                             ],
                           ),
@@ -126,10 +126,10 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                               style: const TextStyle(fontSize: 16)),
                         ),
                         const SizedBox(height: 16.0),
-                        Center(
-                          child: Text('Telefone: ${user.phone}',
-                              style: const TextStyle(fontSize: 16)),
-                        ),
+                        // Center(
+                        //   child: Text('Telefone: ${user.phone}',
+                        //       style: const TextStyle(fontSize: 16)),
+                        // ),
                         const Center(child: SizedBox(height: 16.0)),
                         Text('CPF: ${user.cpf}',
                             style: const TextStyle(fontSize: 16)),
