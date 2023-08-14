@@ -25,6 +25,27 @@ class MedicalRecordService {
     }
   }
 
+  Future<int> editMedicalRecord(MedicalRecord medicalRecord, int id) async {
+    try {
+      final res = await http.patch(
+        Uri.parse('$uri/medical-record/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(medicalRecord.toJson()),
+      );
+      print(medicalRecord.toJson());
+      if (res.statusCode == 200) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } catch (e) {
+      print(e);
+      return -1;
+    }
+  }
+
   Future<List<MedicalRecord>> fetchMedicalRecordtList(
       String psychologistId, String clientId) async {
     List<MedicalRecord> medicalRecord = [];
@@ -36,6 +57,7 @@ class MedicalRecordService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
+      print(res.body);
       List<dynamic> body = jsonDecode(res.body);
       medicalRecord =
           body.map((dynamic item) => MedicalRecord.fromJson(item)).toList();
@@ -66,5 +88,22 @@ class MedicalRecordService {
       print(e);
       return -1;
     }
+  }
+
+  Future<MedicalRecord?> fetchMedicalRecordById(String id) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/medical-record/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      return MedicalRecord.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+    }
+
+    return null;
   }
 }

@@ -177,6 +177,16 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                   onSaved: (value) => objective = value!,
                 ),
                 TextFormField(
+                  decoration: const InputDecoration(labelText: 'Evolução'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira a evolução';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => evolutionRecord = value!,
+                ),
+                TextFormField(
                   decoration: const InputDecoration(labelText: 'Notas'),
                   onSaved: (value) => notes = value!,
                 ),

@@ -11,6 +11,7 @@ import '../../../shared/services/medical_record_service.dart';
 import '../../../shared/services/psychologist_service.dart';
 import '../../../shared/services/user.service.dart';
 import 'medical_record_create.dart';
+import 'medical_record_edit.dart';
 
 class MedicalRecordScreen extends StatefulWidget {
   const MedicalRecordScreen({super.key});
@@ -96,39 +97,39 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                SingleChildScrollView(
-                  child: DropdownButtonFormField<int>(
-                    onChanged: (newValue) async {
-                      _selectedValueUserId = newValue!;
+                // TODO - Tentar abordar o singleScrrow, se não ulrapassar a tela, quebra
+                DropdownButtonFormField<int>(
+                  onChanged: (newValue) async {
+                    _selectedValueUserId = newValue!;
 
-                      var client = await clientService
-                          .fetchClientByUserId(_selectedValueUserId.toString());
-                      medicalRecorList =
-                          await medicalRecordService.fetchMedicalRecordtList(
-                              psychologistLoggedId, client!.id!.toString());
+                    var client = await clientService
+                        .fetchClientByUserId(_selectedValueUserId.toString());
+                    medicalRecorList =
+                        await medicalRecordService.fetchMedicalRecordtList(
+                            psychologistLoggedId, client!.id!.toString());
 
-                      setState(() {});
-                    },
-                    items: users.isEmpty
-                        ? []
-                        : users.map((user) {
-                            return DropdownMenuItem<int>(
-                              value: user.id,
-                              child: Text(user.name),
-                            );
-                          }).toList(),
-                    decoration: const InputDecoration(
-                        labelText: 'Selecione um paciente'),
-                    validator: (value) {
-                      if (users.isEmpty) {
-                        return 'Não há pacientes relacionados disponíveis.';
-                      } else if (value == -1) {
-                        return 'Por favor, selecione um paciente';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) => _selectedValueUserId = value!,
-                  ),
+                    setState(() {});
+                  },
+                  items: users.isEmpty
+                      ? []
+                      : users.map((user) {
+                          return DropdownMenuItem<int>(
+                            value: user.id,
+                            child: Text(user.name),
+                          );
+                        }).toList(),
+                  decoration:
+                      const InputDecoration(labelText: 'Selecione um paciente'),
+                  isExpanded: true,
+                  validator: (value) {
+                    if (users.isEmpty) {
+                      return 'Não há pacientes relacionados disponíveis.';
+                    } else if (value == -1) {
+                      return 'Por favor, selecione um paciente';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _selectedValueUserId = value!,
                 ),
                 if (medicalRecorList.isNotEmpty) _buildShowMedicalRecord(),
               ],
@@ -181,8 +182,12 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                           const SizedBox(height: 8.0),
                           Text('Notas: ${medicalRecord.notes ?? ""}'),
                           const SizedBox(height: 8.0),
-                          const Text('Humor:'),
-                          _getMoodIcon(int.parse(medicalRecord.mood)),
+                          Row(
+                            children: [
+                              const Text('Humor:'),
+                              _getMoodIcon(int.parse(medicalRecord.mood)),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -463,17 +468,24 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              // Lógica para a ação do botão com o ícone de lápis
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MedicalRecordEditForm(
+                                    medicalRecord: medicalRecord,
+                                    userName: user.name,
+                                  ),
+                                ),
+                              );
                             },
-                            child: Icon(Icons.edit), // Ícone de lápis
+                            child: const Icon(Icons.edit), // Ícone de lápis
                           ),
-                          SizedBox(width: 16), // Espaço entre os botões
-
+                          const SizedBox(width: 16),
                           ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Icon(Icons.close), // Ícone de fechar (X)
+                            child: const Icon(Icons.close),
                           ),
                           const SizedBox(width: 16),
                           ElevatedButton(
