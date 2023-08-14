@@ -118,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     child: const Text("Registrar"),
                   ),
-                  if (registerErrorMessage != null)
+                  if (registerErrorMessage != null) ...[
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
@@ -126,6 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: const TextStyle(color: Colors.red),
                       ),
                     ),
+                  ]
                 ],
               )),
         ),
