@@ -18,10 +18,7 @@ class User {
   final String? city;
   final String? state;
   final String? cep;
-  final String phone;
   final String? description;
-  final String email;
-  final String password;
   final String? gender;
 
   @JsonKey(includeToJson: false)
@@ -45,10 +42,7 @@ class User {
     this.city,
     this.state,
     this.cep,
-    required this.phone,
     this.description,
-    required this.email,
-    required this.password,
     this.gender,
     this.client,
     this.clientId,
