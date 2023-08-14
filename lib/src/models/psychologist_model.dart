@@ -11,7 +11,7 @@ class Psychologist {
   final String? certificationNumber;
 
   @JsonKey(includeToJson: false)
-  final int? userId;
+  final String? userId;
 
   @JsonKey(includeToJson: false)
   final User? user;

@@ -37,7 +37,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   List<RelationshipStatus> relationshipStatusList = RelationshipStatus.values;
   List<MedicalAppointment> psychologistMedicalConsultation = [];
   List<User> users = [];
-  int _selectedValueUserId = -1;
+  String _selectedValueUserId = "";
   int selectedMood = 1;
   RelationshipStatus? _relationshipStatus;
   String notes = '';
@@ -130,7 +130,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                     ),
                   ],
                 ),
-                DropdownButtonFormField<int>(
+                DropdownButtonFormField<String>(
                   onChanged: (newValue) {
                     setState(() {
                       _selectedValueUserId = newValue!;
@@ -139,7 +139,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                   items: users.isEmpty
                       ? []
                       : users.map((user) {
-                          return DropdownMenuItem<int>(
+                          return DropdownMenuItem<String>(
                             value: user.id,
                             child: Text(user.name),
                           );

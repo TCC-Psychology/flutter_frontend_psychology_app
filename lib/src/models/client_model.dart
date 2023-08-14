@@ -19,7 +19,7 @@ class Client {
   final User? user;
 
   @JsonKey(includeToJson: false)
-  final int? userId;
+  final String? userId;
 
   Client({
     this.id,

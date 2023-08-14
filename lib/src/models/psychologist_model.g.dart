@@ -9,7 +9,7 @@ part of 'psychologist_model.dart';
 Psychologist _$PsychologistFromJson(Map<String, dynamic> json) => Psychologist(
       id: json['id'] as int?,
       certificationNumber: json['certificationNumber'] as String?,
-      userId: json['userId'] as int?,
+      userId: json['userId'] as String?,
       user: json['user'] == null
           ? null
           : User.fromJson(json['user'] as Map<String, dynamic>),

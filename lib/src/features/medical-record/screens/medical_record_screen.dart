@@ -33,7 +33,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   List<MedicalAppointment> psychologistMedicalConsultation = [];
   List<User> users = [];
   List<MedicalRecord> medicalRecorList = [];
-  int _selectedValueUserId = -1;
+  String _selectedValueUserId = "";
 
   @override
   void initState() {
@@ -95,7 +95,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<int>(
+                DropdownButtonFormField<String>(
                   onChanged: (newValue) async {
                     _selectedValueUserId = newValue!;
 
@@ -110,7 +110,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                   items: users.isEmpty
                       ? []
                       : users.map((user) {
-                          return DropdownMenuItem<int>(
+                          return DropdownMenuItem<String>(
                             value: user.id,
                             child: Text(user.name),
                           );
