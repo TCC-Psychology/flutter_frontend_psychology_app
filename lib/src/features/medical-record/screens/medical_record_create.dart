@@ -62,6 +62,13 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   bool _showAdditionalClientFields = false;
   User? userTypeClientSearched;
   String cpfValue = '';
+  bool _cpfAlreadyExists = false;
+  bool _phoneAlreadyExists = false;
+  bool _emailAlreadyExists = false;
+  bool _isNomeFilled = false;
+  bool _isCpfFilled = false;
+  bool _isPhoneFilled = false;
+  bool _isEmailFilled = false;
 
   @override
   void initState() {
@@ -338,31 +345,50 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                       onChanged: (value) {
                         setState(() {
                           _nome = value;
+                          _isNomeFilled = value.isNotEmpty;
                         });
                       },
                     ),
                     TextFormField(
-                      decoration: const InputDecoration(labelText: 'CPF'),
+                      decoration: InputDecoration(
+                        labelText: 'CPF',
+                        errorText:
+                            _cpfAlreadyExists ? 'CPF já cadastrado' : null,
+                      ),
                       onChanged: (value) {
                         setState(() {
                           _cpf = value;
+                          _isCpfFilled = value.isNotEmpty;
+                          _cpfAlreadyExists = false;
                         });
                       },
                     ),
                     TextFormField(
-                      decoration:
-                          const InputDecoration(labelText: 'Número Celular'),
+                      decoration: InputDecoration(
+                        labelText: 'Número de Celular',
+                        errorText: _phoneAlreadyExists
+                            ? 'Celular já cadastrado'
+                            : null,
+                      ),
                       onChanged: (value) {
                         setState(() {
                           _phone = value;
+                          _isPhoneFilled = value.isNotEmpty;
+                          _phoneAlreadyExists = false;
                         });
                       },
                     ),
                     TextFormField(
-                      decoration: const InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        errorText:
+                            _emailAlreadyExists ? 'Email já cadastrado' : null,
+                      ),
                       onChanged: (value) {
                         setState(() {
                           _email = value;
+                          _isEmailFilled = value.isNotEmpty;
+                          _emailAlreadyExists = false;
                         });
                       },
                     ),
@@ -370,43 +396,47 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                       height: 30,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showAdditionalUserFields =
-                              !_showAdditionalUserFields;
-                        });
-                      },
-                      child: Text(_showAdditionalUserFields
-                          ? 'Ocultar campos usuario adicionais'
-                          : 'Mostrar campos usuario adicionais'),
-                    ),
-                    if (_showAdditionalUserFields)
-                      _buildAdditionalFieldsUserForm(),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showAdditionalClientFields =
-                              !_showAdditionalClientFields;
-                        });
-                      },
-                      child: Text(_showAdditionalClientFields
-                          ? 'Ocultar campos paciente adicionais'
-                          : 'Mostrar campos paciente adicionais'),
-                    ),
-                    if (_showAdditionalClientFields)
-                      _buildAdditionalFieldsClientForm(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _saveClientData();
+                      onPressed: () async {
+                        if (_areAllFieldsFilled()) {
+                          var userCpf = await userService.fetchUserByProperties(
+                              _cpf, null, null);
+                          var userPhone = await userService
+                              .fetchUserByProperties(null, _phone, null);
+                          var userEmail = await userService
+                              .fetchUserByProperties(null, null, _email);
+
+                          setState(() {
+                            _cpfAlreadyExists = userCpf != null;
+                            _phoneAlreadyExists = userPhone != null;
+                            _emailAlreadyExists = userEmail != null;
+                          });
+
+                          if (!_cpfAlreadyExists &&
+                              !_phoneAlreadyExists &&
+                              !_emailAlreadyExists) {
+                            _saveClientData();
+                          }
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Aviso'),
+                              content: Text(
+                                  'Por favor, preencha todos os campos obrigatórios (Nome, cpf, email e telefone).'),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
                       },
                       child: const Text('Salvar'),
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -440,8 +470,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        var user =
-                            await userService.fetchUserByProperties(cpfValue);
+                        var user = await userService.fetchUserByProperties(
+                            cpfValue, null, null);
                         userTypeClientSearched = user;
                         setState(() {});
                       },
@@ -725,5 +755,9 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         );
       },
     );
+  }
+
+  bool _areAllFieldsFilled() {
+    return _isNomeFilled && _isCpfFilled && _isPhoneFilled && _isEmailFilled;
   }
 }
