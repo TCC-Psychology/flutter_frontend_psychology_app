@@ -24,6 +24,18 @@ class AuthValidator {
     return null;
   }
 
+  static String? validateCpf(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, insira o CPF';
+    }
+
+    if (value.length != 11) {
+      return 'CPF inválido';
+    }
+
+    return null;
+  }
+
   static String? validateGeneric(String? value, String type) {
     if (value == null || value.isEmpty) {
       return 'Por favor, insira um ${type}';

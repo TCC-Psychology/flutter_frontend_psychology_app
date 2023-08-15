@@ -26,7 +26,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   final MedicalRecordService medicalRecordService = MedicalRecordService();
   final PsychologistService psychologistService = PsychologistService();
   final ClientService clientService = ClientService();
-  final UserService userService = UserService();
+  final UserProfileService userProfileService = UserProfileService();
 
   //TODO - AUTENTICAÇÃO
   var psychologistLogged = '1';
@@ -36,7 +36,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   final TextEditingController _datePickerController = TextEditingController();
   List<RelationshipStatus> relationshipStatusList = RelationshipStatus.values;
   List<MedicalAppointment> psychologistMedicalConsultation = [];
-  List<User> users = [];
+  List<UserProfile> users = [];
   String _selectedValueUserId = "";
   int selectedMood = 1;
   RelationshipStatus? _relationshipStatus;
@@ -60,7 +60,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   String _email = '';
   bool _showAdditionalUserFields = false;
   bool _showAdditionalClientFields = false;
-  User? userTypeClientSearched;
+  UserProfile? userTypeClientSearched;
   String cpfValue = '';
 
   @override
@@ -86,7 +86,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     users = [];
     for (MedicalAppointment medicalAppointment
         in psychologistMedicalConsultation) {
-      var user = await userService
+      var user = await userProfileService
           .fetchUserByClientId(medicalAppointment.clientId.toString());
 
       if (user != null) {
@@ -430,8 +430,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        var user =
-                            await userService.fetchUserByProperties(cpfValue);
+                        var user = await userProfileService
+                            .fetchUserByProperties(cpfValue);
                         userTypeClientSearched = user;
                         setState(() {});
                       },
@@ -591,7 +591,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     );
   }
 
-  Widget _showUserFeteched(User userTypeClientSearched) {
+  Widget _showUserFeteched(UserProfile userTypeClientSearched) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -649,7 +649,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   }
 
   Future<void> _saveClientData() async {
-    User user = User(
+    UserProfile user = UserProfile(
       name: _nome,
       cpf: _cpf,
       birthDate: _birthDate,
@@ -673,7 +673,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       motherOccupation: _motherOccupation,
     );
 
-    var userCreated = await userService.createUserAndClient(user, client);
+    var userCreated =
+        await userProfileService.createUserAndClient(user, client);
     var userId = userCreated!.id!.toString();
 
     var clientCreated = await clientService.fetchClientByUserId(userId);

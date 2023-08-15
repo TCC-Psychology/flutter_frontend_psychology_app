@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter_frontend_psychology_app/constants/global_variables.dart';
 import 'package:flutter_frontend_psychology_app/src/models/client_model.dart';
+import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 
-class UserService {
-  Future<User?> fetchUserByUserId(String userId) async {
+class UserProfileService {
+  Future<UserProfile?> fetchUserByUserId(String userId) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/users/$userId'),
@@ -15,7 +16,7 @@ class UserService {
         },
       );
 
-      return User.fromJson(jsonDecode(res.body));
+      return UserProfile.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
     }
@@ -23,7 +24,7 @@ class UserService {
     return null;
   }
 
-  Future<User?> fetchUserByClientId(String clientId) async {
+  Future<UserProfile?> fetchUserByClientId(String clientId) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/users/getUserByClientId/$clientId'),
@@ -32,7 +33,7 @@ class UserService {
         },
       );
 
-      return User.fromJson(jsonDecode(res.body));
+      return UserProfile.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
     }
@@ -40,7 +41,7 @@ class UserService {
     return null;
   }
 
-  Future<User?> fetchUserByPsychologistId(String psychologistId) async {
+  Future<UserProfile?> fetchUserByPsychologistId(String psychologistId) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/users/getUserByPsychologistId/$psychologistId'),
@@ -49,7 +50,7 @@ class UserService {
         },
       );
 
-      return User.fromJson(jsonDecode(res.body));
+      return UserProfile.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
     }
@@ -57,7 +58,7 @@ class UserService {
     return null;
   }
 
-  Future<User?> fetchUserByProperties(String cpf) async {
+  Future<UserProfile?> fetchUserByProperties(String cpf) async {
     try {
       final res = await http.get(
         Uri.parse('$uri/users/getUserByProperties/$cpf'),
@@ -66,7 +67,7 @@ class UserService {
         },
       );
 
-      return User.fromJson(jsonDecode(res.body));
+      return UserProfile.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
     }
@@ -91,7 +92,8 @@ class UserService {
     }
   }
 
-  Future<User?> createUserAndClient(User user, Client client) async {
+  Future<UserProfile?> createUserAndClient(
+      UserProfile user, Client client) async {
     try {
       final res = await http.post(
         Uri.parse('$uri/users/createUserAndClient'),
@@ -103,7 +105,29 @@ class UserService {
           'client': client.toJson(),
         }),
       );
-      return User.fromJson(jsonDecode(res.body));
+      return UserProfile.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+    }
+    return null;
+  }
+
+  Future<UserProfile?> createUserAndPsychologist(
+    UserProfile user,
+    Psychologist psychologist,
+  ) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$uri/users/createUserAndPsychologist'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'user': user.toJson(),
+          'psychologist': psychologist.toJson(),
+        }),
+      );
+      return UserProfile.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
     }

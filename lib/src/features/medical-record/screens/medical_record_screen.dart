@@ -24,14 +24,14 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   final MedicalRecordService medicalRecordService = MedicalRecordService();
   final PsychologistService psychologistService = PsychologistService();
   final ClientService clientService = ClientService();
-  final UserService userService = UserService();
+  final UserProfileService userProfileService = UserProfileService();
 
   //TODO - AUTENTICAÇÃO
   var psychologistLoggedId = '1';
 
   //Using un creatMedicalRecord
   List<MedicalAppointment> psychologistMedicalConsultation = [];
-  List<User> users = [];
+  List<UserProfile> users = [];
   List<MedicalRecord> medicalRecorList = [];
   String _selectedValueUserId = "";
 
@@ -57,7 +57,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   Future<void> fetchUsersByClients() async {
     for (MedicalAppointment medicalAppointment
         in psychologistMedicalConsultation) {
-      var user = await userService
+      var user = await userProfileService
           .fetchUserByClientId(medicalAppointment.clientId.toString());
 
       if (user != null) {

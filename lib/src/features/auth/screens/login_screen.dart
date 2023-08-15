@@ -1,8 +1,7 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/register_screen.dart';
-import 'package:flutter_frontend_psychology_app/src/shared/services/auth_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_models.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
 
 import '../../../shared/validators/auth_validator.dart';
 
@@ -67,13 +66,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     String password = passwordController.text;
 
                     if (_key.currentState!.validate()) {
-                      String? error = await authService.signIn(email, password);
+                      SignInData data = SignInData(
+                        email: email,
+                        password: password,
+                      );
+                      String? error = await authService.signIn(data);
+
                       setState(() {
                         loginErrorMessage = error;
                       });
                     }
                   },
-                  child: Text('Login'),
+                  child: const Text('Login'),
                 ),
                 if (loginErrorMessage != null)
                   Padding(
@@ -85,7 +89,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 TextButton(
                   onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => RegisterScreen(),
+                    ),
                   ),
                   child: Text("Registre-se"),
                 ),

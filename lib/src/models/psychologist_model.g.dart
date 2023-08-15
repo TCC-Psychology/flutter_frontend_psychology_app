@@ -12,7 +12,7 @@ Psychologist _$PsychologistFromJson(Map<String, dynamic> json) => Psychologist(
       userId: json['userId'] as String?,
       user: json['user'] == null
           ? null
-          : User.fromJson(json['user'] as Map<String, dynamic>),
+          : UserProfile.fromJson(json['user'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$PsychologistToJson(Psychologist instance) {

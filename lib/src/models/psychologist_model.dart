@@ -14,7 +14,7 @@ class Psychologist {
   final String? userId;
 
   @JsonKey(includeToJson: false)
-  final User? user;
+  final UserProfile? user;
 
   Psychologist({
     this.id,

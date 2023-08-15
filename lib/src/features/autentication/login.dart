@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../shared/services/user.service.dart';
 import '../psychologist_search/screens/psychologist_search_screen.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -10,7 +11,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  UserService userService = UserService();
+  UserProfileService userProfileService = UserProfileService();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String phone = '';
@@ -30,13 +31,15 @@ class _LoginPageState extends State<LoginPage> {
     phone = _phoneController.text;
     password = _passwordController.text;
 
-    bool isValidCredentials = await userService.canLogin(phone, password);    
+    bool isValidCredentials =
+        await userProfileService.canLogin(phone, password);
 
     setState(() {
       if (isValidCredentials) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const PsychologistSearchScreen()),
+          MaterialPageRoute(
+              builder: (context) => const PsychologistSearchScreen()),
         );
       } else {
         _message = 'Telefone ou senha inválidos.';
@@ -53,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
             const Text(
               'Nome aplicativo',
               style: TextStyle(
-                fontSize: 24.0, 
+                fontSize: 24.0,
               ),
             ),
             const SizedBox(height: 120),
@@ -68,7 +71,8 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _phoneController,
                 decoration: InputDecoration(
                   labelText: 'Phone',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
                 ),
                 onChanged: (_) => _onChange(),
               ),
@@ -80,7 +84,8 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)),
                 ),
                 obscureText: true,
                 onChanged: (_) => _onChange(),
