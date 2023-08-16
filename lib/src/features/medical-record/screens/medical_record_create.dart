@@ -160,7 +160,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                   validator: (value) {
                     if (users.isEmpty) {
                       return 'Não há pacientes relacionados disponíveis.';
-                    } else if (value == -1) {
+                    } else if (_selectedValueUserId == -1) {
                       return 'Por favor, selecione um paciente';
                     }
                     return null;
@@ -700,21 +700,32 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          TextFormField(
-            decoration: const InputDecoration(labelText: 'Nome'),
-            initialValue: userTypeClientSearched!.name,
-            readOnly: true,
+          const SizedBox(width: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Nome'),
+              const SizedBox(width: 10), // Espaço entre o título e o conteúdo
+              Text(userTypeClientSearched!.name),
+            ],
           ),
-          TextFormField(
-            decoration: const InputDecoration(labelText: 'Telefone'),
-            initialValue: userTypeClientSearched!.phone,
-            readOnly: true,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Telefone'),
+              const SizedBox(width: 10),
+              Text(userTypeClientSearched!.phone),
+            ],
           ),
-          TextFormField(
-            decoration: const InputDecoration(labelText: 'CPF'),
-            initialValue: userTypeClientSearched!.cpf,
-            readOnly: true,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('CPF'),
+              const SizedBox(width: 10),
+              Text(userTypeClientSearched!.cpf),
+            ],
           ),
+          const SizedBox(width: 30),
           ElevatedButton(
             onPressed: () async {
               var psychologist = await psychologistService

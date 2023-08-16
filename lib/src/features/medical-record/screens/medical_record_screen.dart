@@ -410,8 +410,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                     ),
                                     Text(
                                         client.relationshipStatus != null
-                                            ? client.relationshipStatus
-                                                .toString()
+                                            ? getReadableRelationshipStatus(
+                                                client.relationshipStatus)
                                             : '',
                                         style: const TextStyle(fontSize: 18)),
                                     const SizedBox(height: 16.0),
@@ -543,5 +543,26 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         );
       },
     );
+  }
+
+  String getReadableRelationshipStatus(RelationshipStatus? status) {
+    switch (status) {
+      case RelationshipStatus.single:
+        return 'Solteiro(a)';
+      case RelationshipStatus.married:
+        return 'Casado(a)';
+      case RelationshipStatus.divorced:
+        return 'Divorciado(a)';
+      case RelationshipStatus.widowed:
+        return 'Viúvo(a)';
+      case RelationshipStatus.separated:
+        return 'Separado(a)';
+      case RelationshipStatus.domesticPartnership:
+        return 'Parceria Doméstica';
+      case null:
+        return '';
+      default:
+        return '';
+    }
   }
 }
