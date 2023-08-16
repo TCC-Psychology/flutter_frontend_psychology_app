@@ -41,6 +41,7 @@ class AuthService {
       data.email,
       data.cpf,
       data.name,
+      data.phone,
       data.birthDate,
       data.userType,
     );
@@ -56,6 +57,7 @@ class AuthService {
     String email,
     String cpf,
     String name,
+    String phone,
     DateTime? birthDate,
     UserType userType,
   ) async {
@@ -66,9 +68,7 @@ class AuthService {
     }
 
     final UserProfile userProfile = UserProfile(
-      id: user.id,
-      cpf: cpf,
-      name: name,
+      id: user.id, cpf: cpf, name: name, phone: phone,
       // birthDate: birthDate,
     );
 
@@ -95,10 +95,7 @@ class AuthService {
     return null; // Successful data insertion
   }
 
-  Future<String?> _registerWithSupabase(
-    String email,
-    String password,
-  ) async {
+  Future<String?> _registerWithSupabase(String email, String password) async {
     try {
       var x = await supabase.auth.signUp(
         password: password,

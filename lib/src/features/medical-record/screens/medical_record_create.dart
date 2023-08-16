@@ -657,7 +657,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       city: _city,
       state: _state,
       cep: _cep,
-      // phone: _phone,
+      phone: _phone,
       description: '',
       // email: _email,
       // password: 'password',

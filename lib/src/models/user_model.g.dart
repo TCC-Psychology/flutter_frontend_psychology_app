@@ -10,6 +10,7 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
       id: json['id'] as String?,
       name: json['name'] as String,
       cpf: json['cpf'] as String,
+      phone: json['phone'] as String,
       birthDate: json['birthDate'] == null
           ? null
           : DateTime.parse(json['birthDate'] as String),
@@ -41,6 +42,7 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) {
   writeNotNull('id', instance.id);
   val['name'] = instance.name;
   val['cpf'] = instance.cpf;
+  val['phone'] = instance.phone;
   val['birthDate'] = instance.birthDate?.toIso8601String();
   val['imageUrl'] = instance.imageUrl;
   val['city'] = instance.city;

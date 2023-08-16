@@ -1,4 +1,5 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/utils/input_formatter_util.dart.dart';
 
 class AuthValidator {
   static String? validateEmail(String? value) {
@@ -29,8 +30,24 @@ class AuthValidator {
       return 'Por favor, insira o CPF';
     }
 
-    if (value.length != 11) {
+    String unmaskedValue = InputFormatterUtil.getUnmaskedCpfText(value);
+
+    if (unmaskedValue.length != 11) {
       return 'CPF inválido';
+    }
+
+    return null;
+  }
+
+  static String? validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, insira o telefone';
+    }
+
+    String unmaskedValue = InputFormatterUtil.getUnmaskedPhoneText(value);
+
+    if (unmaskedValue.length != 14) {
+      return 'Telefone inválido';
     }
 
     return null;
@@ -40,6 +57,7 @@ class AuthValidator {
     if (value == null || value.isEmpty) {
       return 'Por favor, insira um ${type}';
     }
+
     return null;
   }
 }

@@ -12,6 +12,7 @@ class UserProfile {
 
   final String name;
   final String cpf;
+  final String phone;
 
   final DateTime? birthDate;
   final String? imageUrl;
@@ -37,6 +38,7 @@ class UserProfile {
     this.id,
     required this.name,
     required this.cpf,
+    required this.phone,
     this.birthDate,
     this.imageUrl,
     this.city,

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/register_screen.dart';
+import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
+import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_models.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
 
@@ -57,26 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icon(Icons.lock),
                   ),
                   obscureText: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
                   validator: (value) => AuthValidator.validatePassword(value),
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
-                  onPressed: () async {
-                    String email = emailController.text.trim();
-                    String password = passwordController.text;
-
-                    if (_key.currentState!.validate()) {
-                      SignInData data = SignInData(
-                        email: email,
-                        password: password,
-                      );
-                      String? error = await authService.signIn(data);
-
-                      setState(() {
-                        loginErrorMessage = error;
-                      });
-                    }
-                  },
+                  onPressed: handleLogin,
                   child: const Text('Login'),
                 ),
                 if (loginErrorMessage != null)
@@ -100,6 +90,43 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void handleLogin() async {
+    if (!_key.currentState!.validate()) {
+      return;
+    }
+    String email = emailController.text.trim();
+    String password = passwordController.text;
+
+    SignInData data = SignInData(
+      email: email,
+      password: password,
+    );
+    try {
+      String? error = await authService.signIn(data);
+
+      setState(() {
+        loginErrorMessage = error;
+      });
+
+      if (error == null) {
+        navigateToPsychologistSearchScreen();
+      }
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
+  }
+
+  void navigateToPsychologistSearchScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PsychologistSearchScreen()),
     );
   }
 }
