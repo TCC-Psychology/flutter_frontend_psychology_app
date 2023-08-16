@@ -24,16 +24,16 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   final MedicalRecordService medicalRecordService = MedicalRecordService();
   final PsychologistService psychologistService = PsychologistService();
   final ClientService clientService = ClientService();
-  final UserService userService = UserService();
+  final UserProfileService userProfileService = UserProfileService();
 
   //TODO - AUTENTICAÇÃO
   var psychologistLoggedId = '1';
 
   //Using un creatMedicalRecord
   List<MedicalAppointment> psychologistMedicalConsultation = [];
-  List<User> users = [];
+  List<UserProfile> users = [];
   List<MedicalRecord> medicalRecorList = [];
-  int _selectedValueUserId = -1;
+  String _selectedValueUserId = "";
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   Future<void> fetchUsersByClients() async {
     for (MedicalAppointment medicalAppointment
         in psychologistMedicalConsultation) {
-      var user = await userService
+      var user = await userProfileService
           .fetchUserByClientId(medicalAppointment.clientId.toString());
 
       if (user != null) {
@@ -95,7 +95,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<int>(
+                DropdownButtonFormField<String>(
                   onChanged: (newValue) async {
                     _selectedValueUserId = newValue!;
 
@@ -110,7 +110,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                   items: users.isEmpty
                       ? []
                       : users.map((user) {
-                          return DropdownMenuItem<int>(
+                          return DropdownMenuItem<String>(
                             value: user.id,
                             child: Text(user.name),
                           );

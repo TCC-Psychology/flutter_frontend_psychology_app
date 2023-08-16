@@ -18,7 +18,7 @@ class PsychologistSearchScreen extends StatefulWidget {
 
 class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   final PsychologistService psychologistService = PsychologistService();
-  final UserService userService = UserService();
+  final UserProfileService userProfileService = UserProfileService();
   List<Psychologist> psychologists = [];
 
   @override
@@ -39,8 +39,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
             : ListView.builder(
                 itemCount: psychologists.length,
                 itemBuilder: (context, index) {
-                  return FutureBuilder<User?>(
-                    future: userService.fetchUserByPsychologistId(
+                  return FutureBuilder<UserProfile?>(
+                    future: userProfileService.fetchUserByPsychologistId(
                         psychologists[index].id!.toString()),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -62,7 +62,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text('Nome: ${user!.name}'),
-                              Text('Telefone: ${user.phone}'),
+                              // Text('Telefone: ${user.phone}'),
                               Text('Localização: ${user.city}, ${user.state}'),
                             ],
                           ),
@@ -88,8 +88,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
 
   Future<void> _openPsychologistModal(
       BuildContext context, Psychologist psychologist) async {
-    var user =
-        await userService.fetchUserByPsychologistId(psychologist.id.toString());
+    var user = await userProfileService
+        .fetchUserByPsychologistId(psychologist.id.toString());
 
     // ignore: use_build_context_synchronously
     showModalBottomSheet(
@@ -126,10 +126,10 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                               style: const TextStyle(fontSize: 16)),
                         ),
                         const SizedBox(height: 16.0),
-                        Center(
-                          child: Text('Telefone: ${user.phone}',
-                              style: const TextStyle(fontSize: 16)),
-                        ),
+                        // Center(
+                        //   child: Text('Telefone: ${user.phone}',
+                        //       style: const TextStyle(fontSize: 16)),
+                        // ),
                         const Center(child: SizedBox(height: 16.0)),
                         Text('CPF: ${user.cpf}',
                             style: const TextStyle(fontSize: 16)),
