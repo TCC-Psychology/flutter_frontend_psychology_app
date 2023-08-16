@@ -16,10 +16,10 @@ class Client {
   final String? motherOccupation;
 
   @JsonKey(includeToJson: false)
-  final User? user;
+  final UserProfile? user;
 
   @JsonKey(includeToJson: false)
-  final int? userId;
+  final String? userId;
 
   Client({
     this.id,

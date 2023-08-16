@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_frontend_psychology_app/src/features/autentication/login.dart';
+import 'package:flutter_frontend_psychology_app/src/features/auth/screens/login_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 2000)
     ..indicatorType = EasyLoadingIndicatorType.ring
@@ -18,7 +21,16 @@ void main() {
     ..textColor = Colors.black
     ..maskColor = Colors.black.withOpacity(0.5)
     ..userInteractions = false;
+
+  await Supabase.initialize(
+    url: dotenv.get("SUPABASE_URL"),
+    anonKey: dotenv.get("SUPABASE_ANON_KEY"),
+  );
+
+  runApp(const MyApp());
 }
+
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -32,7 +44,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       builder: EasyLoading.init(),
-      home: const MedicalRecordScreen(),
+      home: LoginScreen(),
     );
   }
 }

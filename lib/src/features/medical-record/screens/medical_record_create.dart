@@ -30,7 +30,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   final MedicalRecordService medicalRecordService = MedicalRecordService();
   final PsychologistService psychologistService = PsychologistService();
   final ClientService clientService = ClientService();
-  final UserService userService = UserService();
+  final UserProfileService userProfileService = UserProfileService();
 
   //TODO - AUTENTICAÇÃO
   var psychologistLogged = '1';
@@ -40,8 +40,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   final TextEditingController _datePickerController = TextEditingController();
   List<RelationshipStatus> relationshipStatusList = RelationshipStatus.values;
   List<MedicalAppointment> psychologistMedicalConsultation = [];
-  List<User> users = [];
-  int _selectedValueUserId = -1;
+  List<UserProfile> users = [];
+  String _selectedValueUserId = "";
   int selectedMood = 1;
   RelationshipStatus? _relationshipStatus;
   String notes = '';
@@ -64,7 +64,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   String _email = '';
   bool _showAdditionalUserFields = false;
   bool _showAdditionalClientFields = false;
-  User? userTypeClientSearched;
+  UserProfile? userTypeClientSearched;
   String cpfValue = '';
   bool _cpfAlreadyExists = false;
   bool _phoneAlreadyExists = false;
@@ -97,7 +97,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     users = [];
     for (MedicalAppointment medicalAppointment
         in psychologistMedicalConsultation) {
-      var user = await userService
+      var user = await userProfileService
           .fetchUserByClientId(medicalAppointment.clientId.toString());
 
       if (user != null) {
@@ -141,7 +141,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                     ),
                   ],
                 ),
-                DropdownButtonFormField<int>(
+                DropdownButtonFormField<String>(
                   onChanged: (newValue) {
                     setState(() {
                       _selectedValueUserId = newValue!;
@@ -150,7 +150,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                   items: users.isEmpty
                       ? []
                       : users.map((user) {
-                          return DropdownMenuItem<int>(
+                          return DropdownMenuItem<String>(
                             value: user.id,
                             child: Text(user.name),
                           );
@@ -765,7 +765,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   }
 
   Future<void> _saveClientData() async {
-    User user = User(
+    UserProfile user = UserProfile(
       name: _nome,
       cpf: _cpf,
       birthDate: _birthDate,
@@ -775,8 +775,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       cep: _cep,
       phone: _phone,
       description: '',
-      email: _email,
-      password: 'password',
+      // email: _email,
+      // password: 'password',
       gender: _gender,
     );
 
@@ -789,7 +789,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       motherOccupation: _motherOccupation,
     );
 
-    var userCreated = await userService.createUserAndClient(user, client);
+    var userCreated =
+        await userProfileService.createUserAndClient(user, client);
     var userId = userCreated!.id!.toString();
 
     var clientCreated = await clientService.fetchClientByUserId(userId);

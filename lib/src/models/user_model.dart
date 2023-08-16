@@ -6,22 +6,20 @@ import 'psychologist_model.dart';
 part 'user_model.g.dart';
 
 @JsonSerializable()
-class User {
+class UserProfile {
   @JsonKey(includeIfNull: false)
-  final int? id;
+  final String? id;
 
   final String name;
   final String cpf;
+  final String phone;
 
   final DateTime? birthDate;
   final String? imageUrl;
   final String? city;
   final String? state;
   final String? cep;
-  final String phone;
   final String? description;
-  final String email;
-  final String password;
   final String? gender;
 
   @JsonKey(includeToJson: false)
@@ -36,19 +34,17 @@ class User {
   @JsonKey(includeToJson: false)
   final int? psychologistId;
 
-  User({
+  UserProfile({
     this.id,
     required this.name,
     required this.cpf,
+    required this.phone,
     this.birthDate,
     this.imageUrl,
     this.city,
     this.state,
     this.cep,
-    required this.phone,
     this.description,
-    required this.email,
-    required this.password,
     this.gender,
     this.client,
     this.clientId,
@@ -56,7 +52,8 @@ class User {
     this.psychologistId,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
 
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 }
