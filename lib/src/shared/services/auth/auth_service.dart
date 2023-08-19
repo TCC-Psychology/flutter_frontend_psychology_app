@@ -23,6 +23,15 @@ class AuthService {
     return null;
   }
 
+  Future<User?> getUserById(String id) async {
+    try {
+      var data = await supabase.auth.admin.getUserById(id);
+      return data.user;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<String?> signUp(SignUpData data) async {
     if (await _userWithCpfExists(data.cpf)) {
       return 'Erro de registro. Verifique seus detalhes e tente novamente.';
@@ -111,7 +120,7 @@ class AuthService {
   }
 
   Future<bool> _userWithCpfExists(String cpf) async {
-    var user = await userProfileService.fetchUserByProperties(cpf);
+    var user = await userProfileService.fetchUserByProperties(cpf, null, null);
     return user != null;
   }
 }

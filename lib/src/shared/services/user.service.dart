@@ -58,14 +58,18 @@ class UserProfileService {
     return null;
   }
 
-  Future<UserProfile?> fetchUserByProperties(String cpf) async {
+  Future<UserProfile?> fetchUserByProperties(
+      String? cpf, String? phone, String? email) async {
     try {
       final res = await http.get(
-        Uri.parse('$uri/users/getUserByProperties/$cpf'),
+        Uri.parse('$uri/users/getUserByProperties/$cpf/$phone/$email'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
+      if (res.statusCode == 404) {
+        return null;
+      }
 
       return UserProfile.fromJson(jsonDecode(res.body));
     } catch (e) {
