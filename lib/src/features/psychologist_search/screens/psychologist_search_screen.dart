@@ -7,6 +7,7 @@ import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist
 
 import '../../../../main.dart';
 import '../../../shared/services/user.service.dart';
+import '../../medical-appointment/screens/medical-appointment_create.dart';
 
 class PsychologistSearchScreen extends StatefulWidget {
   const PsychologistSearchScreen({Key? key}) : super(key: key);
@@ -106,6 +107,20 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                   Tab(icon: Icon(Icons.tag), text: 'Tags'),
                 ],
               ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    // Navigate to the medical appointment create page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MedicalAppointmentCreate(
+                              psychologistId: psychologist.id!.toString())),
+                    );
+                  },
+                ),
+              ],
             ),
             body: TabBarView(
               children: [

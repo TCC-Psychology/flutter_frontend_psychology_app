@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 import '../../models/medical_appointment_model.dart';
 
 class MedicalAppointmentService {
-  Future<List<MedicalAppointment>> fetchMedicalAppointmentList(String psychologistId, String clienteId) async {
+  Future<List<MedicalAppointment>> fetchMedicalAppointmentList(
+      String? psychologistId, String? clienteId) async {
     List<MedicalAppointment> medicalAppointmentList = [];
 
     try {
@@ -17,7 +18,9 @@ class MedicalAppointmentService {
         },
       );
       List<dynamic> body = jsonDecode(res.body);
-      medicalAppointmentList = body.map((dynamic item) => MedicalAppointment.fromJson(item)).toList();
+      medicalAppointmentList = body
+          .map((dynamic item) => MedicalAppointment.fromJson(item))
+          .toList();
     } catch (e) {
       print(e);
     }
@@ -25,10 +28,11 @@ class MedicalAppointmentService {
     return medicalAppointmentList;
   }
 
-  Future<int> createMedicalAppointment(MedicalAppointment medicalAppointment) async {
+  Future<int> createMedicalAppointment(
+      MedicalAppointment medicalAppointment) async {
     try {
-      int? clientId = medicalAppointment.clientId; 
-      int? psychologistId = medicalAppointment.psychologistId; 
+      int? clientId = medicalAppointment.clientId;
+      int? psychologistId = medicalAppointment.psychologistId;
 
       final res = await http.post(
         Uri.parse('$uri/medical-appointment/$clientId/$psychologistId'),
