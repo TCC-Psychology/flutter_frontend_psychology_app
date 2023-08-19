@@ -34,14 +34,12 @@ class MedicalRecordService {
         },
         body: jsonEncode(medicalRecord.toJson()),
       );
-      print(medicalRecord.toJson());
       if (res.statusCode == 200) {
         return 1;
       } else {
         return -1;
       }
     } catch (e) {
-      print(e);
       return -1;
     }
   }
@@ -57,7 +55,7 @@ class MedicalRecordService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
-      print(res.body);
+
       List<dynamic> body = jsonDecode(res.body);
       medicalRecord =
           body.map((dynamic item) => MedicalRecord.fromJson(item)).toList();
@@ -77,14 +75,11 @@ class MedicalRecordService {
       );
 
       if (response.statusCode == 200) {
-        // Sucesso
         return 1;
       } else {
-        // Algo deu errado no servidor, você pode tratar diferentes códigos de erro aqui
         return response.statusCode;
       }
     } catch (e) {
-      // Ocorreu uma exceção, algo deu errado na comunicação
       print(e);
       return -1;
     }

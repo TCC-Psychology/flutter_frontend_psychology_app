@@ -41,4 +41,20 @@ class PsychologistService {
       return null;
     }
   }
+
+  Future<Psychologist?> fetchPsychologistByUserId(String userId) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/psychologist/findOneByUserId/$userId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      return Psychologist.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
 }

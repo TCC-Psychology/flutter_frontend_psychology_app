@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/models/medical_record_model.dart';
-import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
-
 import '../../../models/user_model.dart';
 import '../../../shared/services/medical_record_service.dart';
+import '../../../shared/services/user.service.dart';
+import '../../../shared/style/input_decoration.dart';
 
 final MedicalRecordService medicalRecordService = MedicalRecordService();
 
@@ -19,7 +20,7 @@ class MedicalRecordEditForm extends StatefulWidget {
 }
 
 class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
-  UserService userService = UserService();
+  UserProfileService userService = UserProfileService();
   final _formKey = GlobalKey<FormState>();
   MedicalRecord? medicalRecord;
   String? notes = '';
@@ -28,7 +29,7 @@ class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
   String evolutionRecord = '';
   int selectedMood = 1;
   int medicalRecordIdEdit = 0;
-  User? user;
+  UserProfile? user;
 
   @override
   void initState() {
@@ -58,18 +59,30 @@ class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                const SizedBox(
+                  height: 10,
+                ),
                 const Text(
                   'Paciente', // Texto "Paciente" acima do nome do usuário
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+                ),
+                const SizedBox(
+                  height: 5,
                 ),
                 Text(
                   widget.userName,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   initialValue: widget.medicalRecord.theme,
-                  decoration: const InputDecoration(labelText: 'Tema'),
+                  decoration: ProjectInputDecorations.textFieldDecoration(
+                    labelText: "Tema *",
+                    prefixIcon: Icons.title,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, insira o tema';
@@ -78,9 +91,15 @@ class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
                   },
                   onSaved: (value) => theme = value!,
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   initialValue: widget.medicalRecord.objective,
-                  decoration: const InputDecoration(labelText: 'Objetivo'),
+                  decoration: ProjectInputDecorations.textFieldDecoration(
+                    labelText: "Objetivo *",
+                    prefixIcon: Icons.folder_copy_sharp,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, insira o objetivo';
@@ -89,9 +108,15 @@ class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
                   },
                   onSaved: (value) => objective = value!,
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   initialValue: widget.medicalRecord.evolutionRecord,
-                  decoration: const InputDecoration(labelText: 'Evolução'),
+                  decoration: ProjectInputDecorations.textFieldDecoration(
+                    labelText: "Evolução *",
+                    prefixIcon: Icons.upcoming,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, insira a evolução';
@@ -100,20 +125,33 @@ class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
                   },
                   onSaved: (value) => evolutionRecord = value!,
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
                 TextFormField(
                   initialValue: widget.medicalRecord.notes ?? '',
-                  decoration: const InputDecoration(labelText: 'Notas'),
+                  decoration: ProjectInputDecorations.textFieldDecoration(
+                    labelText: "Notas",
+                    prefixIcon: Icons.notes,
+                  ),
                   onSaved: (value) => notes = value!,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(
+                  height: 10,
+                ),
                 const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Humor',
-                    style: TextStyle(
-                      fontSize: 16,
+                  child: Center(
+                    child: Text(
+                      'Humor',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
                     ),
                   ),
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -210,6 +248,9 @@ class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
 
                       if (id == 1) {
                         setState(() {});
+                        EasyLoading.showSuccess(
+                          'Prontuario editado',
+                        );
                         // ignore: use_build_context_synchronously
                         Navigator.pushReplacement(
                           context,
@@ -218,7 +259,9 @@ class _MedicalRecordEditFormState extends State<MedicalRecordEditForm> {
                           ),
                         );
                       } else {
-                        print('Mostrar erro');
+                        EasyLoading.showError(
+                          'Erro inesperado, reinicie o aplicativo',
+                        );
                       }
                     }
                   },

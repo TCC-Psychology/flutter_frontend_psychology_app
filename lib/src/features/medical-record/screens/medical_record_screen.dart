@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/models/client_model.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../main.dart';
 import '../../../models/medical_appointment_model.dart';
 import '../../../models/medical_record_model.dart';
+import '../../../models/psychologist_model.dart';
 import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/medical_appointment_service.dart';
 import '../../../shared/services/medical_record_service.dart';
 import '../../../shared/services/psychologist_service.dart';
 import '../../../shared/services/user.service.dart';
+import '../../../shared/style/input_decoration.dart';
+import '../../../shared/utils/relationsship_type.dart';
 import 'medical_record_create.dart';
 import 'medical_record_edit.dart';
 
@@ -27,16 +33,15 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   final PsychologistService psychologistService = PsychologistService();
   final ClientService clientService = ClientService();
   final UserProfileService userProfileService = UserProfileService();
+  final AuthService authService = AuthService();
 
-  //TODO - AUTENTICAÇÃO
-  var psychologistLoggedId = '1';
-
-  //Using un creatMedicalRecord
   List<MedicalAppointment> psychologistMedicalConsultation = [];
   List<UserProfile> users = [];
   List<MedicalRecord> medicalRecorList = [];
-  String _selectedValueUserId = "";
 
+  String _selectedValueUserId = "";
+  Psychologist? psychologist;
+  var psychologistLogged = supabase.auth.currentUser!.id;
   @override
   void initState() {
     super.initState();
@@ -52,8 +57,11 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   }
 
   fetchMedicalAppointments() async {
+    psychologist =
+        await psychologistService.fetchPsychologistByUserId(psychologistLogged);
+
     psychologistMedicalConsultation = await medicalAppointmentService
-        .fetchMedicalAppointmentList(psychologistLoggedId, 'null');
+        .fetchMedicalAppointmentList(psychologist!.id!.toString(), 'null');
   }
 
   Future<void> fetchUsersByClients() async {
@@ -65,8 +73,9 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
       if (user != null) {
         users.add(user);
       } else {
-        print(
-            "Fazer algo que mostre um erro e que é necessario reiniciar o app, pq seria impossivel nao ter user aqui");
+        EasyLoading.showError(
+          'Erro inesperado, entre em contato com os desenvolveores',
+        );
       }
     }
   }
@@ -86,7 +95,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -105,8 +114,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                         .fetchClientByUserId(_selectedValueUserId.toString());
                     medicalRecorList =
                         await medicalRecordService.fetchMedicalRecordtList(
-                            psychologistLoggedId, client!.id!.toString());
-
+                            psychologist!.id!.toString(),
+                            client!.id!.toString());
                     setState(() {});
                   },
                   items: users.isEmpty
@@ -117,18 +126,10 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                             child: Text(user.name),
                           );
                         }).toList(),
-                  decoration:
-                      const InputDecoration(labelText: 'Selecione um paciente'),
+                  decoration: ProjectInputDecorations.textFieldDecoration(
+                    labelText: "Paciente",
+                  ),
                   isExpanded: true,
-                  validator: (value) {
-                    if (users.isEmpty) {
-                      return 'Não há pacientes relacionados disponíveis.';
-                    } else if (value == -1) {
-                      return 'Por favor, selecione um paciente';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => _selectedValueUserId = value!,
                 ),
                 if (medicalRecorList.isNotEmpty) _buildShowMedicalRecord(),
               ],
@@ -236,8 +237,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
     );
   }
 
-  void _showMedicalRecordUserClientDetailed(BuildContext context, User user,
-      Client client, MedicalRecord medicalRecord) {
+  void _showMedicalRecordUserClientDetailed(BuildContext context,
+      UserProfile user, Client client, MedicalRecord medicalRecord) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -326,8 +327,6 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    Text(user.email,
-                                        style: const TextStyle(fontSize: 18)),
                                   ],
                                 ),
                               ),
@@ -523,7 +522,7 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                     .fetchClientByUserId(_selectedValueUserId.toString());
                 medicalRecorList =
                     await medicalRecordService.fetchMedicalRecordtList(
-                        psychologistLoggedId, client!.id!.toString());
+                        psychologistLogged, client!.id!.toString());
 
                 setState(() {});
 
@@ -542,26 +541,5 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         );
       },
     );
-  }
-
-  String getReadableRelationshipStatus(RelationshipStatus? status) {
-    switch (status) {
-      case RelationshipStatus.single:
-        return 'Solteiro(a)';
-      case RelationshipStatus.married:
-        return 'Casado(a)';
-      case RelationshipStatus.divorced:
-        return 'Divorciado(a)';
-      case RelationshipStatus.widowed:
-        return 'Viúvo(a)';
-      case RelationshipStatus.separated:
-        return 'Separado(a)';
-      case RelationshipStatus.domesticPartnership:
-        return 'Parceria Doméstica';
-      case null:
-        return '';
-      default:
-        return '';
-    }
   }
 }
