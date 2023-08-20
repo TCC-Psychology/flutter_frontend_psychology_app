@@ -48,4 +48,28 @@ class MedicalAppointmentService {
       return -1;
     }
   }
+
+  Future<List<MedicalAppointment>>
+      fetchMedicalAppointmentByAppointmentsStateList(String? psychologistId,
+          String? clienteId, AppointmentStatus status) async {
+    List<MedicalAppointment> medicalAppointmentList = [];
+    var statusName = status.name;
+    try {
+      final res = await http.get(
+        Uri.parse(
+            '$uri/medical-appointment/$clienteId/$psychologistId/$statusName'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      List<dynamic> body = jsonDecode(res.body);
+      medicalAppointmentList = body
+          .map((dynamic item) => MedicalAppointment.fromJson(item))
+          .toList();
+    } catch (e) {
+      print(e);
+    }
+
+    return medicalAppointmentList;
+  }
 }
