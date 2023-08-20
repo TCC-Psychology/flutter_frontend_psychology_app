@@ -44,7 +44,7 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
     setState(() {});
   }
 
-  Future<void> _handleDateSelection(DateTime selectedDate) async {
+  void _handleDateSelection(DateTime selectedDate) {
     List<DateTime> datasIguais = medicalAppointments
         .map((appointment) => appointment.date)
         .where((date) =>
@@ -53,11 +53,10 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
             date.day == selectedDate.day)
         .toList();
 
-    setState(() {
-      _selectedDate = selectedDate;
-      _selectedTime = null;
-      _updateAvailableTimes(datasIguais);
-    });
+    _selectedDate = selectedDate;
+    _selectedTime = null;
+    _updateAvailableTimes(datasIguais);
+    setState(() {});
   }
 
   void _updateAvailableTimes(List<DateTime> datasOcupadas) {
@@ -92,97 +91,116 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
     DateTime minSelectableDate = now.add(Duration(days: 2));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Agendamento de Consulta'),
-      ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            DropdownButtonFormField(
-              value: appointmentType,
-              decoration: ProjectInputDecorations.textFieldDecoration(
-                labelText: "Tipo de consulta",
-              ),
-              items: [
-                DropdownMenuItem(
-                  value: AppointmentType.online,
-                  child: Text(AppointmentType.online.name),
-                ),
-                DropdownMenuItem(
-                  value: AppointmentType.presencial,
-                  child: Text(AppointmentType.presencial.name),
-                ),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  appointmentType = value!;
-                });
-              },
-            ),
-            CalendarDatePicker(
-              initialDate: minSelectableDate,
-              firstDate: minSelectableDate,
-              lastDate: DateTime(2100),
-              onDateChanged: _handleDateSelection,
-              selectableDayPredicate: (DateTime date) {
-                return date.weekday != DateTime.saturday &&
-                    date.weekday != DateTime.sunday;
-              },
-            ),
-            const SizedBox(height: 20),
-            if (_selectedDate != null)
-              Column(
-                children: [
-                  const Text('Horários Disponíveis'),
-                  const SizedBox(height: 15),
-                  Column(
-                    children: List.generate(_availableTimes.length, (index) {
-                      if (index % 3 == 0) {
-                        int endIndex = index + 3 <= _availableTimes.length
-                            ? index + 3
-                            : _availableTimes.length;
-
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: _availableTimes
-                                  .sublist(index, endIndex)
-                                  .map((time) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      _handleTimeSelection(time);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: _selectedTime != null &&
-                                              _selectedTime == time
-                                          ? Colors.blue
-                                          : null,
-                                      padding: const EdgeInsets.all(15),
-                                      minimumSize: const Size(80, 50),
-                                    ),
-                                    child: Text('${time.hour}:00'),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    }),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Center(
+                child: Text(
+                  'Agendamento de Consulta',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 24,
+                    color: Colors.purple,
                   ),
-                  ElevatedButton(
-                    onPressed: handleScheduling,
-                    child: const Text("Marcar"),
+                ),
+              ),
+              const SizedBox(height: 25),
+              DropdownButtonFormField(
+                value: appointmentType,
+                decoration: ProjectInputDecorations.textFieldDecoration(
+                  labelText: "Tipo de consulta",
+                ),
+                items: [
+                  DropdownMenuItem(
+                    value: AppointmentType.online,
+                    child: Text(AppointmentType.online.name),
+                  ),
+                  DropdownMenuItem(
+                    value: AppointmentType.presencial,
+                    child: Text(AppointmentType.presencial.name),
                   ),
                 ],
+                onChanged: (value) {
+                  setState(() {
+                    appointmentType = value!;
+                  });
+                },
               ),
-          ],
+              const SizedBox(height: 10),
+              CalendarDatePicker(
+                initialDate: minSelectableDate,
+                firstDate: minSelectableDate,
+                lastDate: DateTime(2100),
+                onDateChanged: _handleDateSelection,
+                selectableDayPredicate: (DateTime date) {
+                  return date.weekday != DateTime.saturday &&
+                      date.weekday != DateTime.sunday;
+                },
+              ),
+              if (_selectedDate != null)
+                Column(
+                  children: [
+                    const Text(
+                      'Horários Disponíveis',
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.purple),
+                    ),
+                    const SizedBox(height: 10),
+                    Column(
+                      children: List.generate(_availableTimes.length, (index) {
+                        if (index % 3 == 0) {
+                          int endIndex = index + 3 <= _availableTimes.length
+                              ? index + 3
+                              : _availableTimes.length;
+
+                          return Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: _availableTimes
+                                    .sublist(index, endIndex)
+                                    .map((time) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        _handleTimeSelection(time);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            _selectedTime != null &&
+                                                    _selectedTime == time
+                                                ? Colors.blue
+                                                : null,
+                                        padding: const EdgeInsets.all(15),
+                                        minimumSize: const Size(80, 50),
+                                      ),
+                                      child: Text('${time.hour}:00'),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: handleScheduling,
+                      child: const Text("Marcar"),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
