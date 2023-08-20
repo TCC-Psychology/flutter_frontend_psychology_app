@@ -16,8 +16,7 @@ class ClientService {
       return Client.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
+      return null;
     }
-
-    return null;
   }
 }
