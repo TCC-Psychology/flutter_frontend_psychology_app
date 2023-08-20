@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appointment_service.dart';
 
+import '../../../models/medical_appointment_model.dart';
+
 class MedicalAppointmentCreate extends StatefulWidget {
   final String psychologistId;
 
@@ -14,15 +16,33 @@ class MedicalAppointmentCreate extends StatefulWidget {
 class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
+  List<MedicalAppointment> medicalAppointments = [];
   DateTime? _selectedDate;
   DateTime? _selectedTime;
 
-  Future<void> _handleDateSelection(DateTime selectedDate) async {
-    var medicalAppointments = await medicalAppointmentService
+  @override
+  void initState() {
+    super.initState();
+
+    loadPageUtilities();
+  }
+
+  Future<void> loadPageUtilities() async {
+    medicalAppointments = await medicalAppointmentService
         .fetchMedicalAppointmentList(widget.psychologistId, null);
-    for (var item in medicalAppointments) {
-      print(item.toJson());
-    }
+
+    setState(() {});
+  }
+
+  Future<void> _handleDateSelection(DateTime selectedDate) async {
+    //2023-08-22T10:00:00.000Z
+    List<DateTime> datasIguais = medicalAppointments
+        .map((appointment) => appointment.date)
+        .where((date) =>
+            date.year == selectedDate.year &&
+            date.month == selectedDate.month &&
+            date.day == selectedDate.day)
+        .toList();
     setState(() {
       _selectedDate = selectedDate;
       _selectedTime = null;
@@ -42,7 +62,7 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Create Medical Appointment'),
+          title: const Text('Agendamento do consulta'),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -64,8 +84,9 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
               if (_selectedDate != null)
                 Column(
                   children: [
-                    Text('Select a time:'),
-                    SizedBox(height: 15), // Aumentei o espaçamento vertical
+                    const Text('Horarios disponiveis'),
+                    const SizedBox(
+                        height: 15), // Aumentei o espaçamento vertical
                     Column(
                       children: [
                         for (int startHour = 8; startHour <= 17; startHour += 3)
