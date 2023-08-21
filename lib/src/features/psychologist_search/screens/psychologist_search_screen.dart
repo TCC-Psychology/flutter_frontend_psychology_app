@@ -15,7 +15,6 @@ class PsychologistSearchScreen extends StatefulWidget {
 class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   final PsychologistService psychologistService = PsychologistService();
   List<Psychologist>? psychologists;
-
   @override
   void initState() {
     super.initState();
@@ -59,7 +58,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   }
 
   fetchPsychologistList() async {
-    EasyLoading.show(status: 'Loading...');
+    EasyLoading.show(status: 'Buscando...');
     var fetchedPsychologists =
         await psychologistService.fetchPsychologistList();
     if (fetchedPsychologists.isNotEmpty) {

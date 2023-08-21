@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 
+import '../../../models/academic_formation_model.dart';
+import '../../../shared/services/academic_formations_service.dart';
 import '../../../shared/services/psychologist_service.dart';
 
 class PsychologistProfileScreen extends StatefulWidget {
@@ -13,14 +16,15 @@ class PsychologistProfileScreen extends StatefulWidget {
 
 class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
   final PsychologistService psychologistService = PsychologistService();
-  final Psychologist psychologist = Psychologist(
-    id: 1,
-    certificationNumber: '1',
-    userId: 1,
-  );
+  Psychologist? psychologist = Psychologist();
+  List<AcademicFormation>? academicFormations;
+  final AcademicFormationsService academicFormationsServiceService =
+      AcademicFormationsService();
   @override
   void initState() {
     super.initState();
+    fetchPsychologist();
+    fetchAcademicFormationsList();
   }
 
   @override
@@ -62,8 +66,7 @@ class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ClipRRect(
-                            borderRadius:
-                                BorderRadius.circular(100), // Raio dos cantos
+                            borderRadius: BorderRadius.circular(100),
                             child: Image.asset(
                               'lib/src/assets/images/logo.png',
                               width: 200,
@@ -72,29 +75,29 @@ class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
                             ),
                           ),
                           const Padding(padding: EdgeInsets.only(top: 10)),
-                          const Text(
-                            'Fabio Vaz',
-                            style: TextStyle(
+                          Text(
+                            psychologist?.user?.name ?? '--',
+                            style: const TextStyle(
                                 color: Colors.black,
                                 decoration: TextDecoration.none,
                                 fontSize: 30,
                                 fontWeight: FontWeight.bold),
                           ),
                           const Padding(padding: EdgeInsets.only(top: 10)),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.home_outlined,
                                     color: Colors.grey,
                                   ),
                                   Text(
-                                    'Alfenas',
-                                    style: TextStyle(
+                                    psychologist?.user?.city ?? '--',
+                                    style: const TextStyle(
                                         color: Colors.grey,
                                         decoration: TextDecoration.none,
                                         fontSize: 16,
@@ -106,13 +109,13 @@ class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.psychology_outlined,
                                     color: Colors.grey,
                                   ),
                                   Text(
-                                    'Abordagem',
-                                    style: TextStyle(
+                                    psychologist?.approach ?? '--',
+                                    style: const TextStyle(
                                         color: Colors.grey,
                                         decoration: TextDecoration.none,
                                         fontSize: 16,
@@ -177,9 +180,9 @@ class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
                                         ),
                                       ],
                                     ),
-                                    child: const Text(
-                                      'Como psicólogo, eu sou treinado para compreender e analisar a mente humana e o comportamento. Eu trabalho com indivíduos, grupos e organizações para ajudá-los a melhorar sua saúde mental e bem-estar emocional. Isso pode incluir ajudar as pessoas a lidar com problemas de saúde mental, tais como ansiedade e depressão, ou ajudar casais e famílias a melhorar seus relacionamentos. Eu uso uma variedade de técnicas terapêuticas para ajudar as pessoas a compreender e resolver seus problemas, e trabalho em colaboração com meus pacientes para alcançar seus objetivos.',
-                                      style: TextStyle(
+                                    child: Text(
+                                      psychologist?.user?.description ?? '--',
+                                      style: const TextStyle(
                                           color: Colors.black87,
                                           decoration: TextDecoration.none,
                                           fontSize: 15,
@@ -189,20 +192,20 @@ class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
                                 ],
                               )),
                           const Padding(padding: EdgeInsets.only(top: 10)),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.message_outlined,
                                     color: Colors.grey,
                                   ),
                                   Text(
-                                    'Telefone',
-                                    style: TextStyle(
+                                    psychologist?.user?.phone ?? '--',
+                                    style: const TextStyle(
                                         color: Colors.grey,
                                         decoration: TextDecoration.none,
                                         fontSize: 16,
@@ -213,11 +216,11 @@ class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
                             ],
                           ),
                           const Padding(padding: EdgeInsets.only(top: 10)),
-                          const Row(
+                          Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 "Formação Acadêmica",
                                 style: TextStyle(
                                     color: Colors.black,
@@ -225,42 +228,104 @@ class _PsychologistProfileScreen extends State<PsychologistProfileScreen> {
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold),
                               ),
+                              IconButton(
+                                  onPressed: () {}, icon: const Icon(Icons.add))
                             ],
                           ),
                           const Padding(padding: EdgeInsets.only(top: 10)),
-                          const Column(
-                            children: [
-                              Text(
-                                "Universidade Federal de Alfenas",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  decoration: TextDecoration.none,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                "Curso de Psicologia",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  decoration: TextDecoration.none,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                "2015 - 2020",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  decoration: TextDecoration.none,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          )
+                          academicFormations == null
+                              ? Container()
+                              : SizedBox(
+                                  height: 300,
+                                  width: 350,
+                                  child: ListView(
+                                    children: academicFormations!
+                                        .map(buildAcademicFormationWidget)
+                                        .toList(),
+                                  ))
                         ],
                       ),
                     ],
                   )
                 ],
               ));
+  }
+
+  fetchPsychologist() async {
+    EasyLoading.show(status: 'Loading...');
+    var fetchedPsychologist =
+        await psychologistService.fetchPsychologistById("1");
+    if (fetchedPsychologist != null) {
+      psychologist = fetchedPsychologist;
+    } else {
+      EasyLoading.showError('Failed to load data.');
+    }
+    setState(() {});
+    EasyLoading.dismiss();
+  }
+
+  fetchAcademicFormationsList() async {
+    EasyLoading.show(status: 'Buscando...');
+    var fetchedAcademicFormations =
+        await academicFormationsServiceService.fetchAcademicFormationsList();
+    if (fetchedAcademicFormations.isNotEmpty) {
+      academicFormations = fetchedAcademicFormations;
+    } else {
+      EasyLoading.showError('Failed to load data.');
+    }
+    setState(() {});
+    EasyLoading.dismiss();
+  }
+
+  Card buildAcademicFormationWidget(AcademicFormation formation) {
+    return Card(
+      color: Colors.grey[200],
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Universidade: ${formation.institution}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    "Curso: ${formation.course}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    "${formation.startDate.year} - ${formation.endDate.year}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () {},
+              ),
+            ],
+          )),
+    );
   }
 }

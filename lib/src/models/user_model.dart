@@ -10,18 +10,18 @@ class User {
   @JsonKey(includeIfNull: false)
   final int? id;
 
-  final String name;
-  final String cpf;
+  final String? name;
+  final String? cpf;
 
   final DateTime? birthDate;
   final String? imageUrl;
   final String? city;
   final String? state;
   final String? cep;
-  final String phone;
+  final String? phone;
   final String? description;
-  final String email;
-  final String password;
+  final String? email;
+  final String? password;
   final String? gender;
 
   @JsonKey(includeToJson: false)
@@ -38,17 +38,17 @@ class User {
 
   User({
     this.id,
-    required this.name,
-    required this.cpf,
+    this.name,
+    this.cpf,
     this.birthDate,
     this.imageUrl,
     this.city,
     this.state,
     this.cep,
-    required this.phone,
+    this.phone,
     this.description,
-    required this.email,
-    required this.password,
+    this.email,
+    this.password,
     this.gender,
     this.client,
     this.clientId,

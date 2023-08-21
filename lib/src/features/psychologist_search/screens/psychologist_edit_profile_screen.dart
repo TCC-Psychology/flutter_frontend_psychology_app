@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+import '../../../models/user_model.dart';
 import '../../../shared/services/psychologist_service.dart';
+import '../../../shared/services/user_service.dart';
 
 class PsychologistEditProfileScreen extends StatefulWidget {
   const PsychologistEditProfileScreen({Key? key}) : super(key: key);
@@ -14,13 +16,17 @@ class PsychologistEditProfileScreen extends StatefulWidget {
 class _PsychologistEditProfileScreen
     extends State<PsychologistEditProfileScreen> {
   final PsychologistService psychologistService = PsychologistService();
-  final Psychologist psychologist = Psychologist(
-    id: 1,
-    certificationNumber: '1',
-    userId: 1,
-  );
+  final UserService userService = UserService();
+  String prevApproach = '';
+  User? user = User();
+  TextEditingController name = TextEditingController();
+  TextEditingController city = TextEditingController();
+  TextEditingController approach = TextEditingController();
+  TextEditingController description = TextEditingController();
+  TextEditingController phone = TextEditingController();
   @override
   void initState() {
+    fetchUser();
     super.initState();
   }
 
@@ -28,7 +34,7 @@ class _PsychologistEditProfileScreen
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        body: psychologist == null
+        body: user == null
             ? Container()
             : ListView(
                 children: [
@@ -55,68 +61,28 @@ class _PsychologistEditProfileScreen
                               onPressed: () {},
                               icon: const Icon(Icons.image_search_outlined)),
                           const Padding(padding: EdgeInsets.only(top: 10)),
-                          Align(
-                            alignment: const AlignmentDirectional(0, 0),
-                            child: SizedBox(
-                              width: 250,
-                              height: 40,
-                              child: TextFormField(
-                                //controller: document,
-                                keyboardType: TextInputType.name,
-                                decoration: InputDecoration(
-                                  labelText: 'Nome',
-                                  labelStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                  fillColor: Colors.grey.shade300,
-                                  filled: true,
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: const BorderSide(
-                                      color: Colors.black,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: const BorderSide(
-                                      color: Colors.white,
-                                      width: 0.5,
-                                    ),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const Padding(padding: EdgeInsets.only(top: 10)),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const Icon(
-                                    Icons.home_outlined,
+                                    Icons.person_outline,
                                     color: Colors.grey,
                                   ),
                                   Align(
                                     alignment: const AlignmentDirectional(0, 0),
                                     child: SizedBox(
-                                      width: 170,
+                                      width: 250,
                                       height: 40,
                                       child: TextFormField(
-                                        //controller: document,
+                                        controller: name,
                                         keyboardType: TextInputType.name,
                                         decoration: InputDecoration(
-                                          labelText: 'Cidade',
-                                          labelStyle: const TextStyle(
+                                          hintText: 'Nome',
+                                          hintStyle: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 16,
                                           ),
@@ -148,26 +114,32 @@ class _PsychologistEditProfileScreen
                                     ),
                                   ),
                                 ],
-                              ),
+                              )
+                            ],
+                          ),
+                          const Padding(padding: EdgeInsets.only(top: 10)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   const Icon(
-                                    Icons.psychology_outlined,
+                                    Icons.home_outlined,
                                     color: Colors.grey,
                                   ),
                                   Align(
                                     alignment: const AlignmentDirectional(0, 0),
                                     child: SizedBox(
-                                      width: 170,
+                                      width: 250,
                                       height: 40,
                                       child: TextFormField(
-                                        //controller: document,
+                                        controller: city,
                                         keyboardType: TextInputType.name,
                                         decoration: InputDecoration(
-                                          labelText: 'Abordagem',
-                                          labelStyle: const TextStyle(
+                                          hintText: 'Cidade',
+                                          hintStyle: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 16,
                                           ),
@@ -248,7 +220,7 @@ class _PsychologistEditProfileScreen
                               child: ListView(
                                 children: [
                                   Container(
-                                      padding: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(1),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
                                         boxShadow: [
@@ -259,14 +231,15 @@ class _PsychologistEditProfileScreen
                                       ),
                                       child: SingleChildScrollView(
                                         child: TextFormField(
-                                          //controller: document,
-                                          maxLines: null,
+                                          controller: description,
+                                          maxLines: 5,
+                                          minLines: 5,
                                           keyboardType: TextInputType.multiline,
                                           decoration: InputDecoration(
-                                            hintText: 'Digite seu texto...',
-                                            labelStyle: const TextStyle(
+                                            hintText: 'Digite sua descrição...',
+                                            hintStyle: const TextStyle(
                                               color: Colors.black,
-                                              fontSize: 16,
+                                              fontSize: 15,
                                             ),
                                             fillColor: Colors.grey.shade300,
                                             filled: true,
@@ -314,11 +287,11 @@ class _PsychologistEditProfileScreen
                                       width: 250,
                                       height: 40,
                                       child: TextFormField(
-                                        //controller: document,
+                                        controller: phone,
                                         keyboardType: TextInputType.phone,
                                         decoration: InputDecoration(
-                                          labelText: 'Telefone',
-                                          labelStyle: const TextStyle(
+                                          hintText: 'Telefone',
+                                          hintStyle: const TextStyle(
                                             color: Colors.black,
                                             fontSize: 16,
                                           ),
@@ -355,9 +328,67 @@ class _PsychologistEditProfileScreen
                           ),
                         ],
                       ),
+                      const Padding(padding: EdgeInsets.only(top: 20)),
+                      SizedBox(
+                        width: 150,
+                        height: 40,
+                        child: FilledButton(
+                          onPressed: () async {
+                            updateUser();
+                          },
+                          style: const ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll<Color>(Colors.blue)),
+                          child: const Text(
+                            'Salvar',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        ),
+                      )
                     ],
                   )
                 ],
               ));
+  }
+
+  fetchUser() async {
+    EasyLoading.show(status: 'Carregando...');
+    var fetchedUser = await userService.fetchUserByUserId("1");
+    if (fetchedUser != null) {
+      user = fetchedUser;
+      setState(() {
+        name.text = user?.name ?? "";
+        city.text = user?.city ?? "";
+        description.text = user?.description ?? "";
+        phone.text = user?.phone ?? "";
+      });
+    } else {
+      EasyLoading.showError('Failed to load data.');
+    }
+    EasyLoading.dismiss();
+  }
+
+  updateUser() async {
+    EasyLoading.show(status: 'Carregando...');
+
+    User userUptaded = User(
+      name: name.text,
+      city: city.text,
+      description: description.text,
+      phone: phone.text,
+      cpf: user?.cpf,
+      email: user?.email,
+      password: user?.password,
+    );
+    bool isUpdated = false;
+    await userService
+        .updateUserById("1", userUptaded)
+        .then((value) => isUpdated = true);
+
+    if (isUpdated) {
+      EasyLoading.showSuccess('Dados atualizados com sucesso!');
+    } else {
+      EasyLoading.showError('Tente novamente...');
+    }
   }
 }
