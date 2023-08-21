@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appointment_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
@@ -138,68 +139,74 @@ class _MedicalAppointmentClientScreenState
 
   Widget _buildAppointmentCard(
       MedicalAppointment appointment, UserProfile psychologist) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Text(
-                "Dr. ${psychologist.name}", // Adicionando "Dr." ao nome do psicólogo
-                style: const TextStyle(fontSize: 18, color: Colors.purple),
+    return GestureDetector(
+      onTap: () {
+        onTapCardAppointment(appointment);
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  "Dr. ${psychologist.name}", // Adicionando "Dr." ao nome do psicólogo
+                  style: const TextStyle(fontSize: 18, color: Colors.purple),
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_today, size: 24),
-                    const SizedBox(width: 8),
-                    Text(
-                      DateFormat('dd MMM').format(appointment.date),
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    appointment.status == AppointmentStatus.confirmed
-                        ? const Icon(Icons.check_circle,
-                            color: Colors.green, size: 24)
-                        : appointment.status == AppointmentStatus.pending
-                            ? const Icon(Icons.check_circle,
-                                color: Colors.yellow, size: 24)
-                            : const Icon(Icons.cancel,
-                                color: Colors.red, size: 24),
-                    const SizedBox(width: 8),
-                    Text(
-                      appointment.status.name,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Center(
-              child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // Centraliza horizontalmente
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.lock_clock), // Ícone de relógio
-                  const SizedBox(width: 8), // Espaço entre o ícone e o texto
-                  Text(
-                    _formatAppointmentTime(appointment.date),
-                    style: const TextStyle(fontSize: 16, color: Colors.purple),
+                  Row(
+                    children: [
+                      const Icon(Icons.calendar_today, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        DateFormat('dd MMM').format(appointment.date),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      appointment.status == AppointmentStatus.confirmed
+                          ? const Icon(Icons.check_circle,
+                              color: Colors.green, size: 24)
+                          : appointment.status == AppointmentStatus.pending
+                              ? const Icon(Icons.check_circle,
+                                  color: Colors.yellow, size: 24)
+                              : const Icon(Icons.cancel,
+                                  color: Colors.red, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        appointment.status.name,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            )
-          ],
+              const SizedBox(height: 10),
+              Center(
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center, // Centraliza horizontalmente
+                  children: [
+                    const Icon(Icons.lock_clock), // Ícone de relógio
+                    const SizedBox(width: 8), // Espaço entre o ícone e o texto
+                    Text(
+                      _formatAppointmentTime(appointment.date),
+                      style:
+                          const TextStyle(fontSize: 16, color: Colors.purple),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -224,5 +231,78 @@ class _MedicalAppointmentClientScreenState
     }
 
     return "$hour:${dateTime.minute.toString().padLeft(2, '0')} $period";
+  }
+
+  void onTapCardAppointment(MedicalAppointment appointment) {
+    showModalBottomSheet(
+      isScrollControlled: true, // Faz o modal ocupar toda a altura da tela
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "O que deseja?",
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purple),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // Lógica para obter a localização
+                      Navigator.pop(context); // Fecha o modal
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.pinkAccent),
+                    child: const Text(
+                      "Gerar Localização",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      cancelAppointment(appointment);
+                    },
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: const Text(
+                      "Cancelar Consulta",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void cancelAppointment(MedicalAppointment appointment) {
+    try {
+      EasyLoading.show(status: 'Cancelando...');
+
+      MedicalAppointment medicalAppointment = MedicalAppointment(
+          date: appointment.date,
+          status: AppointmentStatus.canceled,
+          appointmentType: appointment.appointmentType,
+          psychologistId: appointment.psychologistId,
+          clientId: appointment.clientId);
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 }
