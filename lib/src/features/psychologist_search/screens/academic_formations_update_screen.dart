@@ -286,7 +286,7 @@ class _AcademicFormationUpdateScreen
         psychologistId: academicFormation.psychologistId);
     await academicFormationsService
         .updateAcademicFormationById(
-            academicFormationUpdated.id as String, academicFormationUpdated)
+            academicFormation.id.toString(), academicFormationUpdated)
         .then((value) => isUpdated = true);
     if (isUpdated) {
       EasyLoading.showSuccess('Dados atualizados com sucesso!');
