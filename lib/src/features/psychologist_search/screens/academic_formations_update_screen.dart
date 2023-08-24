@@ -237,7 +237,7 @@ class _AcademicFormationUpdateScreen
                   height: 40,
                   child: FilledButton(
                     onPressed: () async {
-                      createAcademicFormation();
+                      updateAcademicFormation();
                     },
                     style: const ButtonStyle(
                         backgroundColor:
@@ -273,19 +273,20 @@ class _AcademicFormationUpdateScreen
     EasyLoading.dismiss();
   }
 
-  createAcademicFormation() async {
+  updateAcademicFormation() async {
     EasyLoading.show(status: 'Carregando...');
     bool isUpdated = false;
 
-    AcademicFormation academicFormation = AcademicFormation(
+    AcademicFormation academicFormationUpdated = AcademicFormation(
         institution: institution.text,
         course: course.text,
         description: description.text,
         endDate: selectedEndDate.toUtc(),
         startDate: selectedStartDate.toUtc(),
-        psychologistId: 1);
+        psychologistId: academicFormation.psychologistId);
     await academicFormationsService
-        .createAcademicFormation(academicFormation)
+        .updateAcademicFormationById(
+            academicFormationUpdated.id as String, academicFormationUpdated)
         .then((value) => isUpdated = true);
     if (isUpdated) {
       EasyLoading.showSuccess('Dados atualizados com sucesso!');
