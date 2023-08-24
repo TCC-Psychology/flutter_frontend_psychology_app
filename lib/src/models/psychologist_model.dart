@@ -15,10 +15,10 @@ class Psychologist {
   final List<TargetAudience>? targetAudience;
   final List<AcademicFormation>? academicFormations;
   @JsonKey(includeToJson: false)
-  final int? userId;
+  final String? userId;
 
-  @JsonKey(includeToJson: true)
-  final User? user;
+  @JsonKey(includeToJson: false)
+  final UserProfile? user;
 
   Psychologist({
     this.id,

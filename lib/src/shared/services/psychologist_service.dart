@@ -19,9 +19,6 @@ class PsychologistService {
 
       psychologistList =
           body.map((dynamic item) => Psychologist.fromJson(item)).toList();
-
-      print(res);
-      print(psychologistList);
     } catch (e) {
       print(e);
     }
@@ -36,30 +33,27 @@ class PsychologistService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
       );
+
       return Psychologist.fromJson(jsonDecode(res.body));
     } catch (e) {
-      Psychologist psychologist = Psychologist(
-        id: 1,
-        certificationNumber: '1',
-        userId: 1,
-      );
-      return psychologist;
+      print(e);
+      return null;
     }
   }
 
-  Future<String> updatePsychologistById(String id, Psychologist update) async {
+  Future<Psychologist?> fetchPsychologistByUserId(String userId) async {
     try {
-      final res = await http.patch(
-        Uri.parse('$uri/psychologist/$id'),
+      final res = await http.get(
+        Uri.parse('$uri/psychologist/findOneByUserId/$userId'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(update.toJson()),
       );
 
-      return res.body;
+      return Psychologist.fromJson(jsonDecode(res.body));
     } catch (e) {
-      return 'error';
+      print(e);
+      return null;
     }
   }
 }

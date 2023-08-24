@@ -15,10 +15,10 @@ Client _$ClientFromJson(Map<String, dynamic> json) => Client(
       fatherOccupation: json['fatherOccupation'] as String?,
       motherName: json['motherName'] as String?,
       motherOccupation: json['motherOccupation'] as String?,
-      userId: json['userId'] as int?,
+      userId: json['userId'] as String?,
       user: json['user'] == null
           ? null
-          : User.fromJson(json['user'] as Map<String, dynamic>),
+          : UserProfile.fromJson(json['user'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ClientToJson(Client instance) {

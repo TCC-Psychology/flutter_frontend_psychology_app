@@ -16,10 +16,10 @@ class Client {
   final String? motherOccupation;
 
   @JsonKey(includeToJson: false)
-  final User? user;
+  final UserProfile? user;
 
   @JsonKey(includeToJson: false)
-  final int? userId;
+  final String? userId;
 
   Client({
     this.id,
@@ -56,4 +56,27 @@ enum RelationshipStatus {
 
   @JsonValue('domesticPartnership')
   domesticPartnership,
+}
+
+String relationshipStatusToString(RelationshipStatus status) {
+  return status.toString().split('.').last;
+}
+
+RelationshipStatus getRelationshipStatusFromString(String status) {
+  switch (status) {
+    case 'single':
+      return RelationshipStatus.single;
+    case 'married':
+      return RelationshipStatus.married;
+    case 'divorced':
+      return RelationshipStatus.divorced;
+    case 'widowed':
+      return RelationshipStatus.widowed;
+    case 'separated':
+      return RelationshipStatus.separated;
+    case 'domesticPartnership':
+      return RelationshipStatus.domesticPartnership;
+    default:
+      return RelationshipStatus.single;
+  }
 }
