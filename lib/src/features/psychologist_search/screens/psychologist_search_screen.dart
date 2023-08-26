@@ -7,7 +7,7 @@ import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist
 
 import '../../../../main.dart';
 import '../../../shared/services/user.service.dart';
-import '../../medical-appointment/screens/medical-appointment_create.dart';
+import '../../medical-appointment/screens/medical_appointment_create.dart';
 
 class PsychologistSearchScreen extends StatefulWidget {
   const PsychologistSearchScreen({Key? key}) : super(key: key);
