@@ -49,6 +49,24 @@ class MedicalAppointmentService {
     }
   }
 
+  Future<int> editMedicalAppointment(
+      MedicalAppointment medicalAppointment, String id) async {
+    try {
+      final res = await http.patch(
+        Uri.parse('$uri/medical-appointment/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(medicalAppointment.toJson()),
+      );
+
+      return 1;
+    } catch (e) {
+      print(e);
+      return -1;
+    }
+  }
+
   Future<List<MedicalAppointment>>
       fetchMedicalAppointmentByAppointmentsStateList(String? psychologistId,
           String? clienteId, AppointmentStatus status) async {

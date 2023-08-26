@@ -287,7 +287,7 @@ class _MedicalAppointmentClientScreenState
     );
   }
 
-  void cancelAppointment(MedicalAppointment appointment) {
+  Future<void> cancelAppointment(MedicalAppointment appointment) async {
     try {
       EasyLoading.show(status: 'Cancelando...');
 
@@ -297,6 +297,12 @@ class _MedicalAppointmentClientScreenState
           appointmentType: appointment.appointmentType,
           psychologistId: appointment.psychologistId,
           clientId: appointment.clientId);
+
+      await medicalAppointmentService.editMedicalAppointment(
+          medicalAppointment, appointment.id.toString());
+      await fetchMedicalAppointments();
+      // ignore: use_build_context_synchronously
+      Navigator.pop(context);
     } catch (e) {
       EasyLoading.showError(
         'Erro inesperado, verifique sua conexão com a internet',
