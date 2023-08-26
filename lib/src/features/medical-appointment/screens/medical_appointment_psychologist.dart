@@ -4,30 +4,27 @@ import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appo
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:intl/intl.dart';
-
 import '../../../../main.dart';
-import '../../../models/client_model.dart';
 import '../../../models/medical_appointment_model.dart';
+import '../../../models/psychologist_model.dart';
 import '../../../models/user_model.dart';
-import '../../../shared/services/client_service.dart';
 
-class MedicalAppointmentClientScreen extends StatefulWidget {
+class MedicalAppointmentPsychologistScreen extends StatefulWidget {
   @override
-  _MedicalAppointmentClientScreenState createState() =>
-      _MedicalAppointmentClientScreenState();
+  _MedicalAppointmentPsychologistScreenState createState() =>
+      _MedicalAppointmentPsychologistScreenState();
 }
 
-class _MedicalAppointmentClientScreenState
-    extends State<MedicalAppointmentClientScreen> {
-  ClientService clientService = ClientService();
+class _MedicalAppointmentPsychologistScreenState
+    extends State<MedicalAppointmentPsychologistScreen> {
   PsychologistService psychologistService = PsychologistService();
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
   UserProfileService userProfileService = UserProfileService();
 
   List<MedicalAppointment> medicalAppointments = [];
-  List<UserProfile> psychologists = [];
-  Client? client;
+  List<UserProfile> clients = [];
+  Psychologist? psychologist;
   AppointmentStatus appointmentStatus = AppointmentStatus.confirmed;
 
   var userLogged = supabase.auth.currentUser!.id;
@@ -40,7 +37,8 @@ class _MedicalAppointmentClientScreenState
   }
 
   Future<void> loadPageUtilities() async {
-    client = await clientService.fetchClientByUserId(userLogged);
+    psychologist =
+        await psychologistService.fetchPsychologistByUserId(userLogged);
     await fetchMedicalAppointments();
     setState(() {});
   }
@@ -48,7 +46,7 @@ class _MedicalAppointmentClientScreenState
   Future<void> fetchMedicalAppointments() async {
     medicalAppointments = await medicalAppointmentService
         .fetchMedicalAppointmentByAppointmentsStateList(
-            null, client!.id!.toString(), appointmentStatus);
+            psychologist!.id!.toString(), null, appointmentStatus);
     medicalAppointments.sort((a, b) {
       int dateComparison = b.date.compareTo(a.date);
 
@@ -59,7 +57,7 @@ class _MedicalAppointmentClientScreenState
       }
     });
 
-    await loadPsychologists();
+    await loadClients();
     setState(() {});
   }
 
@@ -130,15 +128,15 @@ class _MedicalAppointmentClientScreenState
         itemCount: medicalAppointments.length,
         itemBuilder: (context, index) {
           final appointment = medicalAppointments[index];
-          final psychologist = psychologists[index];
-          return _buildAppointmentCard(appointment, psychologist);
+          final client = clients[index];
+          return _buildAppointmentCard(appointment, client);
         },
       ),
     );
   }
 
   Widget _buildAppointmentCard(
-      MedicalAppointment appointment, UserProfile psychologist) {
+      MedicalAppointment appointment, UserProfile client) {
     return GestureDetector(
       onTap: () {
         onTapCardAppointment(appointment);
@@ -152,7 +150,7 @@ class _MedicalAppointmentClientScreenState
             children: [
               Center(
                 child: Text(
-                  "Dr. ${psychologist.name}", // Adicionando "Dr." ao nome do psicólogo
+                  "Paciente ${client.name}",
                   style: const TextStyle(fontSize: 18, color: Colors.purple),
                 ),
               ),
@@ -192,11 +190,10 @@ class _MedicalAppointmentClientScreenState
               const SizedBox(height: 10),
               Center(
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // Centraliza horizontalmente
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.lock_clock), // Ícone de relógio
-                    const SizedBox(width: 8), // Espaço entre o ícone e o texto
+                    const Icon(Icons.lock_clock),
+                    const SizedBox(width: 8),
                     Text(
                       _formatAppointmentTime(appointment.date),
                       style:
@@ -212,11 +209,11 @@ class _MedicalAppointmentClientScreenState
     );
   }
 
-  Future<void> loadPsychologists() async {
+  Future<void> loadClients() async {
     for (var appointment in medicalAppointments) {
-      final psychologist = await userProfileService
-          .fetchUserByPsychologistId(appointment.psychologistId.toString());
-      psychologists.add(psychologist!);
+      final client = await userProfileService
+          .fetchUserByClientId(appointment.clientId.toString());
+      clients.add(client!);
     }
   }
 
@@ -235,7 +232,7 @@ class _MedicalAppointmentClientScreenState
 
   void onTapCardAppointment(MedicalAppointment appointment) {
     showModalBottomSheet(
-      isScrollControlled: true, // Faz o modal ocupar toda a altura da tela
+      isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
         return Container(
@@ -256,13 +253,12 @@ class _MedicalAppointmentClientScreenState
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // Lógica para obter a localização
-                      Navigator.pop(context); // Fecha o modal
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.pinkAccent),
                     child: const Text(
-                      "Gerar Localização",
+                      "Remarcar",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -301,7 +297,6 @@ class _MedicalAppointmentClientScreenState
       await medicalAppointmentService.editMedicalAppointment(
           medicalAppointment, appointment.id.toString());
       await fetchMedicalAppointments();
-      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } catch (e) {
       EasyLoading.showError(

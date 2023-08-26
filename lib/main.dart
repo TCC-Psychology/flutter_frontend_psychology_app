@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/login_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/medical-appointment/screens/medical-appointment.dart';
+import 'package:flutter_frontend_psychology_app/src/features/medical-appointment/screens/medical_appointment_psychologist.dart';
 import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -117,7 +118,8 @@ class HorizontalMenu extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => MedicalAppointmentClientScreen()),
+                    builder: (context) =>
+                        MedicalAppointmentPsychologistScreen()),
               );
             },
           ),
