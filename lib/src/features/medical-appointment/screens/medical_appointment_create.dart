@@ -1,18 +1,23 @@
 import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-
-import '../../../../main.dart';
 import '../../../models/medical_appointment_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/medical_appointment_service.dart';
 import '../../../shared/style/input_decoration.dart';
+import 'medical_appointment_client.dart';
+import 'medical_appointment_psychologist.dart';
 
 class MedicalAppointmentCreate extends StatefulWidget {
+  final String clientId;
   final String psychologistId;
+  final String? appointmentId;
 
-  const MedicalAppointmentCreate({required this.psychologistId});
+  const MedicalAppointmentCreate({
+    required this.psychologistId,
+    required this.clientId,
+    this.appointmentId,
+  });
 
   @override
   _MedicalAppointmentCreateState createState() =>
@@ -20,8 +25,6 @@ class MedicalAppointmentCreate extends StatefulWidget {
 }
 
 class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
-  var clientLogged = supabase.auth.currentUser!.id;
-
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
   ClientService clientService = ClientService();
@@ -223,19 +226,37 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
         _selectedTime!.hour,
         _selectedTime!.minute,
       );
-
-      var client = await clientService.fetchClientByUserId(clientLogged);
+      medicalAppointDate =
+          medicalAppointDate.subtract(const Duration(hours: 3));
 
       MedicalAppointment medicalAppointment = MedicalAppointment(
-          date: medicalAppointDate,
+          date: medicalAppointDate.toUtc(),
           status: AppointmentStatus.pending,
           appointmentType: appointmentType,
           psychologistId: int.parse(widget.psychologistId),
-          clientId: client!.id!);
+          clientId: int.parse(widget.clientId));
 
-      await medicalAppointmentService
-          .createMedicalAppointment(medicalAppointment);
       EasyLoading.showSuccess('Consulta marcada');
+      if (widget.appointmentId != null) {
+        medicalAppointment.status = AppointmentStatus.confirmed;
+        await medicalAppointmentService.editMedicalAppointment(
+            medicalAppointment, widget.appointmentId!);
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MedicalAppointmentPsychologistScreen()),
+        );
+      } else {
+        await medicalAppointmentService
+            .createMedicalAppointment(medicalAppointment);
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MedicalAppointmentClientScreen()),
+        );
+      }
     } catch (e) {
       // Handle potential errors
       EasyLoading.showError(

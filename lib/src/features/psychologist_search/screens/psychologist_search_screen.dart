@@ -6,6 +6,7 @@ import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 
 import '../../../../main.dart';
+import '../../../shared/services/client_service.dart';
 import '../../../shared/services/user.service.dart';
 import '../../medical-appointment/screens/medical_appointment_create.dart';
 
@@ -18,6 +19,7 @@ class PsychologistSearchScreen extends StatefulWidget {
 }
 
 class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
+  final ClientService clientService = ClientService();
   final PsychologistService psychologistService = PsychologistService();
   final UserProfileService userProfileService = UserProfileService();
   List<Psychologist> psychologists = [];
@@ -110,13 +112,18 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
               actions: [
                 IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: () {
-                    // Navigate to the medical appointment create page
+                  onPressed: () async {
+                    var client = await clientService
+                        .fetchClientByUserId(supabase.auth.currentUser!.id);
+                    // ignore: use_build_context_synchronously
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => MedicalAppointmentCreate(
-                              psychologistId: psychologist.id!.toString())),
+                                psychologistId: psychologist.id!.toString(),
+                                clientId: client!.id!.toString(),
+                                appointmentId: null,
+                              )),
                     );
                   },
                 ),

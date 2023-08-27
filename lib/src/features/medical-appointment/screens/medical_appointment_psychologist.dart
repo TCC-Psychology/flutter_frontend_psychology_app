@@ -8,6 +8,7 @@ import '../../../../main.dart';
 import '../../../models/medical_appointment_model.dart';
 import '../../../models/psychologist_model.dart';
 import '../../../models/user_model.dart';
+import 'medical_appointment_create.dart';
 
 class MedicalAppointmentPsychologistScreen extends StatefulWidget {
   @override
@@ -253,7 +254,8 @@ class _MedicalAppointmentPsychologistScreenState
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      rescheduleAppointment(appointment.clientId!,
+                          appointment.psychologistId!, appointment.id!);
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.pinkAccent),
@@ -305,5 +307,18 @@ class _MedicalAppointmentPsychologistScreenState
     } finally {
       EasyLoading.dismiss();
     }
+  }
+
+  void rescheduleAppointment(
+      int clientId, int psichologistId, int appointmentId) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => MedicalAppointmentCreate(
+                clientId: clientId.toString(),
+                psychologistId: psichologistId.toString(),
+                appointmentId: appointmentId.toString(),
+              )),
+    );
   }
 }
