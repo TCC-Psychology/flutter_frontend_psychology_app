@@ -6,6 +6,7 @@ import 'package:flutter_frontend_psychology_app/src/features/medical-appointment
 import 'package:flutter_frontend_psychology_app/src/features/medical-appointment/screens/medical_appointment_psychologist.dart';
 import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
+import 'package:flutter_frontend_psychology_app/src/features/triage/triage_create.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -46,7 +47,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       builder: EasyLoading.init(),
-      home: LoginScreen(),
+      home: ChatScreen(
+        medicalAppointmentId: '8',
+      ),
     );
   }
 }
