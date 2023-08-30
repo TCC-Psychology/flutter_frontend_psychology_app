@@ -8,7 +8,8 @@ import '../medical-appointment/screens/medical_appointment_client.dart';
 class TriageScreen extends StatefulWidget {
   final String medicalAppointmentId;
 
-  const TriageScreen({super.key, required this.medicalAppointmentId});
+  const TriageScreen({Key? key, required this.medicalAppointmentId})
+      : super(key: key);
 
   @override
   _TriageScreenState createState() => _TriageScreenState();
@@ -19,6 +20,7 @@ class _TriageScreenState extends State<TriageScreen> {
   List<ChatMessage> messages = [];
   TextEditingController messageController = TextEditingController();
   int currentQuestionIndex = 0;
+  bool isWaiting = false; // Track if waiting for 2 seconds
 
   String? chiefComplaint;
   String? triggeringFacts;
@@ -44,13 +46,19 @@ class _TriageScreenState extends State<TriageScreen> {
     });
   }
 
-  void processUserMessage(String messageText) {
+  Future<void> processUserMessage(String messageText) async {
+    if (isWaiting) return;
+
     if (chiefComplaint == null) {
       chiefComplaint = messageText;
     } else if (triggeringFacts == null) {
       triggeringFacts = messageText;
     } else if (messageText == '.') {
-      registrationTriage();
+      await registrationTriage();
+      setState(() {
+        isWaiting = false;
+      });
+      return;
     } else {
       currentSymptoms.add(messageText);
     }
@@ -59,10 +67,16 @@ class _TriageScreenState extends State<TriageScreen> {
     messageController.clear();
 
     if (currentQuestionIndex < questions.length) {
+      setState(() {
+        isWaiting = true;
+      });
       Future.delayed(const Duration(seconds: 2), () {
-        addMessage(
-            ChatMessage(text: questions[currentQuestionIndex], isUser: false));
-        currentQuestionIndex++;
+        setState(() {
+          addMessage(ChatMessage(
+              text: questions[currentQuestionIndex], isUser: false));
+          currentQuestionIndex++;
+          isWaiting = false;
+        });
       });
     }
   }
@@ -94,6 +108,7 @@ class _TriageScreenState extends State<TriageScreen> {
                     onChanged: (value) {
                       setState(() {});
                     },
+                    enabled: !isWaiting,
                     decoration: const InputDecoration(
                       hintText: 'Digite sua mensagem...',
                     ),
@@ -101,7 +116,7 @@ class _TriageScreenState extends State<TriageScreen> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),
-                  onPressed: messageController.text.isEmpty
+                  onPressed: (messageController.text.isEmpty || isWaiting)
                       ? null
                       : () {
                           processUserMessage(messageController.text);
@@ -130,7 +145,6 @@ class _TriageScreenState extends State<TriageScreen> {
 
       await triageService.createTriage(triage, widget.medicalAppointmentId);
 
-      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -150,7 +164,8 @@ class ChatMessage extends StatelessWidget {
   final String text;
   final bool isUser;
 
-  const ChatMessage({super.key, required this.text, required this.isUser});
+  const ChatMessage({Key? key, required this.text, required this.isUser})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

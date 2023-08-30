@@ -47,7 +47,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       builder: EasyLoading.init(),
-      home: const LoginScreen(),
+      home: TriageScreen(
+        medicalAppointmentId: '19',
+      ),
     );
   }
 }
