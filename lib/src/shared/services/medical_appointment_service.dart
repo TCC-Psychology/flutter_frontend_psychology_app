@@ -28,7 +28,7 @@ class MedicalAppointmentService {
     return medicalAppointmentList;
   }
 
-  Future<int> createMedicalAppointment(
+  Future<MedicalAppointment?> createMedicalAppointment(
       MedicalAppointment medicalAppointment) async {
     try {
       int? clientId = medicalAppointment.clientId;
@@ -42,10 +42,10 @@ class MedicalAppointmentService {
         body: jsonEncode(medicalAppointment.toJson()),
       );
 
-      return 1;
+      return MedicalAppointment.fromJson(jsonDecode(res.body));
     } catch (e) {
       print(e);
-      return -1;
+      return null;
     }
   }
 

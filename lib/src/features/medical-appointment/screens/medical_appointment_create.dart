@@ -5,6 +5,7 @@ import '../../../models/medical_appointment_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/medical_appointment_service.dart';
 import '../../../shared/style/input_decoration.dart';
+import '../../triage/triage_create.dart';
 import 'medical_appointment_client.dart';
 import 'medical_appointment_psychologist.dart';
 
@@ -226,6 +227,7 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
         _selectedTime!.hour,
         _selectedTime!.minute,
       );
+
       medicalAppointDate =
           medicalAppointDate.subtract(const Duration(hours: 3));
 
@@ -236,9 +238,10 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
           psychologistId: int.parse(widget.psychologistId),
           clientId: int.parse(widget.clientId));
 
-      EasyLoading.showSuccess('Consulta marcada');
       if (widget.appointmentId != null) {
+        print("Rermacando consulta");
         medicalAppointment.status = AppointmentStatus.confirmed;
+
         await medicalAppointmentService.editMedicalAppointment(
             medicalAppointment, widget.appointmentId!);
         // ignore: use_build_context_synchronously
@@ -248,14 +251,14 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
               builder: (context) => MedicalAppointmentPsychologistScreen()),
         );
       } else {
-        await medicalAppointmentService
+        var appointmentCreated = await medicalAppointmentService
             .createMedicalAppointment(medicalAppointment);
-        // ignore: use_build_context_synchronously
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MedicalAppointmentClientScreen()),
-        );
+
+        if (appointmentCreated == null) {
+          throw Error();
+        }
+
+        showTriageModal(appointmentCreated.id!);
       }
     } catch (e) {
       // Handle potential errors
@@ -265,5 +268,44 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
     } finally {
       EasyLoading.dismiss();
     }
+  }
+
+  void showTriageModal(int appointmentId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Triagem'),
+          content:
+              const Text('Você deseja fazer uma triagem para esta consulta?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TriageScreen(
+                            medicalAppointmentId: appointmentId.toString(),
+                          )),
+                );
+              },
+              child: const Text('Sim'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MedicalAppointmentClientScreen()),
+                );
+              },
+              child: const Text('Não'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

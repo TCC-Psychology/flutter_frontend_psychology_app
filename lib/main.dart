@@ -47,9 +47,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       builder: EasyLoading.init(),
-      home: ChatScreen(
-        medicalAppointmentId: '8',
-      ),
+      home: const LoginScreen(),
     );
   }
 }

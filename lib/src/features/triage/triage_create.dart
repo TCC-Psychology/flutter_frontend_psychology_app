@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/triage_service.dart';
 
 import '../../models/triage_model.dart';
+import '../medical-appointment/screens/medical_appointment_client.dart';
 
-class ChatScreen extends StatefulWidget {
+class TriageScreen extends StatefulWidget {
   final String medicalAppointmentId;
 
-  const ChatScreen({super.key, required this.medicalAppointmentId});
+  const TriageScreen({super.key, required this.medicalAppointmentId});
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _TriageScreenState createState() => _TriageScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _TriageScreenState extends State<TriageScreen> {
   TriageService triageService = TriageService();
   List<ChatMessage> messages = [];
   TextEditingController messageController = TextEditingController();
@@ -114,16 +116,33 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> registrationTriage() async {
-    Triage triage = Triage(
-      chiefComplaint: chiefComplaint!,
-      triggeringFacts: triggeringFacts!,
-      medicalAppointmentId: widget.medicalAppointmentId,
-      currentSymptoms: currentSymptoms.join(", "),
-      createdAt: DateTime.now().toUtc(),
-      updatedAt: DateTime.now().toUtc(),
-    );
+    try {
+      EasyLoading.show(status: 'Montando triagem');
 
-    await triageService.createTriage(triage, widget.medicalAppointmentId);
+      Triage triage = Triage(
+        chiefComplaint: chiefComplaint!,
+        triggeringFacts: triggeringFacts!,
+        medicalAppointmentId: widget.medicalAppointmentId,
+        currentSymptoms: currentSymptoms.join(", "),
+        createdAt: DateTime.now().toUtc(),
+        updatedAt: DateTime.now().toUtc(),
+      );
+
+      await triageService.createTriage(triage, widget.medicalAppointmentId);
+
+      // ignore: use_build_context_synchronously
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MedicalAppointmentClientScreen()),
+      );
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 }
 
