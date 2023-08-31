@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_frontend_psychology_app/constants/global_variables.dart';
+
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
-import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 
 import '../../../../main.dart';
+import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/user.service.dart';
 import '../../medical-appointment/screens/medical_appointment_create.dart';
@@ -23,70 +23,120 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   final PsychologistService psychologistService = PsychologistService();
   final UserProfileService userProfileService = UserProfileService();
   List<Psychologist> psychologists = [];
+  List<UserProfile> users = [];
 
   @override
   void initState() {
     super.initState();
-    fetchPsychologistList();
+
+    loadPageUtilities();
+  }
+
+  loadPageUtilities() async {
+    try {
+      EasyLoading.show(status: 'Procurando...');
+      await fetchPsychologistList();
+      await fetchUsersByPsychologist();
+
+      setState(() {});
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
+  }
+
+  fetchPsychologistList() async {
+    psychologists = [];
+    psychologists = await psychologistService.fetchPsychologistList();
+    EasyLoading.dismiss();
+  }
+
+  fetchUsersByPsychologist() async {
+    for (var psychologist in psychologists) {
+      var user = await userProfileService
+          .fetchUserByPsychologistId(psychologist.id.toString());
+
+      if (!users.any((item) => item.id == user!.id)) {
+        if (user != null) {
+          users.add(user);
+        } else {
+          EasyLoading.showError(
+            'Erro inesperado, reinicie o aplicativo.',
+          );
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
-      body: SafeArea(
-        child: psychologists.isEmpty
-            ? const Center(
-                child: Text('Nenhum psicólogo encontrado.'),
-              )
-            : ListView.builder(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 15),
+            const Text(
+              "Listagem de psicologos",
+              style: TextStyle(
+                color: Colors.purple,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (psychologists.isNotEmpty)
+              ListView.builder(
+                shrinkWrap: true,
                 itemCount: psychologists.length,
                 itemBuilder: (context, index) {
-                  return FutureBuilder<UserProfile?>(
-                    future: userProfileService.fetchUserByPsychologistId(
-                        psychologists[index].id!.toString()),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator(); // or any loading indicator
-                      }
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      }
-                      var psychologist = psychologists[index];
-                      var user = snapshot.data;
-                      return GestureDetector(
-                        onTap: () async {
-                          _openPsychologistModal(context, psychologist);
-                        },
-                        child: Card(
-                          // ... rest of your card widget
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('Nome: ${user!.name}'),
-                              // Text('Telefone: ${user.phone}'),
-                              Text('Localização: ${user.city}, ${user.state}'),
-                            ],
-                          ),
-                        ),
-                      );
+                  Psychologist psychologist = psychologists[index];
+                  UserProfile user =
+                      users.firstWhere((u) => u.id == psychologist.userId);
+
+                  return GestureDetector(
+                    onTap: () {
+                      _openPsychologistModal(context, psychologist);
                     },
+                    child: Card(
+                      margin: const EdgeInsets.all(16.0),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons
+                              .account_circle, // Placeholder icon, you can replace this
+                          size: 48.0,
+                        ),
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                                child: Text(
+                              user.name,
+                              style: const TextStyle(
+                                color: Colors.purple,
+                              ),
+                            )),
+                            Text('${user.city}, ${user.state}'),
+                            Text(user.phone),
+                            Text(
+                                'Certificate Number: ${psychologist.certificationNumber}'),
+                          ],
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
+            if (psychologists.isEmpty)
+              const Center(
+                child: Text('No psychologists found.'),
+              ),
+          ],
+        ),
       ),
       bottomNavigationBar: const HorizontalMenu(),
     );
-  }
-
-  fetchPsychologistList() async {
-    EasyLoading.show(status: 'Loading...');
-    var fetchedPsychologists =
-        await psychologistService.fetchPsychologistList();
-    psychologists = fetchedPsychologists;
-    setState(() {});
-    EasyLoading.dismiss();
   }
 
   Future<void> _openPsychologistModal(
