@@ -5,6 +5,7 @@ import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.da
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 
 import '../../../../main.dart';
+import '../../../models/academic_formation_model.dart';
 import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/user.service.dart';
@@ -24,6 +25,36 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   final UserProfileService userProfileService = UserProfileService();
   List<Psychologist> psychologists = [];
   List<UserProfile> users = [];
+
+  List<AcademicFormation> academicFormations = [
+    AcademicFormation(
+      institution: "University A",
+      course: "Psychology",
+      description: "Studied various aspects of psychology.",
+      startDate: DateTime(2018, 9, 1),
+      endDate: DateTime(2022, 6, 30),
+      psychologistId: 123,
+    ),
+    AcademicFormation(
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      institution: "College B",
+      course: "Counseling",
+      description: "Focused on counseling techniques.",
+      startDate: DateTime(2020, 3, 15),
+      endDate: DateTime(2021, 11, 20),
+    ),
+    AcademicFormation(
+      id: 3,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      institution: "University C",
+      course: "Clinical Psychology",
+      description: "Explored clinical psychology practices.",
+      startDate: DateTime(2017, 8, 10),
+      endDate: DateTime(2023, 5, 5),
+    ),
+  ];
 
   @override
   void initState() {
@@ -169,11 +200,12 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MedicalAppointmentCreate(
-                                psychologistId: psychologist.id!.toString(),
-                                clientId: client!.id!.toString(),
-                                appointmentId: null,
-                              )),
+                        builder: (context) => MedicalAppointmentCreate(
+                          psychologistId: psychologist.id!.toString(),
+                          clientId: client!.id!.toString(),
+                          appointmentId: null,
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -181,30 +213,51 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
             ),
             body: TabBarView(
               children: [
-                Center(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 16.0),
-                        Center(
-                          child: Text(user!.name,
-                              style: const TextStyle(fontSize: 20)),
+                        const Text(
+                          'Nome',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
                         ),
-                        Center(
-                          child: Text(
-                              'Número de Certificação: ${psychologist.certificationNumber ?? "N/A"}',
-                              style: const TextStyle(fontSize: 16)),
+                        Text(
+                          user!.name,
+                          style: const TextStyle(fontSize: 20),
                         ),
                         const SizedBox(height: 16.0),
-                        // Center(
-                        //   child: Text('Telefone: ${user.phone}',
-                        //       style: const TextStyle(fontSize: 16)),
-                        // ),
-                        const Center(child: SizedBox(height: 16.0)),
-                        Text('CPF: ${user.cpf}',
-                            style: const TextStyle(fontSize: 16)),
+                        const Text(
+                          'Número de Certificação',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
+                        ),
+                        Text(
+                          psychologist.certificationNumber ?? "N/A",
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 16.0),
+                        const Text(
+                          'CPF:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
+                        ),
+                        Text(
+                          user.cpf,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        // ... Outros campos do perfil
                       ],
                     ),
                   ),
@@ -213,40 +266,69 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Center(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 10),
-                        Center(
-                          child: Text('CEP: ${user.cep ?? "N/A"}',
-                              style: const TextStyle(fontSize: 16)),
+                        const Text(
+                          'CEP',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
+                        ),
+                        Text(
+                          user.cep ?? "N/A",
+                          style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(height: 10),
-                        Center(
-                          child: Text('Cidade: ${user.city ?? "N/A"}',
-                              style: const TextStyle(fontSize: 16)),
+                        const Text(
+                          'Cidade',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
+                        ),
+                        Text(
+                          user.city ?? "N/A",
+                          style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(height: 10),
-                        Text('Estado: ${user.state ?? "N/A"}',
-                            style: const TextStyle(fontSize: 16)),
-                        const SizedBox(height: 10),
+                        const Text(
+                          'Estado',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.purple,
+                          ),
+                        ),
+                        Text(
+                          user.state ?? "N/A",
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () {
                             // Lógica para obter rota quando o botão for pressionado
                             // Isso pode envolver integração com APIs de mapas, por exemplo
                             // Substitua este comentário com o código necessário
                           },
-                          child: const Text('Obter Rota',
-                              style: TextStyle(fontSize: 16)),
+                          child: const Text(
+                            'Obter Rota',
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SingleChildScrollView(
+                SingleChildScrollView(
                   padding: EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [],
+                    children: [
+                      // Conteúdo para a terceira TabBarView
+                    ],
                   ),
                 ),
               ],
