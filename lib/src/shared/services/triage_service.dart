@@ -20,4 +20,20 @@ class TriageService {
       return -1;
     }
   }
+
+  Future<Triage?> fetchTriageById(String id) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/triage/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      return Triage.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
 }
