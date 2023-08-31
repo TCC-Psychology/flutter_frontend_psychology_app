@@ -45,21 +45,30 @@ class _MedicalAppointmentPsychologistScreenState
   }
 
   Future<void> fetchMedicalAppointments() async {
-    medicalAppointments = await medicalAppointmentService
-        .fetchMedicalAppointmentByAppointmentsStateList(
-            psychologist!.id!.toString(), null, appointmentStatus);
-    medicalAppointments.sort((a, b) {
-      int dateComparison = b.date.compareTo(a.date);
+    try {
+      EasyLoading.show(status: 'Carregando...');
+      medicalAppointments = await medicalAppointmentService
+          .fetchMedicalAppointmentByAppointmentsStateList(
+              psychologist!.id!.toString(), null, appointmentStatus);
+      medicalAppointments.sort((a, b) {
+        int dateComparison = b.date.compareTo(a.date);
 
-      if (dateComparison != 0) {
-        return dateComparison;
-      } else {
-        return b.date.hour.compareTo(a.date.hour);
-      }
-    });
+        if (dateComparison != 0) {
+          return dateComparison;
+        } else {
+          return b.date.hour.compareTo(a.date.hour);
+        }
+      });
 
-    await loadClients();
-    setState(() {});
+      await loadClients();
+      setState(() {});
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 
   @override
@@ -265,19 +274,56 @@ class _MedicalAppointmentPsychologistScreenState
                     ),
                   ),
                   const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      cancelAppointment(appointment);
-                    },
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    child: const Text(
-                      "Cancelar",
-                      style: TextStyle(color: Colors.white),
+                  if (appointment.status != AppointmentStatus.canceled)
+                    ElevatedButton(
+                      onPressed: () {
+                        cancelAppointment(appointment);
+                      },
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: const Text(
+                        "Cancelar",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  )
+                  if (appointment.status != AppointmentStatus.pending &&
+                      appointment.status != AppointmentStatus.confirmed)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            confirmAppointment(appointment);
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green),
+                          child: const Text(
+                            "Confirmar",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
+              const SizedBox(height: 20),
+              if (appointment.status == AppointmentStatus.pending)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        confirmAppointment(appointment);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
+                      child: const Text(
+                        "Confirmar",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         );
@@ -292,6 +338,30 @@ class _MedicalAppointmentPsychologistScreenState
       MedicalAppointment medicalAppointment = MedicalAppointment(
           date: appointment.date,
           status: AppointmentStatus.canceled,
+          appointmentType: appointment.appointmentType,
+          psychologistId: appointment.psychologistId,
+          clientId: appointment.clientId);
+
+      await medicalAppointmentService.editMedicalAppointment(
+          medicalAppointment, appointment.id.toString());
+      await fetchMedicalAppointments();
+      Navigator.pop(context);
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
+  }
+
+  Future<void> confirmAppointment(MedicalAppointment appointment) async {
+    try {
+      EasyLoading.show(status: 'Confirmando');
+
+      MedicalAppointment medicalAppointment = MedicalAppointment(
+          date: appointment.date,
+          status: AppointmentStatus.confirmed,
           appointmentType: appointment.appointmentType,
           psychologistId: appointment.psychologistId,
           clientId: appointment.clientId);

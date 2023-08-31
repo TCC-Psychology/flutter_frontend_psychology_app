@@ -46,21 +46,31 @@ class _MedicalAppointmentClientScreenState
   }
 
   Future<void> fetchMedicalAppointments() async {
-    medicalAppointments = await medicalAppointmentService
-        .fetchMedicalAppointmentByAppointmentsStateList(
-            null, client!.id!.toString(), appointmentStatus);
-    medicalAppointments.sort((a, b) {
-      int dateComparison = b.date.compareTo(a.date);
+    try {
+      EasyLoading.show(status: 'Carregando...');
+      medicalAppointments = [];
+      medicalAppointments = await medicalAppointmentService
+          .fetchMedicalAppointmentByAppointmentsStateList(
+              null, client!.id!.toString(), appointmentStatus);
+      medicalAppointments.sort((a, b) {
+        int dateComparison = b.date.compareTo(a.date);
 
-      if (dateComparison != 0) {
-        return dateComparison;
-      } else {
-        return b.date.hour.compareTo(a.date.hour);
-      }
-    });
+        if (dateComparison != 0) {
+          return dateComparison;
+        } else {
+          return b.date.hour.compareTo(a.date.hour);
+        }
+      });
 
-    await loadPsychologists();
-    setState(() {});
+      await loadPsychologists();
+      setState(() {});
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 
   @override
@@ -213,6 +223,7 @@ class _MedicalAppointmentClientScreenState
   }
 
   Future<void> loadPsychologists() async {
+    psychologists = [];
     for (var appointment in medicalAppointments) {
       final psychologist = await userProfileService
           .fetchUserByPsychologistId(appointment.psychologistId.toString());

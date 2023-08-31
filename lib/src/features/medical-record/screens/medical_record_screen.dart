@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/models/client_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../../main.dart';
 import '../../../models/medical_appointment_model.dart';
 import '../../../models/medical_record_model.dart';
@@ -50,10 +48,19 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   }
 
   Future<void> loadPageUtilities() async {
-    await fetchMedicalAppointments();
-    await fetchUsersByClients();
+    try {
+      EasyLoading.show(status: 'Carregando...');
+      await fetchMedicalAppointments();
+      await fetchUsersByClients();
 
-    setState(() {});
+      setState(() {});
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 
   fetchMedicalAppointments() async {
@@ -69,13 +76,14 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
         in psychologistMedicalConsultation) {
       var user = await userProfileService
           .fetchUserByClientId(medicalAppointment.clientId.toString());
-
-      if (user != null) {
-        users.add(user);
-      } else {
-        EasyLoading.showError(
-          'Erro inesperado, entre em contato com os desenvolveores',
-        );
+      if (!users.any((item) => item.id == user!.id)) {
+        if (user != null) {
+          users.add(user);
+        } else {
+          EasyLoading.showError(
+            'Erro inesperado, entre em contato com os desenvolveores',
+          );
+        }
       }
     }
   }
@@ -253,10 +261,12 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Prontuário do Paciente',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
+                      const Center(
+                        child: Text(
+                          'Prontuário',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
                       ),
                       const SizedBox(height: 16.0),
                       const TabBar(
@@ -274,185 +284,195 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                           child: TabBarView(
                             children: [
                               SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Nome',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                child: Center(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        'Nome',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(user.name,
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'CPF',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(user.name,
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'CPF',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(user.cpf,
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Data de Nascimento',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(user.cpf,
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Data de Nascimento',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                        user.birthDate != null
-                                            ? user.birthDate.toString()
-                                            : '',
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Telefone',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(
+                                          user.birthDate != null
+                                              ? user.birthDate.toString()
+                                              : '',
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Telefone',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(user.phone,
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'E-mail',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
+                                      Text(user.phone,
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      // const Text(
+                                      //   'E-mail',
+                                      //   style: TextStyle(
+                                      //     fontSize: 18,
+                                      //     fontWeight: FontWeight.bold,
+                                      //   ),
+                                      // ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Tema',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                child: Center(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        'Tema',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(medicalRecord.theme,
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Objetivo',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(medicalRecord.theme,
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Objetivo',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(medicalRecord.objective,
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Evolução',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(medicalRecord.objective,
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Evolução',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(medicalRecord.evolutionRecord,
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Notas',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(medicalRecord.evolutionRecord,
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Notas',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(medicalRecord.notes ?? '',
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Humor',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(medicalRecord.notes ?? '',
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Humor',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    _getMoodIcon(int.parse(medicalRecord.mood)),
-                                  ],
+                                      _getMoodIcon(
+                                          int.parse(medicalRecord.mood)),
+                                    ],
+                                  ),
                                 ),
                               ),
                               SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Religião',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                child: Center(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        'Religião',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(client.religion ?? '',
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Estado Civil',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(client.religion ?? '',
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Estado Civil',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                        client.relationshipStatus != null
-                                            ? getReadableRelationshipStatus(
-                                                client.relationshipStatus)
-                                            : '',
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Nome do Pai',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(
+                                          client.relationshipStatus != null
+                                              ? getReadableRelationshipStatus(
+                                                  client.relationshipStatus)
+                                              : '',
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Nome do Pai',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(client.fatherName ?? '',
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Profissão do Pai',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(client.fatherName ?? '',
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Profissão do Pai',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(client.fatherOccupation ?? '',
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Nome da Mãe',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(client.fatherOccupation ?? '',
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Nome da Mãe',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(client.motherName ?? '',
-                                        style: const TextStyle(fontSize: 18)),
-                                    const SizedBox(height: 16.0),
-                                    const Text(
-                                      'Profissão da Mãe',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                      Text(client.motherName ?? '',
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Profissão da Mãe',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(client.motherOccupation ?? '',
-                                        style: const TextStyle(fontSize: 18)),
-                                  ],
+                                      Text(client.motherOccupation ?? '',
+                                          style: const TextStyle(fontSize: 18)),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],

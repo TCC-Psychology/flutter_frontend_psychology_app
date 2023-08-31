@@ -35,7 +35,10 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
   AppointmentType appointmentType = AppointmentType.online;
   DateTime? _selectedDate;
   DateTime? _selectedTime;
-
+  DateTime initValueCaleder = DateTime.now().weekday == DateTime.saturday &&
+          DateTime.now().weekday == DateTime.sunday
+      ? DateTime.now().subtract(Duration(days: 20))
+      : DateTime.now();
   @override
   void initState() {
     super.initState();
@@ -92,7 +95,7 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-    DateTime minSelectableDate = now.add(Duration(days: 2));
+    DateTime minSelectableDate = now.add(const Duration(days: 2));
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -134,8 +137,8 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
               ),
               const SizedBox(height: 10),
               CalendarDatePicker(
-                initialDate: minSelectableDate,
-                firstDate: minSelectableDate,
+                initialDate: initValueCaleder,
+                firstDate: initValueCaleder,
                 lastDate: DateTime(2100),
                 onDateChanged: _handleDateSelection,
                 selectableDayPredicate: (DateTime date) {
