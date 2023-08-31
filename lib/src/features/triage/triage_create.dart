@@ -25,6 +25,7 @@ class _TriageScreenState extends State<TriageScreen> {
   String? chiefComplaint;
   String? triggeringFacts;
   List<String> currentSymptoms = [];
+  bool isChatbotTyping = false;
 
   final List<String> questions = [
     "Olá, eu sou o PSICOLOGUINHO, e vou ajudar você a fazer a triagem para a consulta. \nPrimeiramente, qual é o motivo principal pela qual procura o atendimento?",
@@ -69,13 +70,16 @@ class _TriageScreenState extends State<TriageScreen> {
     if (currentQuestionIndex < questions.length) {
       setState(() {
         isWaiting = true;
-      });
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          addMessage(ChatMessage(
-              text: questions[currentQuestionIndex], isUser: false));
-          currentQuestionIndex++;
-          isWaiting = false;
+        isChatbotTyping = true; // Show typing indicator
+
+        Future.delayed(const Duration(seconds: 3), () {
+          setState(() {
+            isChatbotTyping = false; // Hide typing indicator
+            addMessage(ChatMessage(
+                text: questions[currentQuestionIndex], isUser: false));
+            currentQuestionIndex++;
+            isWaiting = false;
+          });
         });
       });
     }
@@ -84,11 +88,17 @@ class _TriageScreenState extends State<TriageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('Triagem Guiada')),
-      ),
       body: Column(
         children: [
+          const SizedBox(height: 15),
+          const Text(
+            "Triagem",
+            style: TextStyle(
+              color: Colors.purple,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               reverse: true,
@@ -96,6 +106,14 @@ class _TriageScreenState extends State<TriageScreen> {
               itemBuilder: (context, index) {
                 return messages[index];
               },
+            ),
+          ),
+          // Move the TypingIndicator widget outside the ListView.builder
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: isChatbotTyping ? TypingIndicator() : SizedBox.shrink(),
             ),
           ),
           Padding(
@@ -181,6 +199,33 @@ class ChatMessage extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(color: isUser ? Colors.white : Colors.black),
+        ),
+      ),
+    );
+  }
+}
+
+class TypingIndicator extends StatelessWidget {
+  const TypingIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 8,
+              height: 8,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+              ),
+            ),
+            SizedBox(width: 8),
+            Text('Digitando...'),
+          ],
         ),
       ),
     );
