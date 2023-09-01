@@ -94,9 +94,6 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    DateTime minSelectableDate = now.add(const Duration(days: 2));
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(

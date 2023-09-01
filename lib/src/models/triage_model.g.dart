@@ -21,7 +21,7 @@ Triage _$TriageFromJson(Map<String, dynamic> json) => Triage(
           ? null
           : MedicalAppointment.fromJson(
               json['medicalAppointments'] as Map<String, dynamic>),
-      medicalAppointmentId: json['medicalAppointmentId'] as String?,
+      medicalAppointmentId: json['medicalAppointmentId'] as int?,
     );
 
 Map<String, dynamic> _$TriageToJson(Triage instance) {

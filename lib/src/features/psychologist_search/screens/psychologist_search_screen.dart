@@ -159,10 +159,6 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                   );
                 },
               ),
-            if (psychologists.isEmpty)
-              const Center(
-                child: Text('No psychologists found.'),
-              ),
           ],
         ),
       ),
@@ -187,7 +183,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                 tabs: [
                   Tab(icon: Icon(Icons.person), text: 'Perfil'),
                   Tab(icon: Icon(Icons.location_on), text: 'Localização'),
-                  Tab(icon: Icon(Icons.tag), text: 'Tags'),
+                  Tab(icon: Icon(Icons.tag), text: 'Formações'),
                 ],
               ),
               actions: [

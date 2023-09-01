@@ -155,7 +155,7 @@ class _TriageScreenState extends State<TriageScreen> {
       Triage triage = Triage(
         chiefComplaint: chiefComplaint!,
         triggeringFacts: triggeringFacts!,
-        medicalAppointmentId: widget.medicalAppointmentId,
+        medicalAppointmentId: int.parse(widget.medicalAppointmentId),
         currentSymptoms: currentSymptoms.join(", "),
         createdAt: DateTime.now().toUtc(),
         updatedAt: DateTime.now().toUtc(),

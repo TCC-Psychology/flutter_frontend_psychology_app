@@ -295,21 +295,29 @@ class _MedicalAppointmentClientScreenState
                   )
                 ],
               ),
+              const SizedBox(height: 16),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () async {
                       var client = await clientService
-                          .fetchClientByUserId(appointment.clientId.toString());
+                          .fetchClientById(appointment.clientId.toString());
                       var user = await userProfileService
                           .fetchUserByClientId(client!.id!.toString());
                       var triage = await triageService
-                          .fetchTriageById(appointment.triage);
-                      _showMedicalRecordUserClientDetailed(
-                          context, user, client);
+                          .fetchTriageById(appointment.id.toString());
+                      if (triage != null) {
+                        // ignore: use_build_context_synchronously
+                        _showMedicalRecordUserClientDetailed(
+                            context, user!, client, triage);
+                      } else {
+                        await EasyLoading.showInfo('Consulta sem triagem!',
+                            duration: const Duration(seconds: 3));
+                      }
                     },
                     style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                        ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     child: const Text(
                       "Triagem",
                       style: TextStyle(color: Colors.white),
@@ -367,12 +375,12 @@ class _MedicalAppointmentClientScreenState
                     children: [
                       const Center(
                         child: Text(
-                          'Prontuário',
+                          'Triagem',
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 16),
                       const TabBar(
                         tabs: [
                           Tab(icon: Icon(Icons.person)),
@@ -436,13 +444,6 @@ class _MedicalAppointmentClientScreenState
                                       Text(user.phone,
                                           style: const TextStyle(fontSize: 18)),
                                       const SizedBox(height: 16.0),
-                                      // const Text(
-                                      //   'E-mail',
-                                      //   style: TextStyle(
-                                      //     fontSize: 18,
-                                      //     fontWeight: FontWeight.bold,
-                                      //   ),
-                                      // ),
                                     ],
                                   ),
                                 ),
@@ -453,46 +454,45 @@ class _MedicalAppointmentClientScreenState
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
+                                      const SizedBox(height: 10),
                                       const Text(
-                                        'Tema',
+                                        'Causa principal',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(medicalRecord.theme,
-                                          style: const TextStyle(fontSize: 18)),
+                                      Center(
+                                        child: Text(triage.chiefComplaint,
+                                            style:
+                                                const TextStyle(fontSize: 18)),
+                                      ),
                                       const SizedBox(height: 16.0),
                                       const Text(
-                                        'Objetivo',
+                                        'Fatores',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(medicalRecord.objective,
-                                          style: const TextStyle(fontSize: 18)),
+                                      Center(
+                                        child: Text(triage.triggeringFacts,
+                                            style:
+                                                const TextStyle(fontSize: 18)),
+                                      ),
                                       const SizedBox(height: 16.0),
                                       const Text(
-                                        'Evolução',
+                                        'Sintomas',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(medicalRecord.evolutionRecord,
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Notas',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      Center(
+                                        child: Text(triage.currentSymptoms,
+                                            style:
+                                                const TextStyle(fontSize: 18)),
                                       ),
-                                      Text(medicalRecord.notes ?? '',
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
                                     ],
                                   ),
                                 ),

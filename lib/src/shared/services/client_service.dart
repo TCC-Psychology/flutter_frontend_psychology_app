@@ -19,4 +19,19 @@ class ClientService {
       return null;
     }
   }
+
+  Future<Client?> fetchClientById(String id) async {
+    try {
+      final res = await http.get(
+        Uri.parse('$uri/clients/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      return Client.fromJson(jsonDecode(res.body));
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
 }
