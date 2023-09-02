@@ -137,4 +137,20 @@ class UserProfileService {
     }
     return null;
   }
+
+  Future<String> updateUserById(String id, UserProfile update) async {
+    try {
+      final res = await http.patch(
+        Uri.parse('$uri/users/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(update.toJson()),
+      );
+
+      return res.body;
+    } catch (e) {
+      return 'error';
+    }
+  }
 }
