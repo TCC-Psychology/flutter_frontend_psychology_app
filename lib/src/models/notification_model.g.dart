@@ -15,7 +15,7 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
           ? null
           : DateTime.parse(json['updatedAt'] as String),
       description: json['description'] as String,
-      viewed: json['viewed'] as bool,
+      viewed: json['viewed'] as bool? ?? false,
       client: json['client'] == null
           ? null
           : Client.fromJson(json['client'] as Map<String, dynamic>),

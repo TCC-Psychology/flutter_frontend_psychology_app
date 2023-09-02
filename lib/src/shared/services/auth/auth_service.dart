@@ -1,20 +1,35 @@
+import 'package:flutter_frontend_psychology_app/constants/global_variables.dart';
 import 'package:flutter_frontend_psychology_app/main.dart';
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/models/user_model.dart';
 import 'package:flutter_frontend_psychology_app/src/models/client_model.dart'
     as my_models;
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_models.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/auth/secure_storage_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/utils/user_type.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   UserProfileService userProfileService = UserProfileService();
+  final SecureStorageService _storageService = SecureStorageService();
+
+  Future<bool> isAuthenticated() async {
+    final token = await _storageService.getToken();
+    if (token != null && token.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
 
   Future<String?> signIn(SignInData data) async {
     try {
-      await supabase.auth
+      final response = await supabase.auth
           .signInWithPassword(password: data.password, email: data.email);
+
+      if (response.session != null) {
+        await _storageService.storeToken(response.session!.accessToken);
+      }
     } on AuthException catch (error) {
       return error.message;
     } catch (error) {

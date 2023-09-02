@@ -16,7 +16,7 @@ class Notification {
   final DateTime? updatedAt;
 
   final String description;
-  final bool viewed;
+  bool viewed;
 
   @JsonKey(includeToJson: false)
   final Client? client;
@@ -35,7 +35,7 @@ class Notification {
     this.createdAt,
     this.updatedAt,
     required this.description,
-    required this.viewed,
+    this.viewed = false,
     this.client,
     this.clientId,
     this.psychologist,
