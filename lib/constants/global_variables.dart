@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 String uri = 'http://localhost:3000';
 //use http://10.0.2.2:3000 for android emulator
 //use http://localhost:3000 for browser
+String CONTENT_TYPE = 'application/json; charset=UTF-8';
 
 Color text = _hexToColor('#040401');
 Color background = _hexToColor('#f7f7e7');
