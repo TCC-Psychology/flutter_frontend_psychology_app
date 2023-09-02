@@ -100,7 +100,6 @@ class _MedicalAppointmentClientScreenState
           _buildMedicalAppointmentsList(),
         ],
       ),
-      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 

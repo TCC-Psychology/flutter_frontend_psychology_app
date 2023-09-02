@@ -134,7 +134,6 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 

@@ -145,7 +145,6 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 

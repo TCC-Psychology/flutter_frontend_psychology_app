@@ -386,7 +386,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           ),
         ),
       ),
-      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 

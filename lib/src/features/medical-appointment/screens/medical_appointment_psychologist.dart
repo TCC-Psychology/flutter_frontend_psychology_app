@@ -102,7 +102,6 @@ class _MedicalAppointmentPsychologistScreenState
           _buildMedicalAppointmentsList(),
         ],
       ),
-      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 
