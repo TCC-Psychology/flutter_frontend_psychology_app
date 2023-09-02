@@ -22,6 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
 
   final AuthService authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    isAuthenticated();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,6 +127,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } finally {
       EasyLoading.dismiss();
+    }
+  }
+
+  isAuthenticated() async {
+    final alreadyAuthenticated = await authService.isAuthenticated();
+    if (alreadyAuthenticated) {
+      navigateToPsychologistSearchScreen();
     }
   }
 
