@@ -35,10 +35,11 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
   AppointmentType appointmentType = AppointmentType.online;
   DateTime? _selectedDate;
   DateTime? _selectedTime;
-  DateTime initValueCaleder = DateTime.now().weekday == DateTime.saturday &&
+  DateTime initValueCaleder = DateTime.now().weekday == DateTime.saturday ||
           DateTime.now().weekday == DateTime.sunday
-      ? DateTime.now().subtract(Duration(days: 20))
+      ? DateTime.now().subtract(Duration(days: 2))
       : DateTime.now();
+
   @override
   void initState() {
     super.initState();

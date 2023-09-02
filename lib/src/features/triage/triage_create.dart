@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/triage_service.dart';
-
 import '../../models/triage_model.dart';
 import '../medical-appointment/screens/medical_appointment_client.dart';
 
@@ -20,7 +19,7 @@ class _TriageScreenState extends State<TriageScreen> {
   List<ChatMessage> messages = [];
   TextEditingController messageController = TextEditingController();
   int currentQuestionIndex = 0;
-  bool isWaiting = false; // Track if waiting for 2 seconds
+  bool isWaiting = false;
 
   String? chiefComplaint;
   String? triggeringFacts;
@@ -70,11 +69,11 @@ class _TriageScreenState extends State<TriageScreen> {
     if (currentQuestionIndex < questions.length) {
       setState(() {
         isWaiting = true;
-        isChatbotTyping = true; // Show typing indicator
+        isChatbotTyping = true;
 
         Future.delayed(const Duration(seconds: 3), () {
           setState(() {
-            isChatbotTyping = false; // Hide typing indicator
+            isChatbotTyping = false;
             addMessage(ChatMessage(
                 text: questions[currentQuestionIndex], isUser: false));
             currentQuestionIndex++;
@@ -108,12 +107,13 @@ class _TriageScreenState extends State<TriageScreen> {
               },
             ),
           ),
-          // Move the TypingIndicator widget outside the ListView.builder
           Align(
             alignment: Alignment.bottomLeft,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: isChatbotTyping ? TypingIndicator() : SizedBox.shrink(),
+              child: isChatbotTyping
+                  ? const TypingIndicator()
+                  : const SizedBox.shrink(),
             ),
           ),
           Padding(
@@ -163,6 +163,7 @@ class _TriageScreenState extends State<TriageScreen> {
 
       await triageService.createTriage(triage, widget.medicalAppointmentId);
 
+      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
         MaterialPageRoute(

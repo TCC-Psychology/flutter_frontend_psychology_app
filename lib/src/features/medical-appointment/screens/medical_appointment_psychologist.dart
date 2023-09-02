@@ -5,15 +5,13 @@ import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:intl/intl.dart';
 import '../../../../main.dart';
-import '../../../models/client_model.dart';
 import '../../../models/medical_appointment_model.dart';
 import '../../../models/psychologist_model.dart';
-import '../../../models/triage_model.dart';
 import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/triage_service.dart';
-import '../../../shared/utils/relationsship_type.dart';
 import 'medical_appointment_create.dart';
+import 'medical_appointment_triage_show.dart';
 
 class MedicalAppointmentPsychologistScreen extends StatefulWidget {
   @override
@@ -27,14 +25,12 @@ class _MedicalAppointmentPsychologistScreenState
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
   UserProfileService userProfileService = UserProfileService();
-
   List<MedicalAppointment> medicalAppointments = [];
   List<UserProfile> clients = [];
   Psychologist? psychologist;
   AppointmentStatus appointmentStatus = AppointmentStatus.confirmed;
   ClientService clientService = ClientService();
   TriageService triageService = TriageService();
-
   var userLogged = supabase.auth.currentUser!.id;
 
   @override
@@ -57,6 +53,7 @@ class _MedicalAppointmentPsychologistScreenState
       medicalAppointments = await medicalAppointmentService
           .fetchMedicalAppointmentByAppointmentsStateList(
               psychologist!.id!.toString(), null, appointmentStatus);
+
       medicalAppointments.sort((a, b) {
         int dateComparison = b.date.compareTo(a.date);
 
@@ -75,6 +72,14 @@ class _MedicalAppointmentPsychologistScreenState
       );
     } finally {
       EasyLoading.dismiss();
+    }
+  }
+
+  Future<void> loadClients() async {
+    for (var appointment in medicalAppointments) {
+      final client = await userProfileService
+          .fetchUserByClientId(appointment.clientId.toString());
+      clients.add(client!);
     }
   }
 
@@ -226,14 +231,6 @@ class _MedicalAppointmentPsychologistScreenState
     );
   }
 
-  Future<void> loadClients() async {
-    for (var appointment in medicalAppointments) {
-      final client = await userProfileService
-          .fetchUserByClientId(appointment.clientId.toString());
-      clients.add(client!);
-    }
-  }
-
   String _formatAppointmentTime(DateTime dateTime) {
     int hour = dateTime.hour;
     String period = hour < 12 ? "AM" : "PM";
@@ -340,8 +337,7 @@ class _MedicalAppointmentPsychologistScreenState
                           .fetchTriageById(appointment.id.toString());
                       if (triage != null) {
                         // ignore: use_build_context_synchronously
-                        _showMedicalRecordUserClientDetailed(
-                            context, user!, client, triage);
+                        ShowTriage.show(context, user!, client, triage);
                       } else {
                         await EasyLoading.showInfo('Consulta sem triagem!',
                             duration: const Duration(seconds: 3));
@@ -421,234 +417,6 @@ class _MedicalAppointmentPsychologistScreenState
                 psychologistId: psichologistId.toString(),
                 appointmentId: appointmentId.toString(),
               )),
-    );
-  }
-
-  void _showMedicalRecordUserClientDetailed(
-      BuildContext context, UserProfile user, Client client, Triage triage) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Center(
-          child: Dialog(
-            child: SingleChildScrollView(
-              child: DefaultTabController(
-                length: 3,
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Center(
-                        child: Text(
-                          'Triagem',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const TabBar(
-                        tabs: [
-                          Tab(icon: Icon(Icons.person)),
-                          Tab(icon: Icon(Icons.task)),
-                          Tab(icon: Icon(Icons.info)),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
-                      SingleChildScrollView(
-                        child: Container(
-                          //aqui
-                          height: 400,
-                          child: TabBarView(
-                            children: [
-                              SingleChildScrollView(
-                                child: Center(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      const Text(
-                                        'Nome',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(user.name,
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'CPF',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(user.cpf,
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Data de Nascimento',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                          user.birthDate != null
-                                              ? user.birthDate.toString()
-                                              : '',
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Telefone',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(user.phone,
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SingleChildScrollView(
-                                child: Center(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      const SizedBox(height: 10),
-                                      const Text(
-                                        'Causa principal',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Center(
-                                        child: Text(triage.chiefComplaint,
-                                            style:
-                                                const TextStyle(fontSize: 18)),
-                                      ),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Fatores',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Center(
-                                        child: Text(triage.triggeringFacts,
-                                            style:
-                                                const TextStyle(fontSize: 18)),
-                                      ),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Sintomas',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Center(
-                                        child: Text(triage.currentSymptoms,
-                                            style:
-                                                const TextStyle(fontSize: 18)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SingleChildScrollView(
-                                child: Center(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      const Text(
-                                        'Religião',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(client.religion ?? '',
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Estado Civil',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                          client.relationshipStatus != null
-                                              ? getReadableRelationshipStatus(
-                                                  client.relationshipStatus)
-                                              : '',
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Nome do Pai',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(client.fatherName ?? '',
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Profissão do Pai',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(client.fatherOccupation ?? '',
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Nome da Mãe',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(client.motherName ?? '',
-                                          style: const TextStyle(fontSize: 18)),
-                                      const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Profissão da Mãe',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(client.motherOccupation ?? '',
-                                          style: const TextStyle(fontSize: 18)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

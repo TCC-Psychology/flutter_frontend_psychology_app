@@ -25,36 +25,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   final UserProfileService userProfileService = UserProfileService();
   List<Psychologist> psychologists = [];
   List<UserProfile> users = [];
-
-  List<AcademicFormation> academicFormations = [
-    AcademicFormation(
-      institution: "University A",
-      course: "Psychology",
-      description: "Studied various aspects of psychology.",
-      startDate: DateTime(2018, 9, 1),
-      endDate: DateTime(2022, 6, 30),
-      psychologistId: 123,
-    ),
-    AcademicFormation(
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      institution: "College B",
-      course: "Counseling",
-      description: "Focused on counseling techniques.",
-      startDate: DateTime(2020, 3, 15),
-      endDate: DateTime(2021, 11, 20),
-    ),
-    AcademicFormation(
-      id: 3,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      institution: "University C",
-      course: "Clinical Psychology",
-      description: "Explored clinical psychology practices.",
-      startDate: DateTime(2017, 8, 10),
-      endDate: DateTime(2023, 5, 5),
-    ),
-  ];
+  //I was using this academic information to test, then I created a fictitious data, when Fabio comes up I fix it
+  List<AcademicFormation> academicFormations = [];
 
   @override
   void initState() {
