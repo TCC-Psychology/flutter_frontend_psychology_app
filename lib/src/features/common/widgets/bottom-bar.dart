@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
+import 'package:flutter_frontend_psychology_app/src/features/menu/screens/menu-screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/notification/screens/notification_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
 
@@ -19,6 +20,7 @@ class _BottomBarState extends State<BottomBar> {
     const PsychologistSearchScreen(),
     const MedicalRecordScreen(),
     const NotificationScreen(),
+    MenuScreen()
   ];
 
   void updatePage(int page) {
@@ -50,7 +52,11 @@ class _BottomBarState extends State<BottomBar> {
             icon: Icon(Icons.notifications_outlined),
             selectedIcon: Icon(Icons.notifications),
             label: 'Notificações',
-          )
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.more_vert), // Three dots icon
+            label: 'Mais', // or another suitable label
+          ),
         ],
       ),
     );
