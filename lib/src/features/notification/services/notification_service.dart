@@ -15,7 +15,7 @@ class NotificationService {
       final res = await http.post(
         Uri.parse('$uri/notifications'),
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
+          'Content-Type': CONTENT_TYPE,
         },
         body: json.encode(notificationFilter.toJson()),
       );
@@ -28,5 +28,31 @@ class NotificationService {
     }
 
     return notificationList;
+  }
+
+  Future<Notification> editNotification(Notification notification) async {
+    try {
+      final Uri endpoint = Uri.parse('$uri/notifications/${notification.id}');
+      final http.Response res = await http.patch(
+        endpoint,
+        headers: {
+          'Content-Type': CONTENT_TYPE,
+        },
+        body: jsonEncode(notification.toJson()),
+      );
+
+      if (res.statusCode != 200) {
+        throw Exception(
+          'Failed to edit notification with status: ${res.statusCode}',
+        );
+      }
+
+      return Notification.fromJson(jsonDecode(res.body));
+    } catch (error) {
+      print(error);
+      throw Exception(
+        'Failed to edit notification',
+      );
+    }
   }
 }

@@ -27,7 +27,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.initState();
     int clientId = 1;
     int psychologistId = 1;
-    fetchPsychologistList(clientId, null);
+    fetchNotificationList(clientId, null);
   }
 
   @override
@@ -62,7 +62,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       : const Icon(Icons.notifications),
                   onTap: () {
                     setState(() {
-                      notification.viewed = true;
+                      updateNotification(notification);
                     });
                   },
                 );
@@ -71,7 +71,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  fetchPsychologistList(int? clientId, int? psychologistId) async {
+  fetchNotificationList(int? clientId, int? psychologistId) async {
     EasyLoading.show(status: 'Loading...');
 
     final NotificationFilter notificationFilter =
@@ -83,5 +83,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
     setState(() {});
 
     EasyLoading.dismiss();
+  }
+
+  updateNotification(models.Notification notification) {
+    if (!notification.viewed) {
+      notification.viewed = true;
+      notificationService.editNotification(notification);
+    }
   }
 }
