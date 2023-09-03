@@ -23,7 +23,7 @@ class Triage {
   final MedicalAppointment? medicalAppointments;
 
   @JsonKey(includeToJson: false)
-  final String? medicalAppointmentId;
+  final int? medicalAppointmentId;
 
   Triage({
     this.id,
