@@ -34,4 +34,23 @@ class ClientService {
       return null;
     }
   }
+
+  Future<int> editClient(Client client, int id) async {
+    try {
+      final res = await http.patch(
+        Uri.parse('$uri/clients/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(client.toJson()),
+      );
+      if (res.statusCode == 200) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } catch (e) {
+      return -1;
+    }
+  }
 }
