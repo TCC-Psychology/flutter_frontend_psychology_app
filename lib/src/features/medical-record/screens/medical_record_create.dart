@@ -91,10 +91,19 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   }
 
   Future<void> loadPageUtilities() async {
-    await fetchMedicalAppointments();
-    await fetchUsersByClients();
+    try {
+      EasyLoading.show(status: 'Carregando...');
+      await fetchMedicalAppointments();
+      await fetchUsersByClients();
 
-    setState(() {});
+      setState(() {});
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 
   fetchMedicalAppointments() async {
@@ -112,12 +121,14 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       var user = await userProfileService
           .fetchUserByClientId(medicalAppointment.clientId.toString());
 
-      if (user != null) {
-        users.add(user);
-      } else {
-        EasyLoading.showError(
-          'Erro inesperado, reinicie o aplicativo.',
-        );
+      if (!users.any((item) => item.id == user!.id)) {
+        if (user != null) {
+          users.add(user);
+        } else {
+          EasyLoading.showError(
+            'Erro inesperado, reinicie o aplicativo.',
+          );
+        }
       }
     }
   }
@@ -375,7 +386,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           ),
         ),
       ),
-      bottomNavigationBar: const HorizontalMenu(),
     );
   }
 

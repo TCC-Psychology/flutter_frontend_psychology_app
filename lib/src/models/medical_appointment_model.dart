@@ -18,9 +18,9 @@ class MedicalAppointment {
   final DateTime? updatedAt;
 
   final DateTime date;
-  final AppointmentStatus status;
+  AppointmentStatus status;
   final AppointmentType appointmentType;
-  
+
   @JsonKey(includeToJson: false)
   final Triage? triage;
 

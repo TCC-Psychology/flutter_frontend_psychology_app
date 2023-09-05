@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/register_screen.dart';
-import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
-import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
+import 'package:flutter_frontend_psychology_app/src/features/common/widgets/bottom-bar.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_models.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
 
@@ -22,6 +21,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
 
   final AuthService authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    isAuthenticated();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,9 +100,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void handleLogin() async {
-    if (!_key.currentState!.validate()) {
-      return;
-    }
+    if (!_key.currentState!.validate()) return;
+
     String email = emailController.text.trim();
     String password = passwordController.text;
 
@@ -104,29 +109,39 @@ class _LoginScreenState extends State<LoginScreen> {
       email: email,
       password: password,
     );
+
+    String? error;
     try {
-      String? error = await authService.signIn(data);
-
-      setState(() {
-        loginErrorMessage = error;
-      });
-
-      if (error == null) {
-        navigateToPsychologistSearchScreen();
-      }
+      error = await authService.signIn(data);
     } catch (e) {
       EasyLoading.showError(
         'Erro inesperado, verifique sua conexão com a internet',
       );
+      return;
     } finally {
       EasyLoading.dismiss();
     }
+
+    setState(() {
+      loginErrorMessage = error;
+    });
+
+    if (error == null) {
+      navigateToInitialPageWithBottomBar();
+    }
   }
 
-  void navigateToPsychologistSearchScreen() {
-    Navigator.push(
+  isAuthenticated() async {
+    final alreadyAuthenticated = await authService.isAuthenticated();
+    if (alreadyAuthenticated) {
+      navigateToInitialPageWithBottomBar();
+    }
+  }
+
+  void navigateToInitialPageWithBottomBar() {
+    Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const PsychologistSearchScreen()),
+      MaterialPageRoute(builder: (context) => const BottomBar()),
     );
   }
 }
