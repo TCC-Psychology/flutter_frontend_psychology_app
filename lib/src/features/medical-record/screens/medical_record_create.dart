@@ -852,7 +852,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
     try {
       EasyLoading.show(status: 'Carregando...');
       String? userClientId = await authService.signUp(signUpData, false);
-      if (userClientId != null) {
+      if (userClientId == null) {
         EasyLoading.showSuccess(
           'Paciente cadastrado!',
         );

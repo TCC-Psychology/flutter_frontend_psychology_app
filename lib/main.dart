@@ -14,7 +14,7 @@ Future<void> main() async {
     ..displayDuration = const Duration(milliseconds: 2000)
     ..indicatorType = EasyLoadingIndicatorType.ring
     ..loadingStyle = EasyLoadingStyle.custom
-    ..indicatorSize = 50.0
+    ..indicatorSize = 50.0  
     ..radius = 10.0
     ..progressColor = Colors.black
     ..backgroundColor = Colors.cyan.shade100
