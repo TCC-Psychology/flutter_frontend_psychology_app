@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_frontend_psychology_app/constants/global_variables.dart';
 import 'package:flutter_frontend_psychology_app/main.dart';
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_frontend_psychology_app/src/shared/services/auth/secure_
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/utils/user_type.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class AuthService {
   UserProfileService userProfileService = UserProfileService();
@@ -38,6 +41,35 @@ class AuthService {
     return null;
   }
 
+  Future<AuthResponse> signUpOnBackend(String email, String password) async {
+    try {
+      final Uri endpoint = Uri.parse('$uri/auth/signUp');
+      final http.Response res = await http.post(
+        endpoint,
+        headers: {
+          'Content-Type': CONTENT_TYPE,
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (res.statusCode != 201) {
+        throw Exception(
+          'Failed to signUp with status: ${res.statusCode}',
+        );
+      }
+
+      return AuthResponse.fromJson(jsonDecode(res.body));
+    } catch (error) {
+      print(error);
+      throw Exception(
+        'Failed to signUp',
+      );
+    }
+  }
+
   Future<User?> getUserById(String id) async {
     try {
       var data = await supabase.auth.admin.getUserById(id);
@@ -47,7 +79,7 @@ class AuthService {
     }
   }
 
-  Future<String?> signUp(SignUpData data) async {
+  Future<String?> signUp(SignUpData data, bool shouldStoreSessionToken) async {
     if (await _userWithCpfExists(data.cpf)) {
       return 'Erro de registro. Verifique seus detalhes e tente novamente.';
     }
@@ -55,6 +87,7 @@ class AuthService {
     final signUpResult = await _registerWithSupabase(
       data.email,
       data.password,
+      shouldStoreSessionToken,
     );
 
     if (signUpResult != null) {
@@ -119,13 +152,22 @@ class AuthService {
     return null; // Successful data insertion
   }
 
-  Future<String?> _registerWithSupabase(String email, String password) async {
+  Future<String?> _registerWithSupabase(
+      String email, String password, bool shouldStoreSessionToken) async {
     try {
-      var x = await supabase.auth.signUp(
-        password: password,
-        email: email,
-      );
-      print(x);
+      AuthResponse response = AuthResponse();
+      if (shouldStoreSessionToken) {
+        response = await supabase.auth.signUp(
+          password: password,
+          email: email,
+        );
+      }
+
+      if (!shouldStoreSessionToken) {
+        response = await signUpOnBackend(email, password);
+      }
+
+      print(response);
       return null;
     } on AuthException catch (error) {
       return error.message;

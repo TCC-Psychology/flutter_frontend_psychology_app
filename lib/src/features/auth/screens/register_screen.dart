@@ -251,7 +251,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       EasyLoading.show(status: 'Carregando...');
-      String? error = await authService.signUp(signUpData);
+      String? error = await authService.signUp(signUpData, true);
 
       setState(() {
         registerErrorMessage = error;
