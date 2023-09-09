@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/academic_formation_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 
 import '../../../../main.dart';
@@ -9,6 +10,7 @@ import '../../../models/academic_formation_model.dart';
 import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/user.service.dart';
+import '../../../shared/utils/input_formatter_util.dart.dart';
 import '../../medical-appointment/screens/medical_appointment_create.dart';
 
 class PsychologistSearchScreen extends StatefulWidget {
@@ -23,6 +25,9 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   final ClientService clientService = ClientService();
   final PsychologistService psychologistService = PsychologistService();
   final UserProfileService userProfileService = UserProfileService();
+  final AcademicFormationService academicFormationService =
+      AcademicFormationService();
+
   List<Psychologist> psychologists = [];
   List<UserProfile> users = [];
   //I was using this academic information to test, then I created a fictitious data, when Fabio comes up I fix it
@@ -121,7 +126,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                               ),
                             )),
                             Text('${user.city}, ${user.state}'),
-                            Text(user.phone),
+                            Text(InputFormatterUtil.formatPhoneNumber(
+                                user.phone)),
                             Text(
                                 'Certificate Number: ${psychologist.certificationNumber}'),
                           ],
@@ -141,7 +147,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
       BuildContext context, Psychologist psychologist) async {
     var user = await userProfileService
         .fetchUserByPsychologistId(psychologist.id.toString());
-
+    academicFormations = await academicFormationService
+        .fetchAcademicFormationsList(psychologist.id!.toString());
     // ignore: use_build_context_synchronously
     showModalBottomSheet(
       context: context,
@@ -224,7 +231,6 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                           user.cpf,
                           style: const TextStyle(fontSize: 16),
                         ),
-                        // ... Outros campos do perfil
                       ],
                     ),
                   ),

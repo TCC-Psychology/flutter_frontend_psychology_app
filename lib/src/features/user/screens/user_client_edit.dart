@@ -11,6 +11,7 @@ import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/style/input_decoration.dart';
 import '../../../shared/utils/input_formatter_util.dart.dart';
+import '../../academic_formation/screens/academic_formation_screen.dart';
 import '../../medical-appointment/screens/medical_appointment_psychologist.dart';
 import '../../psychologist_search/screens/psychologist_search_screen.dart';
 
@@ -124,6 +125,23 @@ class _UserProfileEditState extends State<UserProfileEdit> {
               ),
             ),
             const SizedBox(height: 15),
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AcademicFormationScreen()),
+                  );
+                },
+                child: const Icon(
+                  Icons.book,
+                  color: Colors.purple,
+                  size: 32,
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
             TextFormField(
               controller: nameController,
               decoration: ProjectInputDecorations.textFieldDecoration(

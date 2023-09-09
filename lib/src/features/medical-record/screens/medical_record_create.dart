@@ -136,10 +136,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Criar Prontuario'),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -147,6 +143,16 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                const Center(
+                  child: Text(
+                    'Criar Prontuário',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 24,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
