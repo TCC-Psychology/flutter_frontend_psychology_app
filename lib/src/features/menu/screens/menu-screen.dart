@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/login_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/secure_storage_service.dart';
 
+import '../../user/screens/user_edit.dart';
+
 class MenuScreen extends StatelessWidget {
   final SecureStorageService _storageService = SecureStorageService();
 
@@ -17,7 +19,12 @@ class MenuScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Perfil'),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UserProfileEdit()),
+              );
+            },
           ),
           ListTile(
             leading: const Icon(Icons.person),
@@ -27,7 +34,9 @@ class MenuScreen extends StatelessWidget {
           const Spacer(),
           Center(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                _signOut(context);
+              },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

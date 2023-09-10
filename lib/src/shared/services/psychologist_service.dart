@@ -57,4 +57,23 @@ class PsychologistService {
       return null;
     }
   }
+
+  Future<int> editPsychologist(Psychologist psychologist, int id) async {
+    try {
+      final res = await http.patch(
+        Uri.parse('$uri/psychologist/$id'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(psychologist.toJson()),
+      );
+      if (res.statusCode == 200) {
+        return 1;
+      } else {
+        return -1;
+      }
+    } catch (e) {
+      return -1;
+    }
+  }
 }
