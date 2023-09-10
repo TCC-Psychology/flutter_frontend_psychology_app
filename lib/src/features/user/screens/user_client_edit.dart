@@ -125,23 +125,25 @@ class _UserProfileEditState extends State<UserProfileEdit> {
               ),
             ),
             const SizedBox(height: 15),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AcademicFormationScreen()),
-                  );
-                },
-                child: const Icon(
-                  Icons.book,
-                  color: Colors.purple,
-                  size: 32,
+            if (psychologist != null)
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const AcademicFormationScreen()),
+                    );
+                  },
+                  child: const Icon(
+                    Icons.book,
+                    color: Colors.purple,
+                    size: 32,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             TextFormField(
               controller: nameController,
               decoration: ProjectInputDecorations.textFieldDecoration(
@@ -251,7 +253,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
   Widget formClient() {
     return Column(
       children: <Widget>[
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextFormField(
           controller: religionController,
           decoration: ProjectInputDecorations.textFieldDecoration(
@@ -259,7 +261,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
             prefixIcon: Icons.accessibility_new,
           ),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         DropdownButtonFormField<RelationshipStatus>(
           value: relationshipStatusController,
           onChanged: (newValue) {
@@ -277,7 +279,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
             );
           }).toList(),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextFormField(
           controller: fatherNameController,
           decoration: ProjectInputDecorations.textFieldDecoration(
@@ -285,7 +287,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
             prefixIcon: Icons.person_outline,
           ),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextFormField(
           controller: fatherOccupationController,
           decoration: ProjectInputDecorations.textFieldDecoration(
@@ -293,7 +295,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
             prefixIcon: Icons.work,
           ),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextFormField(
           controller: motherNameController,
           decoration: ProjectInputDecorations.textFieldDecoration(
@@ -301,7 +303,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
             prefixIcon: Icons.person_outline,
           ),
         ),
-        SizedBox(height: 15),
+        const SizedBox(height: 15),
         TextFormField(
           controller: motherOccupationController,
           decoration: ProjectInputDecorations.textFieldDecoration(
