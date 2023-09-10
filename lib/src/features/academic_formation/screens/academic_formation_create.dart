@@ -33,6 +33,7 @@ class _AcademicFormationsCreateScreen
   final TextEditingController startDate = TextEditingController();
   DateTime? dateTimeStartDate;
   final TextEditingController endDate = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DateTime? dateTimeEndtDate;
   @override
   void initState() {
@@ -42,115 +43,143 @@ class _AcademicFormationsCreateScreen
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              const Padding(padding: EdgeInsets.only(top: 10)),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
                 children: [
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Formação Academica",
-                    style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   const Padding(padding: EdgeInsets.only(top: 10)),
-                  Align(
-                    alignment: const AlignmentDirectional(0, 0),
-                    child: SizedBox(
-                      child: TextFormField(
-                        controller: institution,
-                        keyboardType: TextInputType.name,
-                        decoration: ProjectInputDecorations.textFieldDecoration(
-                          labelText: "Universidade",
-                          prefixIcon: Icons.book,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 10),
+                      const Text(
+                        "Formação Acadêmica",
+                        style: TextStyle(
+                          color: Colors.purple,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Align(
-                    alignment: const AlignmentDirectional(0, 0),
-                    child: SizedBox(
-                      child: TextFormField(
-                        controller: course,
-                        keyboardType: TextInputType.name,
-                        decoration: ProjectInputDecorations.textFieldDecoration(
-                          labelText: "Curso",
-                          prefixIcon: Icons.house,
+                      const Padding(padding: EdgeInsets.only(top: 10)),
+                      Align(
+                        alignment: const AlignmentDirectional(0, 0),
+                        child: SizedBox(
+                          child: TextFormField(
+                            controller: institution,
+                            keyboardType: TextInputType.name,
+                            decoration:
+                                ProjectInputDecorations.textFieldDecoration(
+                              labelText: "Universidade",
+                              prefixIcon: Icons.book,
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Campo obrigatório';
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: startDate,
-                    decoration: ProjectInputDecorations.textFieldDecoration(
-                      labelText: "Inicio da formação",
-                      prefixIcon: Icons.date_range,
-                    ),
-                    readOnly: true,
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          dateTimeStartDate = pickedDate;
-                          DateFormat format = new DateFormat("dd/MM/yyyy");
-                          startDate.text = format.format(pickedDate);
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: endDate,
-                    decoration: ProjectInputDecorations.textFieldDecoration(
-                      labelText: "Fim da formação",
-                      prefixIcon: Icons.date_range,
-                    ),
-                    readOnly: true,
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          dateTimeEndtDate = pickedDate;
-                          DateFormat format = new DateFormat("dd/MM/yyyy");
-                          endDate.text = format.format(pickedDate);
-                        });
-                      }
-                    },
-                  ),
-                  const Padding(padding: EdgeInsets.only(top: 25)),
-                  SizedBox(
-                      height: 150,
-                      width: 350,
-                      child: ListView(
-                        children: [
-                          Container(
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Align(
+                        alignment: const AlignmentDirectional(0, 0),
+                        child: SizedBox(
+                          child: TextFormField(
+                            controller: course,
+                            keyboardType: TextInputType.name,
+                            decoration:
+                                ProjectInputDecorations.textFieldDecoration(
+                              labelText: "Curso",
+                              prefixIcon: Icons.house,
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Campo obrigatório';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: startDate,
+                        decoration: ProjectInputDecorations.textFieldDecoration(
+                          labelText: "Inicio da formação",
+                          prefixIcon: Icons.date_range,
+                        ),
+                        readOnly: true,
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now(),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              selectedStartDate = pickedDate;
+                              DateFormat format = new DateFormat("dd/MM/yyyy");
+                              startDate.text = format.format(pickedDate);
+                            });
+                          }
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Campo obrigatório';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: endDate,
+                        decoration: ProjectInputDecorations.textFieldDecoration(
+                          labelText: "Fim da formação",
+                          prefixIcon: Icons.date_range,
+                        ),
+                        readOnly: true,
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now(),
+                          );
+                          if (pickedDate != null) {
+                            setState(() {
+                              selectedEndDate = pickedDate;
+                              DateFormat format = new DateFormat("dd/MM/yyyy");
+                              endDate.text = format.format(pickedDate);
+                            });
+                          }
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Campo obrigatório';
+                          }
+                          return null;
+                        },
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 25)),
+                      SizedBox(
+                        height: 150,
+                        width: 350,
+                        child: ListView(
+                          children: [
+                            Container(
                               padding: const EdgeInsets.all(1),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
@@ -195,31 +224,38 @@ class _AcademicFormationsCreateScreen
                                     fontSize: 16,
                                   ),
                                 ),
-                              ))
-                        ],
-                      )),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Padding(padding: EdgeInsets.only(top: 20)),
+                  SizedBox(
+                    child: FilledButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          createAcademicFormation();
+                        }
+                      },
+                      style: const ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll<Color>(Colors.blue),
+                      ),
+                      child: const Text(
+                        'Adicionar',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  )
                 ],
               ),
-              const Padding(padding: EdgeInsets.only(top: 20)),
-              SizedBox(
-                child: FilledButton(
-                  onPressed: () async {
-                    createAcademicFormation();
-                  },
-                  style: const ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll<Color>(Colors.blue)),
-                  child: const Text(
-                    'Adicionar',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-              )
-            ],
-          ),
-        )
-      ],
-    ));
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   createAcademicFormation() async {
