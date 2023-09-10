@@ -292,7 +292,21 @@ class _MedicalAppointmentClientScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () async {},
+                    onPressed: () async {
+                      var client = await clientService
+                          .fetchClientById(appointment.clientId.toString());
+                      var user = await userProfileService
+                          .fetchUserByClientId(client!.id!.toString());
+                      var triage = await triageService
+                          .fetchTriageById(appointment.id.toString());
+                      if (triage != null) {
+                        // ignore: use_build_context_synchronously
+                        ShowTriage.show(context, user!, client, triage);
+                      } else {
+                        await EasyLoading.showInfo('Consulta sem triagem!',
+                            duration: const Duration(seconds: 3));
+                      }
+                    },
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     child: const Text(
