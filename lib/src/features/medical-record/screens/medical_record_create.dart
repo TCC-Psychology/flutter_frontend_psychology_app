@@ -1,7 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/utils/user_type.dart';
@@ -22,7 +18,6 @@ import '../../../shared/services/psychologist_service.dart';
 import '../../../shared/services/user.service.dart';
 import '../../../shared/style/input_decoration.dart';
 import '../../../shared/utils/input_formatter_util.dart.dart';
-import '../../../shared/validators/auth_validator.dart';
 import 'medical_record_screen.dart';
 
 class MedicalRecordCreateForm extends StatefulWidget {
@@ -576,18 +571,18 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                           );
                           var user = await userProfileService
                               .fetchUserByProperties(cpfValue, null, null);
-                          if (user.isDefinedAndNotNull) {
+                          if (user != null) {
                             UserProfile? alreadyRelatedUser;
                             for (var u in users) {
-                              if (u.id == user!.id!) {
+                              if (u.id == user.id!) {
                                 alreadyRelatedUser = u;
                                 break;
                               }
                             }
-                            if (alreadyRelatedUser.isUndefinedOrNull) {
+                            if (alreadyRelatedUser == null) {
                               var client = await clientService
                                   .fetchClientByUserId(user!.id!.toString());
-                              if (client.isDefinedAndNotNull) {
+                              if (client != null) {
                                 userTypeClientSearched = user;
                                 setState(() {});
                               } else {
