@@ -305,14 +305,7 @@ class _AcademicFormationScreenState extends State<AcademicFormationScreen> {
           actions: [
             ElevatedButton(
               onPressed: () async {
-                await academicFormationService
-                    .deleteAcademicFormation(medicalRecordId);
-
-                await fetchAcademicFormations();
-                setState(() {});
-
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                await deleteAcademicFormation(medicalRecordId, context);
               },
               child: const Text("Sim"),
             ),
@@ -326,5 +319,26 @@ class _AcademicFormationScreenState extends State<AcademicFormationScreen> {
         );
       },
     );
+  }
+
+  deleteAcademicFormation(int medicalRecordId, BuildContext context) async {
+    try {
+      EasyLoading.show(status: 'Excluindo...');
+      await academicFormationService.deleteAcademicFormation(medicalRecordId);
+
+      await fetchAcademicFormations();
+      setState(() {});
+
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 }
