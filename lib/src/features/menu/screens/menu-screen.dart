@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/login_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/secure_storage_service.dart';
 
-import '../../user/screens/user_client_edit.dart';
+import '../../user/screens/user_edit.dart';
 
 class MenuScreen extends StatelessWidget {
   final SecureStorageService _storageService = SecureStorageService();
