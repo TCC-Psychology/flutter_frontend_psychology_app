@@ -827,7 +827,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   Future<void> _saveClientData() async {
     SignUpData signUpData = SignUpData(
       email: _email,
-      password: 'senha qualquer',
+      password: 'senhaqualquer',
       cpf: _cpf,
       name: _name,
       phone: _phone,
@@ -851,8 +851,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
 
     try {
       EasyLoading.show(status: 'Carregando...');
-      String? userClientId = await authService.signUp(signUpData);
-      if (userClientId != null) {
+      String? userClientId = await authService.signUp(signUpData, false);
+      if (userClientId == null) {
         EasyLoading.showSuccess(
           'Paciente cadastrado!',
         );
