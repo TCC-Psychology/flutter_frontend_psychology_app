@@ -1,4 +1,3 @@
-import 'dart:js_interop';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import '../../../models/medical_appointment_model.dart';
@@ -213,7 +212,7 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
 
   void handleScheduling() async {
     try {
-      if (_selectedDate.isNull || _selectedTime.isNull) {
+      if (_selectedDate == null || _selectedTime == null) {
         await EasyLoading.showError('Selecione o dia e a hora',
             duration: const Duration(seconds: 30));
         await Future.delayed(const Duration(seconds: 1)); // Atraso de 1 segundo
