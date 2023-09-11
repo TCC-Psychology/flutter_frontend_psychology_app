@@ -15,7 +15,7 @@ SegmentOfActivity _$SegmentOfActivityFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
-      segment: json['segment'] as String,
+      title: json['title'] as String,
       psychologists: (json['psychologists'] as List<dynamic>?)
           ?.map((e) => Psychologist.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -31,6 +31,6 @@ Map<String, dynamic> _$SegmentOfActivityToJson(SegmentOfActivity instance) {
   }
 
   writeNotNull('id', instance.id);
-  val['segment'] = instance.segment;
+  val['title'] = instance.title;
   return val;
 }

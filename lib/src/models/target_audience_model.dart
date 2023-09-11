@@ -14,17 +14,17 @@ class TargetAudience {
   @JsonKey(includeToJson: false)
   final DateTime? updatedAt;
 
-  final String tag;
+  final String title;
 
   @JsonKey(includeToJson: false)
-  final List<Psychologist> psychologists;
+  final List<Psychologist>? psychologists;
 
   TargetAudience({
     this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.tag,
-    required this.psychologists,
+    this.createdAt,
+    this.updatedAt,
+    required this.title,
+    this.psychologists,
   });
 
   factory TargetAudience.fromJson(Map<String, dynamic> json) =>
