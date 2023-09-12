@@ -14,7 +14,7 @@ class SegmentOfActivity {
   @JsonKey(includeToJson: false)
   final DateTime? updatedAt;
 
-  final String segment;
+  final String title;
 
   @JsonKey(includeToJson: false)
   final List<Psychologist>? psychologists;
@@ -23,7 +23,7 @@ class SegmentOfActivity {
     this.id,
     this.createdAt,
     this.updatedAt,
-    required this.segment,
+    required this.title,
     this.psychologists,
   });
 

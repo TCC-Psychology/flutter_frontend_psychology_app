@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/login_screen.dart';
+import 'package:flutter_frontend_psychology_app/src/features/tag/screens/tag_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -11,7 +12,7 @@ Future<void> main() async {
     ..displayDuration = const Duration(milliseconds: 2000)
     ..indicatorType = EasyLoadingIndicatorType.ring
     ..loadingStyle = EasyLoadingStyle.custom
-    ..indicatorSize = 50.0  
+    ..indicatorSize = 50.0
     ..radius = 10.0
     ..progressColor = Colors.black
     ..backgroundColor = Colors.cyan.shade100

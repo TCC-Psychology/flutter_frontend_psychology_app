@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend_psychology_app/src/features/auth/screens/login_screen.dart';
+import 'package:flutter_frontend_psychology_app/src/features/tag/screens/tag_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/secure_storage_service.dart';
 
 import '../../user/screens/user_edit.dart';
@@ -27,9 +28,14 @@ class MenuScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Outros botoes...'),
-            onTap: () {},
+            leading: const Icon(Icons.tag_sharp),
+            title: const Text('Tags'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TagScreen()),
+              );
+            },
           ),
           const Spacer(),
           Center(
