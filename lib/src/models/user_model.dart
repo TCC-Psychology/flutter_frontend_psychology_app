@@ -1,3 +1,4 @@
+import 'package:flutter_frontend_psychology_app/src/shared/utils/user_type.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'client_model.dart';
@@ -21,6 +22,7 @@ class UserProfile {
   final String? cep;
   final String? description;
   final String? gender;
+  final UserType userType;
 
   @JsonKey(includeToJson: false)
   final Client? client;
@@ -50,6 +52,7 @@ class UserProfile {
     this.clientId,
     this.psychologist,
     this.psychologistId,
+    required this.userType,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
