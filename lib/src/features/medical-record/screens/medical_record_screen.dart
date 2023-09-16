@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/models/client_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/utils/input_formatter_util.dart.dart';
 import '../../../../main.dart';
 import '../../../models/medical_appointment_model.dart';
 import '../../../models/medical_record_model.dart';
@@ -91,56 +92,62 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Visualizar Prontuarios'),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const MedicalRecordCreateForm()),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  onChanged: (newValue) async {
-                    _selectedValueUserId = newValue!;
-
-                    var client = await clientService
-                        .fetchClientByUserId(_selectedValueUserId.toString());
-                    medicalRecorList =
-                        await medicalRecordService.fetchMedicalRecordtList(
-                            psychologist!.id!.toString(),
-                            client!.id!.toString());
-                    setState(() {});
-                  },
-                  items: users.isEmpty
-                      ? []
-                      : users.map((user) {
-                          return DropdownMenuItem<String>(
-                            value: user.id,
-                            child: Text(user.name),
-                          );
-                        }).toList(),
-                  decoration: ProjectInputDecorations.textFieldDecoration(
-                    labelText: "Paciente",
+        child: SafeArea(
+          child: Form(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Visualizar Prontuarios",
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  isExpanded: true,
-                ),
-                if (medicalRecorList.isNotEmpty) _buildShowMedicalRecord(),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const MedicalRecordCreateForm()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    onChanged: (newValue) async {
+                      _selectedValueUserId = newValue!;
+
+                      var client = await clientService
+                          .fetchClientByUserId(_selectedValueUserId.toString());
+                      medicalRecorList =
+                          await medicalRecordService.fetchMedicalRecordtList(
+                              psychologist!.id!.toString(),
+                              client!.id!.toString());
+                      setState(() {});
+                    },
+                    items: users.isEmpty
+                        ? []
+                        : users.map((user) {
+                            return DropdownMenuItem<String>(
+                              value: user.id,
+                              child: Text(user.name),
+                            );
+                          }).toList(),
+                    decoration: ProjectInputDecorations.textFieldDecoration(
+                      labelText: "Paciente",
+                    ),
+                    isExpanded: true,
+                  ),
+                  if (medicalRecorList.isNotEmpty) _buildShowMedicalRecord(),
+                ],
+              ),
             ),
           ),
         ),
@@ -305,11 +312,14 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(user.cpf,
+                                      Text(
+                                          InputFormatterUtil.formatCPF(
+                                            user.cpf,
+                                          ),
                                           style: const TextStyle(fontSize: 18)),
                                       const SizedBox(height: 16.0),
                                       const Text(
-                                        'Data de Nascimento',
+                                        'Idade',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -317,7 +327,8 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                       ),
                                       Text(
                                           user.birthDate != null
-                                              ? user.birthDate.toString()
+                                              ? InputFormatterUtil.calculateAge(
+                                                  user.birthDate!)
                                               : '',
                                           style: const TextStyle(fontSize: 18)),
                                       const SizedBox(height: 16.0),
@@ -328,16 +339,11 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(user.phone,
+                                      Text(
+                                          InputFormatterUtil.formatPhoneNumber(
+                                              user.phone),
                                           style: const TextStyle(fontSize: 18)),
                                       const SizedBox(height: 16.0),
-                                      // const Text(
-                                      //   'E-mail',
-                                      //   style: TextStyle(
-                                      //     fontSize: 18,
-                                      //     fontWeight: FontWeight.bold,
-                                      //   ),
-                                      // ),
                                     ],
                                   ),
                                 ),

@@ -79,7 +79,8 @@ class AuthService {
     }
   }
 
-  Future<String?> signUp(SignUpData data, bool shouldStoreSessionToken) async {
+  Future<String?> signUp(SignUpData data, bool shouldStoreSessionToken,
+      {bool? isRegistryByRecord}) async {
     if (await _userWithCpfExists(data.cpf)) {
       return 'Erro de registro. Verifique seus detalhes e tente novamente.';
     }
@@ -107,6 +108,8 @@ class AuthService {
     if (dataInsertionResult == null) {
       return "Erro na criação do usuario no banco de dados";
     }
+
+    if (isRegistryByRecord != null) return dataInsertionResult.id!;
 
     return null;
   }
@@ -165,8 +168,6 @@ class AuthService {
         userId = await signUpOnBackend(email, password);
       }
 
-      print(response);
-      print(userId);
       if (response != null) {
         return response.user?.id;
       }
