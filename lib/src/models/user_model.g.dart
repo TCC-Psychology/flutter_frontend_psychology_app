@@ -28,6 +28,7 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
           ? null
           : Psychologist.fromJson(json['psychologist'] as Map<String, dynamic>),
       psychologistId: json['psychologistId'] as int?,
+      userType: $enumDecode(_$UserTypeEnumMap, json['userType']),
     );
 
 Map<String, dynamic> _$UserProfileToJson(UserProfile instance) {
@@ -50,5 +51,11 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) {
   val['cep'] = instance.cep;
   val['description'] = instance.description;
   val['gender'] = instance.gender;
+  val['userType'] = _$UserTypeEnumMap[instance.userType]!;
   return val;
 }
+
+const _$UserTypeEnumMap = {
+  UserType.CLIENT: 'CLIENT',
+  UserType.PSYCHOLOGIST: 'PSYCHOLOGIST',
+};

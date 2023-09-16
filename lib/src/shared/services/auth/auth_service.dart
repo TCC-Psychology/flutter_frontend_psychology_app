@@ -30,6 +30,13 @@ class AuthService {
       final response = await supabase.auth
           .signInWithPassword(password: data.password, email: data.email);
 
+      if (response.user != null) {
+        final currentUser = await userProfileService.fetchUserByUserId(
+          response.user!.id,
+        );
+        await _storageService.storeCurrentUser(currentUser);
+      }
+
       if (response.session != null) {
         await _storageService.storeToken(response.session!.accessToken);
       }
@@ -95,6 +102,11 @@ class AuthService {
       return "Erro de registro!";
     }
 
+    final currentUser = await userProfileService.fetchUserByUserId(
+      userId,
+    );
+    await _storageService.storeCurrentUser(currentUser);
+
     final dataInsertionResult = await _insertUserDataToDatabase(
       userId,
       data.email,
@@ -128,18 +140,18 @@ class AuthService {
       cpf: cpf,
       name: name,
       phone: phone,
-      // birthDate: birthDate,
+      userType: userType,
     );
 
     UserProfile? userCreateResponse;
 
     switch (userType) {
-      case UserType.client:
+      case UserType.CLIENT:
         final my_models.Client client = my_models.Client();
         userCreateResponse =
             await userProfileService.createUserAndClient(userProfile, client);
         break;
-      case UserType.psychologist:
+      case UserType.PSYCHOLOGIST:
         final Psychologist psychologist = Psychologist();
         userCreateResponse = await userProfileService.createUserAndPsychologist(
             userProfile, psychologist);

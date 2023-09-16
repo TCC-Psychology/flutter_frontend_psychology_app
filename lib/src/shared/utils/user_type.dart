@@ -1,14 +1,19 @@
+import 'package:json_annotation/json_annotation.dart';
+
 enum UserType {
-  client,
-  psychologist,
+  @JsonValue('CLIENT')
+  CLIENT,
+
+  @JsonValue('PSYCHOLOGIST')
+  PSYCHOLOGIST,
 }
 
 extension UserTypeExtension on UserType {
   String get name {
     switch (this) {
-      case UserType.client:
+      case UserType.CLIENT:
         return "Cliente";
-      case UserType.psychologist:
+      case UserType.PSYCHOLOGIST:
         return "Psicólogo";
       default:
         return toString().split('.').last;
