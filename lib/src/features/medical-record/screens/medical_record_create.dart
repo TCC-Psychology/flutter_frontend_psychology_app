@@ -833,7 +833,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       name: _name,
       phone: _phone,
       birthDate: _birthDate,
-      userType: UserType.client,
+      userType: UserType.CLIENT,
       certificationNumber: '',
     );
 
@@ -848,6 +848,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       phone: _phone,
       description: '',
       gender: _gender,
+      userType: UserType.CLIENT,
     );
 
     try {

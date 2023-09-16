@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/common/widgets/bottom-bar.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_models.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
@@ -40,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
-  UserType userType = UserType.client;
+  UserType userType = UserType.CLIENT;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,12 +73,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       items: [
                         DropdownMenuItem(
-                          value: UserType.client,
-                          child: Text(UserType.client.name),
+                          value: UserType.CLIENT,
+                          child: Text(UserType.CLIENT.name),
                         ),
                         DropdownMenuItem(
-                          value: UserType.psychologist,
-                          child: Text(UserType.psychologist.name),
+                          value: UserType.PSYCHOLOGIST,
+                          child: Text(UserType.PSYCHOLOGIST.name),
                         ),
                       ],
                       onChanged: (value) {
@@ -177,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                       // validator: (value) => AuthValidator.validateGeneric(value, "data de nascimento"),
                     ),
-                    if (this.userType == UserType.psychologist) ...[
+                    if (this.userType == UserType.PSYCHOLOGIST) ...[
                       const SizedBox(
                         height: 5,
                       ),
@@ -258,7 +259,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       if (error == null) {
-        navigateToPsychologistSearchScreen();
+        navigateToInitialPageWithBottomBar();
       }
     } catch (e) {
       // Handle potential errors
@@ -270,10 +271,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  void navigateToPsychologistSearchScreen() {
-    Navigator.push(
+  void navigateToInitialPageWithBottomBar() {
+    Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const PsychologistSearchScreen()),
+      MaterialPageRoute(builder: (context) => const BottomBar()),
     );
   }
 }

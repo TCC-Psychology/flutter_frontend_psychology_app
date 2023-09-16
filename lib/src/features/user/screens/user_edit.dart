@@ -360,6 +360,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
         cep: cep,
         description: description,
         gender: gender,
+        userType: userProfile!.userType,
       );
 
       await userProfileService.editUser(userProfileEdited, userProfile!.id!);
