@@ -786,6 +786,16 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   }
 
   Future<void> _saveClientData() async {
+    if (_cpf == "" ||
+        _name == "" ||
+        _email == "" ||
+        phoneNumberController.text == "") {
+      EasyLoading.showInfo('Preencha os campos obrigatorios',
+          duration: const Duration(seconds: 3));
+
+      return;
+    }
+
     _cpf = InputFormatterUtil.getUnmaskedCpfText(_cpf);
     phoneNumberController.text = InputFormatterUtil.getUnmaskedPhoneText(
         phoneNumberController.text.trim());

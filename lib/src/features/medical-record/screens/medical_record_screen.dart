@@ -344,6 +344,16 @@ class _MedicalRecordScreenState extends State<MedicalRecordScreen> {
                                               user.phone),
                                           style: const TextStyle(fontSize: 18)),
                                       const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Cidade',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(user.city ?? "N/A",
+                                          style: const TextStyle(fontSize: 18)),
+                                      const SizedBox(height: 16.0),
                                     ],
                                   ),
                                 ),
