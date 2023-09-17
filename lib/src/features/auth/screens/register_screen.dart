@@ -275,7 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void navigateToInitialPageWithBottomBar() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MedicalRecordScreen()),
+      MaterialPageRoute(builder: (context) => const BottomBar()),
     );
   }
 }
