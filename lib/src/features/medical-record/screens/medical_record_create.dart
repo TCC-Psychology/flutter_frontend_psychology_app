@@ -691,6 +691,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Cep'),
+                inputFormatters: [InputFormatterUtil.cepMaskInputFormatter()],
                 onChanged: (value) {
                   setState(() {
                     _cep = value;
@@ -785,6 +786,12 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   }
 
   Future<void> _saveClientData() async {
+    _cpf = InputFormatterUtil.getUnmaskedCpfText(_cpf);
+    phoneNumberController.text = InputFormatterUtil.getUnmaskedPhoneText(
+        phoneNumberController.text.trim());
+    if (_cep != '') {
+      _cep = InputFormatterUtil.getUnmaskedCep(_cep);
+    }
     try {
       EasyLoading.show(status: 'Cadastrando...');
       SignUpData signUpData = SignUpData(
@@ -794,7 +801,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         name: _name,
         phone: phoneNumberController.text,
         birthDate: _birthDate?.toUtc(),
-        userType: UserType.client,
+        userType: UserType.CLIENT,
         certificationNumber: '',
       );
 
@@ -816,6 +823,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         phone: phoneNumberController.text,
         description: '',
         gender: _gender,
+        userType: UserType.CLIENT,
       );
 
       await userProfileService.editUser(user, userClientId);
@@ -836,9 +844,10 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       }
 
       await clientService.editClient(client, clientCreated.id!);
-
+      var psychologist = await psychologistService
+          .fetchPsychologistByUserId(psychologistLogged);
       MedicalAppointment medicalAppointment = MedicalAppointment(
-          date: DateTime.now(),
+          date: DateTime.now().toUtc(),
           status: AppointmentStatus.confirmed,
           appointmentType: AppointmentType.presencial,
           clientId: clientCreated.id,
@@ -869,7 +878,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         .fetchClientByUserId(_selectedValueUserId.toString());
 
     MedicalRecord medicalRecord = MedicalRecord(
-        id: null,
         notes: notes,
         theme: theme,
         mood: selectedMood.toString(),
