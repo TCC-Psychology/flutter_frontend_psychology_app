@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/academic_formation_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../main.dart';
 import '../../../models/academic_formation_model.dart';
@@ -77,6 +78,18 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
         }
       }
     }
+  }
+
+  void openGoogleMaps(String latitude, String longitude) async {
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    final uri = Uri.parse(url);
+
+    await launchUrl(uri).catchError((e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    });
   }
 
   @override
@@ -166,7 +179,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   onPressed: () async {
                     var client = await clientService
                         .fetchClientByUserId(supabase.auth.currentUser!.id);
@@ -280,30 +293,32 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                           style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Lógica para obter rota quando o botão for pressionado
-                            // Isso pode envolver integração com APIs de mapas, por exemplo
-                            // Substitua este comentário com o código necessário
-                          },
-                          child: const Text(
-                            'Obter Rota',
-                            style: TextStyle(fontSize: 16),
+                        if (user.latitude != null && user.longitude != null)
+                          ElevatedButton(
+                            onPressed: () {
+                              openGoogleMaps(
+                                user.latitude!,
+                                user.longitude!,
+                              );
+                            },
+                            child: const Text(
+                              'Obter Rota',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
                 ),
                 SingleChildScrollView(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: academicFormations.map((formation) {
                       return Center(
                         child: Card(
                           elevation: 4,
-                          margin: EdgeInsets.only(bottom: 16.0),
+                          margin: const EdgeInsets.only(bottom: 16.0),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Center(

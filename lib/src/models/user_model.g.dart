@@ -28,6 +28,8 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
           ? null
           : Psychologist.fromJson(json['psychologist'] as Map<String, dynamic>),
       psychologistId: json['psychologistId'] as int?,
+      latitude: json['latitude'] as String?,
+      longitude: json['longitude'] as String?,
       userType: $enumDecode(_$UserTypeEnumMap, json['userType']),
     );
 
@@ -47,6 +49,8 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) {
   val['birthDate'] = instance.birthDate?.toIso8601String();
   val['imageUrl'] = instance.imageUrl;
   val['city'] = instance.city;
+  val['latitude'] = instance.latitude;
+  val['longitude'] = instance.longitude;
   val['state'] = instance.state;
   val['cep'] = instance.cep;
   val['description'] = instance.description;

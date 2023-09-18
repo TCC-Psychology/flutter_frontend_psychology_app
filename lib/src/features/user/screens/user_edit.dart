@@ -3,7 +3,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/utils/user_type.dart';
 import 'package:intl/intl.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../main.dart';
 import '../../../models/client_model.dart';
@@ -16,6 +19,8 @@ import '../../medical-appointment/screens/medical_appointment_psychologist.dart'
 import '../../psychologist_search/screens/psychologist_search_screen.dart';
 
 class UserProfileEdit extends StatefulWidget {
+  const UserProfileEdit({super.key});
+
   @override
   _UserProfileEditState createState() => _UserProfileEditState();
 }
@@ -29,6 +34,8 @@ class _UserProfileEditState extends State<UserProfileEdit> {
   Psychologist? psychologist;
   var userLoggedId = supabase.auth.currentUser!.id;
 
+  String latitude = '';
+  String longitude = '';
   List<RelationshipStatus> relationshipStatusList = [];
   TextEditingController nameController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
@@ -237,6 +244,14 @@ class _UserProfileEditState extends State<UserProfileEdit> {
             ),
             if (client != null) formClient(),
             if (psychologist != null) formPsychologist(),
+            if (userProfile?.userType == UserType.PSYCHOLOGIST)
+              const SizedBox(height: 15),
+            ElevatedButton(
+              onPressed: () async {
+                handleGetLocation();
+              },
+              child: const Text('Buscar localização'),
+            ),
             const SizedBox(height: 15),
             ElevatedButton(
               onPressed: () async {
@@ -361,6 +376,8 @@ class _UserProfileEditState extends State<UserProfileEdit> {
         description: description,
         gender: gender,
         userType: userProfile!.userType,
+        latitude: latitude,
+        longitude: longitude,
       );
 
       await userProfileService.editUser(userProfileEdited, userProfile!.id!);
@@ -417,5 +434,22 @@ class _UserProfileEditState extends State<UserProfileEdit> {
         Psychologist(certificationNumber: certificationNumber);
     await psychologistService.editPsychologist(
         psychologistEdit, psychologist!.id!);
+  }
+
+  Future<void> handleGetLocation() async {
+    try {
+      await Permission.location.request();
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      setState(() {
+        latitude = position.latitude.toString();
+        longitude = position.longitude.toString();
+      });
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique suas permissões de localização',
+      );
+    }
   }
 }
