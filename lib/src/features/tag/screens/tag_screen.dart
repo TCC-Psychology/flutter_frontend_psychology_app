@@ -27,117 +27,133 @@ class _TagScreenState extends State<TagScreen> {
 
   @override
   void initState() {
-    super.initState();
-    fetchTagList();
-    fetchSelectedTags();
+    try {
+      EasyLoading.show(status: 'Carregando...');
+      super.initState();
+      fetchTagList();
+      fetchSelectedTags();
+    } catch (e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Público alvo',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                children:
-                    targetAudienceList.map((TargetAudience targetAudience) {
-                  return FilterChip(
-                    label: Text(targetAudience.title),
-                    selected:
-                        selectedTargetAudienceIds.contains(targetAudience.id),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        if (selected) {
-                          selectedTargetAudienceIds.add(targetAudience.id);
-                          tagService.connectTag(
-                            EntityType.TargetAudience,
-                            currentUserId,
-                            targetAudience.id,
-                          );
-                        } else {
-                          selectedTargetAudienceIds.remove(targetAudience.id);
-                          tagService.disconnectTag(
-                            EntityType.TargetAudience,
-                            currentUserId,
-                            targetAudience.id,
-                          );
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
-            const Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Segmentos',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                children:
-                    segmentOfActivityList.map((SegmentOfActivity segment) {
-                  return FilterChip(
-                    label: Text(
-                      style: TextStyle(fontSize: 12),
-                      segment.title,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    "Público alvo",
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                    selected: selectedSegmentOfActivityIds.contains(segment.id),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        if (selected) {
-                          selectedSegmentOfActivityIds.add(segment.id);
-                          tagService.connectTag(
-                            EntityType.SegmentOfActivity,
-                            currentUserId,
-                            segment.id,
-                          );
-                        } else {
-                          selectedSegmentOfActivityIds.remove(segment.id);
-                          tagService.disconnectTag(
-                            EntityType.SegmentOfActivity,
-                            currentUserId,
-                            segment.id,
-                          );
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
+                  ),
+                ),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children:
+                      targetAudienceList.map((TargetAudience targetAudience) {
+                    return FilterChip(
+                      label: Text(targetAudience.title),
+                      selected:
+                          selectedTargetAudienceIds.contains(targetAudience.id),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            selectedTargetAudienceIds.add(targetAudience.id);
+                            tagService.connectTag(
+                              EntityType.TargetAudience,
+                              currentUserId,
+                              targetAudience.id,
+                            );
+                          } else {
+                            selectedTargetAudienceIds.remove(targetAudience.id);
+                            tagService.disconnectTag(
+                              EntityType.TargetAudience,
+                              currentUserId,
+                              targetAudience.id,
+                            );
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    "Segmentos",
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children:
+                      segmentOfActivityList.map((SegmentOfActivity segment) {
+                    return FilterChip(
+                      label: Text(
+                        style: const TextStyle(fontSize: 12),
+                        segment.title,
+                      ),
+                      selected:
+                          selectedSegmentOfActivityIds.contains(segment.id),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            selectedSegmentOfActivityIds.add(segment.id);
+                            tagService.connectTag(
+                              EntityType.SegmentOfActivity,
+                              currentUserId,
+                              segment.id,
+                            );
+                          } else {
+                            selectedSegmentOfActivityIds.remove(segment.id);
+                            tagService.disconnectTag(
+                              EntityType.SegmentOfActivity,
+                              currentUserId,
+                              segment.id,
+                            );
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
   fetchTagList() async {
-    EasyLoading.show(status: 'Carregando...');
-
     final targets = await tagService.fetchTargetAudiences();
     final segments = await tagService.fetchSegmentOfActivity();
 
@@ -145,13 +161,9 @@ class _TagScreenState extends State<TagScreen> {
     segmentOfActivityList.addAll(segments);
 
     setState(() {});
-
-    EasyLoading.dismiss();
   }
 
   Future<void> fetchSelectedTags() async {
-    EasyLoading.show(status: 'Carregando...');
-
     final List<TargetAudience> currentTargets =
         await tagService.fetchCurrentPsychologistTargetAudiences(currentUserId);
     final List<SegmentOfActivity> currentSegments =
@@ -166,7 +178,5 @@ class _TagScreenState extends State<TagScreen> {
       selectedTargetAudienceIds.addAll(currentTargetIds);
       selectedSegmentOfActivityIds.addAll(currentSegmentIds);
     });
-
-    EasyLoading.dismiss();
   }
 }

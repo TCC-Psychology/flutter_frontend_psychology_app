@@ -87,63 +87,65 @@ class _TriageScreenState extends State<TriageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 15),
-          const Text(
-            "Triagem",
-            style: TextStyle(
-              color: Colors.purple,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 15),
+            const Text(
+              "Triagem",
+              style: TextStyle(
+                color: Colors.purple,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                return messages[index];
-              },
+            Expanded(
+              child: ListView.builder(
+                reverse: true,
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  return messages[index];
+                },
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: isChatbotTyping
+                    ? const TypingIndicator()
+                    : const SizedBox.shrink(),
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.all(8.0),
-              child: isChatbotTyping
-                  ? const TypingIndicator()
-                  : const SizedBox.shrink(),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                    enabled: !isWaiting,
-                    decoration: const InputDecoration(
-                      hintText: 'Digite sua mensagem...',
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: messageController,
+                      onChanged: (value) {
+                        setState(() {});
+                      },
+                      enabled: !isWaiting,
+                      decoration: const InputDecoration(
+                        hintText: 'Digite sua mensagem...',
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: (messageController.text.isEmpty || isWaiting)
-                      ? null
-                      : () {
-                          processUserMessage(messageController.text);
-                        },
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.send),
+                    onPressed: (messageController.text.isEmpty || isWaiting)
+                        ? null
+                        : () {
+                            processUserMessage(messageController.text);
+                          },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

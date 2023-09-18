@@ -65,7 +65,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
           InputFormatterUtil.formatPhoneNumber(userProfile!.phone);
       cityController.text = userProfile!.city ?? '';
       stateController.text = userProfile!.state ?? '';
-      cepController.text = userProfile!.cep != null
+      cepController.text = userProfile!.cep != null && userProfile!.cep != ''
           ? InputFormatterUtil.formatCEP(userProfile!.cep!)
           : '';
       descriptionController.text = userProfile!.description ?? '';
