@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/filters/psychologist_filter_screen.dart';
 
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/academic_formation_service.dart';
@@ -79,12 +80,25 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
     }
   }
 
+  void _openFilters() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return PsychologistFilterScreen();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
+            ElevatedButton(
+              onPressed: _openFilters,
+              child: Icon(Icons.filter_alt),
+            ),
             const SizedBox(height: 15),
             const Text(
               "Listagem de psicologos",
