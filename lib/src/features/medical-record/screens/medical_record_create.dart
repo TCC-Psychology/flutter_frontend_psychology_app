@@ -75,6 +75,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   final TextEditingController phoneNumberController = TextEditingController();
   MaskTextInputFormatter phoneMask =
       InputFormatterUtil.phoneMaskInputFormatter();
+  MaskTextInputFormatter cepMask = InputFormatterUtil.cepMaskInputFormatter();
   @override
   void initState() {
     super.initState();
@@ -574,6 +575,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                           ],
                         ),
                       ),
+                      const SizedBox(width: 15),
                       if (userTypeClientSearched != null) _showUserFetched(),
                     ],
                   ),
@@ -690,8 +692,8 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
                 },
               ),
               TextFormField(
+                inputFormatters: [cepMask],
                 decoration: const InputDecoration(labelText: 'Cep'),
-                inputFormatters: [InputFormatterUtil.cepMaskInputFormatter()],
                 onChanged: (value) {
                   setState(() {
                     _cep = value;
@@ -722,14 +724,15 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
   }
 
   Widget _showUserFetched() {
+    var phone =
+        InputFormatterUtil.formatPhoneNumber(userTypeClientSearched!.phone);
     return SingleChildScrollView(
       child: Column(
         children: [
-          const SizedBox(width: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Nome'),
+              const Text('Nome : '),
               const SizedBox(width: 10),
               Text(userTypeClientSearched!.name),
             ],
@@ -737,20 +740,12 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Telefone'),
+              const Text('Telefone : '),
               const SizedBox(width: 10),
-              Text(userTypeClientSearched!.phone),
+              Text(phone)
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('CPF'),
-              const SizedBox(width: 10),
-              Text(userTypeClientSearched!.cpf),
-            ],
-          ),
-          const SizedBox(width: 30),
+          const SizedBox(width: 15),
           ElevatedButton(
             onPressed: () async {
               var client = await clientService
@@ -766,6 +761,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
               var id = await medicalAppointmentService
                   .createMedicalAppointment(medicalAppointment);
 
+              // ignore: unrelated_type_equality_checks
               if (id == 1) {
                 Navigator.of(_dialogKey.currentContext!).pop();
                 userTypeClientSearched = null;
