@@ -23,7 +23,6 @@ class _MenuScreenState extends State<MenuScreen> {
     setState(() {
       _userType = currentUser?.userType;
     });
-    print(currentUser);
   }
 
   @override

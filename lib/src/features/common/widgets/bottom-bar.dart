@@ -32,7 +32,6 @@ class _BottomBarState extends State<BottomBar> {
     setState(() {
       _userType = currentUser?.userType;
     });
-    print(currentUser);
   }
 
   @override

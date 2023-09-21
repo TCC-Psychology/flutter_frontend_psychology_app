@@ -86,21 +86,23 @@ class _MedicalAppointmentPsychologistScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 10),
-          const Text(
-            "Minhas consultas",
-            style: TextStyle(
-              color: Colors.purple,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              "Minhas consultas",
+              style: TextStyle(
+                color: Colors.purple,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 15),
-          _buildMenuButtons(),
-          _buildMedicalAppointmentsList(),
-        ],
+            const SizedBox(height: 15),
+            _buildMenuButtons(),
+            _buildMedicalAppointmentsList(),
+          ],
+        ),
       ),
     );
   }
