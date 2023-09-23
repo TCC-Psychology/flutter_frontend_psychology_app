@@ -370,8 +370,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
         // ignore: use_build_context_synchronously
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => const PsychologistSearchScreen()),
+          MaterialPageRoute(builder: (context) => PsychologistSearchScreen()),
         );
       } else {
         // ignore: use_build_context_synchronously

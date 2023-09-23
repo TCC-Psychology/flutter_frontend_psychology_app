@@ -18,8 +18,18 @@ class _PsychologistFilterScreenState extends State<PsychologistFilterScreen> {
   List<TargetAudience> targetAudienceList = [];
   List<SegmentOfActivity> segmentOfActivityList = [];
 
-  List<int>? selectedSegmentIds = [];
-  List<int>? selectedTargetAudienceIds = [];
+  List<int> selectedSegmentIds = [];
+  List<int> selectedTargetAudienceIds = [];
+
+  String selectedTargetAudienceNames = '';
+  String selectedSegmentNames = '';
+
+  void _onApplyButtonPressed() {
+    Navigator.pop(context, {
+      'selectedSegmentIds': selectedSegmentIds,
+      'selectedTargetAudienceIds': selectedTargetAudienceIds
+    });
+  }
 
   void _openPsychologistFilterTargetAudiencesDialog(
       BuildContext context) async {
@@ -33,6 +43,17 @@ class _PsychologistFilterScreenState extends State<PsychologistFilterScreen> {
     );
 
     if (selectedTargetAudienceIds != null) {
+      final selectedNames = selectedTargetAudienceIds!
+          .map(
+            (id) => targetAudienceList
+                .firstWhere((element) => element.id == id)
+                .title,
+          )
+          .join(', ');
+      setState(() {
+        selectedTargetAudienceNames = selectedNames;
+      });
+
       print(selectedTargetAudienceIds);
     }
   }
@@ -47,9 +68,17 @@ class _PsychologistFilterScreenState extends State<PsychologistFilterScreen> {
         );
       },
     );
-    if (selectedSegmentIds != null) {
-      print(selectedSegmentIds);
-    }
+    final selectedNames = selectedSegmentIds
+        .map(
+          (id) => segmentOfActivityList
+              .firstWhere((element) => element.id == id)
+              .title,
+        )
+        .join(', ');
+    setState(() {
+      selectedSegmentNames = selectedNames;
+    });
+    print(selectedSegmentIds);
   }
 
   fetchTagList() async {
@@ -76,21 +105,60 @@ class _PsychologistFilterScreenState extends State<PsychologistFilterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Filtros'),
+        title: const Text('Filtros'),
       ),
-      body: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () =>
-                _openPsychologistFilterTargetAudiencesDialog(context),
-            child: Text("Público alvo"),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ElevatedButton(
+                  onPressed: () =>
+                      _openPsychologistFilterTargetAudiencesDialog(context),
+                  child: const Text("Público alvo"),
+                ),
+              ),
+              if (selectedTargetAudienceNames.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(selectedTargetAudienceNames),
+                ),
+              ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ElevatedButton(
+                  onPressed: () =>
+                      _openPsychologistFilterSegmentOfActivityDialog(context),
+                  child: Text("Segmento"),
+                ),
+              ),
+              if (selectedSegmentNames.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(selectedSegmentNames),
+                ),
+              ],
+              Expanded(
+                child: Container(),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                      onPressed: () => {Navigator.pop(context)},
+                      child: Text("Cancelar")),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: _onApplyButtonPressed, child: Text("Aplicar")),
+                ],
+              )
+            ],
           ),
-          ElevatedButton(
-            onPressed: () =>
-                _openPsychologistFilterSegmentOfActivityDialog(context),
-            child: Text("Segmento"),
-          ),
-        ],
+        ),
       ),
     );
   }
