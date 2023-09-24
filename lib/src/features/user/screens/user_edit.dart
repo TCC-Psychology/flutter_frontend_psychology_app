@@ -80,6 +80,15 @@ class _UserProfileEditState extends State<UserProfileEdit> {
       descriptionController.text = userProfile!.description ?? '';
       genderController.text = userProfile!.gender ?? '';
 
+      final userId = supabase.auth.currentUser!.id;
+      final imagePath = '/$userId/profile';
+      String imageUrl =
+          supabase.storage.from('profiles').getPublicUrl(imagePath);
+
+      _imageUrl = Uri.parse(imageUrl).replace(queryParameters: {
+        't': DateTime.now().millisecondsSinceEpoch.toString()
+      }).toString();
+
       if (client != null) {
         popularClient();
       } else {
@@ -92,6 +101,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
       EasyLoading.showError(
         'Erro inesperado, verifique sua conexão com a internet',
       );
+      print(e);
     } finally {
       EasyLoading.dismiss();
     }
@@ -155,10 +165,14 @@ class _UserProfileEditState extends State<UserProfileEdit> {
             const SizedBox(height: 15),
             Avatar(
                 imageUrl: _imageUrl,
-                onUpload: (imageUrl) {
+                onUpload: (imageUrl) async {
                   setState(() {
                     _imageUrl = imageUrl;
                   });
+                  final userId = supabase.auth.currentUser!.id;
+                  await supabase
+                      .from('profiles')
+                      .update({'avatar_url': imageUrl}).eq('id', userId);
                 }),
             const SizedBox(height: 15),
             TextFormField(
