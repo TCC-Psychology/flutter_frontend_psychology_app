@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/filters/psychologist_filter_screen.dart';
 
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/academic_formation_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/style/input_decoration.dart';
 
 import '../../../../main.dart';
 import '../../../models/academic_formation_model.dart';
@@ -29,10 +31,18 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   final AcademicFormationService academicFormationService =
       AcademicFormationService();
 
+  List<int>? selectedSegmentIds = [];
+  List<int>? selectedTargetAudienceIds = [];
+
   List<Psychologist> psychologists = [];
+  List<Psychologist> filteredPsychologists = [];
+
   List<UserProfile> users = [];
   //I was using this academic information to test, then I created a fictitious data, when Fabio comes up I fix it
   List<AcademicFormation> academicFormations = [];
+
+  final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<FormState> _key = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -45,7 +55,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
     try {
       EasyLoading.show(status: 'Procurando...');
       await fetchPsychologistList();
-      await fetchUsersByPsychologist();
+      // await fetchUsersByPsychologist();
 
       setState(() {});
     } catch (e) {
@@ -59,7 +69,11 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
 
   fetchPsychologistList() async {
     psychologists = [];
-    psychologists = await psychologistService.fetchPsychologistList();
+    psychologists = await psychologistService.fetchPsychologistList(
+      selectedSegmentIds,
+      selectedTargetAudienceIds,
+    );
+    filteredPsychologists = psychologists;
     EasyLoading.dismiss();
   }
 
@@ -80,15 +94,34 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
     }
   }
 
-  void openGoogleMaps(String latitude, String longitude) async {
-    final url =
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
-    final uri = Uri.parse(url);
+  void _openFilters() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PsychologistFilterScreen()),
+    );
+    if (result != null) {
+      selectedSegmentIds = result['selectedSegmentIds'];
+      selectedTargetAudienceIds = result['selectedTargetAudienceIds'];
+      loadPageUtilities();
+    }
+  }
 
-    await launchUrl(uri).catchError((e) {
-      EasyLoading.showError(
-        'Erro inesperado, verifique sua conexão com a internet',
-      );
+  void _startSearch(String query) {
+    setState(() {
+      query = query.toLowerCase().trim();
+
+      if (query.isEmpty) {
+        filteredPsychologists = psychologists;
+      } else {
+        filteredPsychologists = psychologists.where((psychologist) {
+          final user = psychologist.user;
+          if (user != null) {
+            final userName = user.name.toLowerCase();
+            return userName.contains(query);
+          }
+          return false;
+        }).toList();
+      }
     });
   }
 
@@ -96,61 +129,100 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 15),
-            const Text(
-              "Listagem de psicologos",
-              style: TextStyle(
-                color: Colors.purple,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (psychologists.isNotEmpty)
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: psychologists.length,
-                itemBuilder: (context, index) {
-                  Psychologist psychologist = psychologists[index];
-                  UserProfile user =
-                      users.firstWhere((u) => u.id == psychologist.userId);
-
-                  return GestureDetector(
-                    onTap: () {
-                      _openPsychologistModal(context, psychologist);
-                    },
-                    child: Card(
-                      margin: const EdgeInsets.all(16.0),
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons
-                              .account_circle, // Placeholder icon, you can replace this
-                          size: 48.0,
-                        ),
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Center(
-                                child: Text(
-                              user.name,
-                              style: const TextStyle(
-                                color: Colors.purple,
-                              ),
-                            )),
-                            Text('${user.city}, ${user.state}'),
-                            Text(InputFormatterUtil.formatPhoneNumber(
-                                user.phone)),
-                            Text(
-                                'Certificate Number: ${psychologist.certificationNumber}'),
-                          ],
+        child: Center(
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 8.0,
+                      ),
+                      child: Form(
+                        key: _key,
+                        child: TextFormField(
+                          controller: _searchController,
+                          decoration:
+                              ProjectInputDecorations.textFieldDecoration(
+                            labelText: "Name",
+                            prefixIcon: Icons.search,
+                          ),
+                          onChanged: (String text) {
+                            if (!_key.currentState!.validate()) {
+                              return;
+                            }
+                            _startSearch(text);
+                          },
                         ),
                       ),
                     ),
-                  );
-                },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        right: 16.0), // Some padding for better alignment
+                    child: ElevatedButton(
+                      style: ProjectInputDecorations.buttonStyle(),
+                      onPressed: _openFilters,
+                      child: const Icon(Icons.filter_alt),
+                    ),
+                  ),
+                ],
               ),
-          ],
+              const SizedBox(height: 15),
+              const Text(
+                "Listagem de psicologos",
+                style: TextStyle(
+                  color: Colors.purple,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (filteredPsychologists.isNotEmpty)
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: filteredPsychologists.length,
+                  itemBuilder: (context, index) {
+                    Psychologist psychologist = filteredPsychologists[index];
+                    UserProfile user = psychologist.user!;
+
+                    return GestureDetector(
+                      onTap: () {
+                        _openPsychologistModal(context, psychologist);
+                      },
+                      child: Card(
+                        margin: const EdgeInsets.all(16.0),
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons
+                                .account_circle, // Placeholder icon, you can replace this
+                            size: 48.0,
+                          ),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                  child: Text(
+                                user.name,
+                                style: const TextStyle(
+                                  color: Colors.purple,
+                                ),
+                              )),
+                              Text('${user.city}, ${user.state}'),
+                              Text(InputFormatterUtil.formatPhoneNumber(
+                                  user.phone)),
+                              Text(
+                                  'Certificate Number: ${psychologist.certificationNumber}'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -391,5 +463,17 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
         );
       },
     );
+  }
+
+  void openGoogleMaps(String latitude, String longitude) async {
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    final uri = Uri.parse(url);
+
+    await launchUrl(uri).catchError((e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    });
   }
 }

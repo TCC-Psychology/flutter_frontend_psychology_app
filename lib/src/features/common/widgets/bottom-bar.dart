@@ -65,7 +65,7 @@ class _BottomBarState extends State<BottomBar> {
         ),
       ];
       userSpecificPages = [
-        const PsychologistSearchScreen(),
+        PsychologistSearchScreen(),
       ];
     } else {
       userSpecificDestinations = [];

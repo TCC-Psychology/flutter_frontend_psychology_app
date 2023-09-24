@@ -10,4 +10,15 @@ class ProjectInputDecorations {
       // ... you can add more properties or customize further if needed
     );
   }
+
+  static ButtonStyle buttonStyle() {
+    return ButtonStyle(
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+          side: BorderSide(color: Colors.grey.shade400),
+        ),
+      ),
+    );
+  }
 }
