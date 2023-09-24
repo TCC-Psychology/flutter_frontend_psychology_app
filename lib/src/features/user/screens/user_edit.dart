@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/user/screens/avatar.dart';
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
@@ -34,6 +35,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
   Psychologist? psychologist;
   var userLoggedId = supabase.auth.currentUser!.id;
 
+  String? _imageUrl;
   String latitude = '';
   String longitude = '';
   List<RelationshipStatus> relationshipStatusList = [];
@@ -150,6 +152,14 @@ class _UserProfileEditState extends State<UserProfileEdit> {
                   ),
                 ),
               ),
+            const SizedBox(height: 15),
+            Avatar(
+                imageUrl: _imageUrl,
+                onUpload: (imageUrl) {
+                  setState(() {
+                    _imageUrl = imageUrl;
+                  });
+                }),
             const SizedBox(height: 15),
             TextFormField(
               controller: nameController,
