@@ -128,100 +128,102 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 8.0,
-                      ),
-                      child: Form(
-                        key: _key,
-                        child: TextFormField(
-                          controller: _searchController,
-                          decoration:
-                              ProjectInputDecorations.textFieldDecoration(
-                            labelText: "Name",
-                            prefixIcon: Icons.search,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8.0,
+                          horizontal: 8.0,
+                        ),
+                        child: Form(
+                          key: _key,
+                          child: TextFormField(
+                            controller: _searchController,
+                            decoration:
+                                ProjectInputDecorations.textFieldDecoration(
+                              labelText: "Name",
+                              prefixIcon: Icons.search,
+                            ),
+                            onChanged: (String text) {
+                              if (!_key.currentState!.validate()) {
+                                return;
+                              }
+                              _startSearch(text);
+                            },
                           ),
-                          onChanged: (String text) {
-                            if (!_key.currentState!.validate()) {
-                              return;
-                            }
-                            _startSearch(text);
-                          },
                         ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        right: 16.0), // Some padding for better alignment
-                    child: ElevatedButton(
-                      style: ProjectInputDecorations.buttonStyle(),
-                      onPressed: _openFilters,
-                      child: const Icon(Icons.filter_alt),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          right: 16.0), // Some padding for better alignment
+                      child: ElevatedButton(
+                        style: ProjectInputDecorations.buttonStyle(),
+                        onPressed: _openFilters,
+                        child: const Icon(Icons.filter_alt),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                "Listagem de psicologos",
-                style: TextStyle(
-                  color: Colors.purple,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  ],
                 ),
-              ),
-              if (filteredPsychologists.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: filteredPsychologists.length,
-                  itemBuilder: (context, index) {
-                    Psychologist psychologist = filteredPsychologists[index];
-                    UserProfile user = psychologist.user!;
+                const SizedBox(height: 15),
+                const Text(
+                  "Listagem de psicologos",
+                  style: TextStyle(
+                    color: Colors.purple,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (filteredPsychologists.isNotEmpty)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: filteredPsychologists.length,
+                    itemBuilder: (context, index) {
+                      Psychologist psychologist = filteredPsychologists[index];
+                      UserProfile user = psychologist.user!;
 
-                    return GestureDetector(
-                      onTap: () {
-                        _openPsychologistModal(context, psychologist);
-                      },
-                      child: Card(
-                        margin: const EdgeInsets.all(16.0),
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons
-                                .account_circle, // Placeholder icon, you can replace this
-                            size: 48.0,
-                          ),
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                  child: Text(
-                                user.name,
-                                style: const TextStyle(
-                                  color: Colors.purple,
-                                ),
-                              )),
-                              Text('${user.city}, ${user.state}'),
-                              Text(InputFormatterUtil.formatPhoneNumber(
-                                  user.phone)),
-                              Text(
-                                  'Certificate Number: ${psychologist.certificationNumber}'),
-                            ],
+                      return GestureDetector(
+                        onTap: () {
+                          _openPsychologistModal(context, psychologist);
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.all(16.0),
+                          child: ListTile(
+                            leading: const Icon(
+                              Icons
+                                  .account_circle, // Placeholder icon, you can replace this
+                              size: 48.0,
+                            ),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                    child: Text(
+                                  user.name,
+                                  style: const TextStyle(
+                                    color: Colors.purple,
+                                  ),
+                                )),
+                                Text('${user.city}, ${user.state}'),
+                                Text(InputFormatterUtil.formatPhoneNumber(
+                                    user.phone)),
+                                Text(
+                                    'Certificate Number: ${psychologist.certificationNumber}'),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-            ],
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
