@@ -5,20 +5,37 @@ import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.da
 import 'package:http/http.dart' as http;
 
 class PsychologistService {
-  Future<List<Psychologist>> fetchPsychologistList() async {
+  Future<List<Psychologist>> fetchPsychologistList(
+    List<int>? segmentOfActivityIds,
+    List<int>? targetAudienceIds,
+  ) async {
     List<Psychologist> psychologistList = [];
 
+    final Map<String, dynamic> body = {
+      'targetAudienceIds': targetAudienceIds,
+      'segmentOfActivityIds': segmentOfActivityIds,
+    };
+
     try {
-      final res = await http.get(
-        Uri.parse('$uri/psychologist'),
+      final res = await http.post(
+        Uri.parse('$uri/psychologist/findAllPsychologists'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
+        body: jsonEncode({
+          'targetAudienceIds': targetAudienceIds,
+          'segmentOfActivityIds': segmentOfActivityIds,
+        }),
       );
-      List<dynamic> body = jsonDecode(res.body);
 
-      psychologistList =
-          body.map((dynamic item) => Psychologist.fromJson(item)).toList();
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        List<dynamic> body = jsonDecode(res.body);
+        psychologistList =
+            body.map((dynamic item) => Psychologist.fromJson(item)).toList();
+      } else {
+        print(
+            'Failed to load psychologists. HTTP status code: ${res.statusCode}');
+      }
     } catch (e) {
       print(e);
     }
