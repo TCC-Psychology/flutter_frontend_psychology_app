@@ -5,6 +5,7 @@ import 'package:flutter_frontend_psychology_app/src/features/psychologist_search
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/academic_formation_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/style/input_decoration.dart';
 
 import '../../../../main.dart';
@@ -127,100 +128,102 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 8.0,
-                      ),
-                      child: Form(
-                        key: _key,
-                        child: TextFormField(
-                          controller: _searchController,
-                          decoration:
-                              ProjectInputDecorations.textFieldDecoration(
-                            labelText: "Name",
-                            prefixIcon: Icons.search,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8.0,
+                          horizontal: 8.0,
+                        ),
+                        child: Form(
+                          key: _key,
+                          child: TextFormField(
+                            controller: _searchController,
+                            decoration:
+                                ProjectInputDecorations.textFieldDecoration(
+                              labelText: "Name",
+                              prefixIcon: Icons.search,
+                            ),
+                            onChanged: (String text) {
+                              if (!_key.currentState!.validate()) {
+                                return;
+                              }
+                              _startSearch(text);
+                            },
                           ),
-                          onChanged: (String text) {
-                            if (!_key.currentState!.validate()) {
-                              return;
-                            }
-                            _startSearch(text);
-                          },
                         ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        right: 16.0), // Some padding for better alignment
-                    child: ElevatedButton(
-                      style: ProjectInputDecorations.buttonStyle(),
-                      onPressed: _openFilters,
-                      child: const Icon(Icons.filter_alt),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          right: 16.0), // Some padding for better alignment
+                      child: ElevatedButton(
+                        style: ProjectInputDecorations.buttonStyle(),
+                        onPressed: _openFilters,
+                        child: const Icon(Icons.filter_alt),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                "Listagem de psicologos",
-                style: TextStyle(
-                  color: Colors.purple,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  ],
                 ),
-              ),
-              if (filteredPsychologists.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: filteredPsychologists.length,
-                  itemBuilder: (context, index) {
-                    Psychologist psychologist = filteredPsychologists[index];
-                    UserProfile user = psychologist.user!;
+                const SizedBox(height: 15),
+                const Text(
+                  "Listagem de psicologos",
+                  style: TextStyle(
+                    color: Colors.purple,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (filteredPsychologists.isNotEmpty)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: filteredPsychologists.length,
+                    itemBuilder: (context, index) {
+                      Psychologist psychologist = filteredPsychologists[index];
+                      UserProfile user = psychologist.user!;
 
-                    return GestureDetector(
-                      onTap: () {
-                        _openPsychologistModal(context, psychologist);
-                      },
-                      child: Card(
-                        margin: const EdgeInsets.all(16.0),
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons
-                                .account_circle, // Placeholder icon, you can replace this
-                            size: 48.0,
-                          ),
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                  child: Text(
-                                user.name,
-                                style: const TextStyle(
-                                  color: Colors.purple,
-                                ),
-                              )),
-                              Text('${user.city}, ${user.state}'),
-                              Text(InputFormatterUtil.formatPhoneNumber(
-                                  user.phone)),
-                              Text(
-                                  'Certificate Number: ${psychologist.certificationNumber}'),
-                            ],
+                      return GestureDetector(
+                        onTap: () {
+                          _openPsychologistModal(context, psychologist);
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.all(16.0),
+                          child: ListTile(
+                            leading: const Icon(
+                              Icons
+                                  .account_circle, // Placeholder icon, you can replace this
+                              size: 48.0,
+                            ),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                    child: Text(
+                                  user.name,
+                                  style: const TextStyle(
+                                    color: Colors.purple,
+                                  ),
+                                )),
+                                Text('${user.city}, ${user.state}'),
+                                Text(InputFormatterUtil.formatPhoneNumber(
+                                    user.phone)),
+                                Text(
+                                    'Certificate Number: ${psychologist.certificationNumber}'),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-            ],
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -250,7 +253,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   onPressed: () async {
                     var client = await clientService
                         .fetchClientByUserId(supabase.auth.currentUser!.id);
@@ -364,30 +367,32 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                           style: const TextStyle(fontSize: 16),
                         ),
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Lógica para obter rota quando o botão for pressionado
-                            // Isso pode envolver integração com APIs de mapas, por exemplo
-                            // Substitua este comentário com o código necessário
-                          },
-                          child: const Text(
-                            'Obter Rota',
-                            style: TextStyle(fontSize: 16),
+                        if (user.latitude != null && user.longitude != null)
+                          ElevatedButton(
+                            onPressed: () {
+                              openGoogleMaps(
+                                user.latitude!,
+                                user.longitude!,
+                              );
+                            },
+                            child: const Text(
+                              'Obter Rota',
+                              style: TextStyle(fontSize: 16),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
                 ),
                 SingleChildScrollView(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: academicFormations.map((formation) {
                       return Center(
                         child: Card(
                           elevation: 4,
-                          margin: EdgeInsets.only(bottom: 16.0),
+                          margin: const EdgeInsets.only(bottom: 16.0),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Center(
@@ -460,5 +465,17 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
         );
       },
     );
+  }
+
+  void openGoogleMaps(String latitude, String longitude) async {
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    final uri = Uri.parse(url);
+
+    await launchUrl(uri).catchError((e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    });
   }
 }

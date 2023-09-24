@@ -7,6 +7,8 @@ import 'package:flutter_frontend_psychology_app/src/shared/utils/user_type.dart'
 import '../../user/screens/user_edit.dart';
 
 class MenuScreen extends StatefulWidget {
+  const MenuScreen({super.key});
+
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
@@ -41,7 +43,7 @@ class _MenuScreenState extends State<MenuScreen> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TagScreen()),
+              MaterialPageRoute(builder: (context) => const TagScreen()),
             );
           },
         ),
@@ -59,7 +61,7 @@ class _MenuScreenState extends State<MenuScreen> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => UserProfileEdit()),
+            MaterialPageRoute(builder: (context) => const UserProfileEdit()),
           );
         },
       ),

@@ -18,6 +18,8 @@ class UserProfile {
   final DateTime? birthDate;
   final String? imageUrl;
   final String? city;
+  final String? latitude;
+  final String? longitude;
   final String? state;
   final String? cep;
   final String? description;
@@ -52,6 +54,8 @@ class UserProfile {
     this.clientId,
     this.psychologist,
     this.psychologistId,
+    this.latitude,
+    this.longitude,
     required this.userType,
   });
 
