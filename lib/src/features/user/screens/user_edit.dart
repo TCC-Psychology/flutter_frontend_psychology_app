@@ -82,12 +82,17 @@ class _UserProfileEditState extends State<UserProfileEdit> {
 
       final userId = supabase.auth.currentUser!.id;
       final imagePath = '/$userId/profile';
-      String imageUrl =
+      String? imageUrl =
           supabase.storage.from('profiles').getPublicUrl(imagePath);
 
       _imageUrl = Uri.parse(imageUrl).replace(queryParameters: {
         't': DateTime.now().millisecondsSinceEpoch.toString()
       }).toString();
+
+      if (userProfile!.imageUrl == null) {
+        imageUrl = null;
+        _imageUrl = null;
+      }
 
       if (client != null) {
         popularClient();

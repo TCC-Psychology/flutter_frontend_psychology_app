@@ -232,9 +232,6 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
         _selectedTime!.minute,
       );
 
-      medicalAppointDate =
-          medicalAppointDate.subtract(const Duration(hours: 3));
-
       MedicalAppointment medicalAppointment = MedicalAppointment(
           date: medicalAppointDate.toUtc(),
           status: AppointmentStatus.pending,

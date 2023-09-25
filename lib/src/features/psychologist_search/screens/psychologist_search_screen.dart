@@ -25,6 +25,7 @@ class PsychologistSearchScreen extends StatefulWidget {
 }
 
 class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
+  String? _imageUrl;
   final ClientService clientService = ClientService();
   final PsychologistService psychologistService = PsychologistService();
   final UserProfileService userProfileService = UserProfileService();
@@ -116,8 +117,10 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
         filteredPsychologists = psychologists.where((psychologist) {
           final user = psychologist.user;
           if (user != null) {
-            final userName = user.name.toLowerCase();
-            return userName.contains(query);
+            if (user.city != null) {
+              final userCity = user.city!.toLowerCase();
+              return userCity.contains(query);
+            }
           }
           return false;
         }).toList();
@@ -147,7 +150,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                             controller: _searchController,
                             decoration:
                                 ProjectInputDecorations.textFieldDecoration(
-                              labelText: "Name",
+                              labelText: "Pesquise por Cidade",
                               prefixIcon: Icons.search,
                             ),
                             onChanged: (String text) {
@@ -187,18 +190,36 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                     itemBuilder: (context, index) {
                       Psychologist psychologist = filteredPsychologists[index];
                       UserProfile user = psychologist.user!;
+                      String userId = user.id!;
+
+                      final imagePath = '/$userId/profile';
+                      String imageUrl = supabase.storage
+                          .from('profiles')
+                          .getPublicUrl(imagePath);
+
+                      _imageUrl = Uri.parse(imageUrl).replace(queryParameters: {
+                        't': DateTime.now().millisecondsSinceEpoch.toString()
+                      }).toString();
 
                       return GestureDetector(
                         onTap: () {
-                          _openPsychologistModal(context, psychologist);
+                          _openPsychologistModal(
+                              context, psychologist, user.imageUrl);
                         },
                         child: Card(
                           margin: const EdgeInsets.all(16.0),
                           child: ListTile(
-                            leading: const Icon(
-                              Icons
-                                  .account_circle, // Placeholder icon, you can replace this
-                              size: 48.0,
+                            leading: SizedBox(
+                              // ignore: unnecessary_null_comparison
+                              child: user.imageUrl != null
+                                  ? Image.network(
+                                      _imageUrl!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Icon(
+                                      Icons.account_circle,
+                                      size: 48.0,
+                                    ),
                             ),
                             title: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,11 +231,12 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                                     color: Colors.purple,
                                   ),
                                 )),
-                                Text('${user.city}, ${user.state}'),
+                                Text(
+                                    '${user.city ?? "N/A cidade"}, ${user.state ?? "N/A estado"}'),
                                 Text(InputFormatterUtil.formatPhoneNumber(
                                     user.phone)),
                                 Text(
-                                    'Certificate Number: ${psychologist.certificationNumber}'),
+                                    'Certificate Number: ${psychologist.certificationNumber ?? ""}'),
                               ],
                             ),
                           ),
@@ -230,8 +252,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
     );
   }
 
-  Future<void> _openPsychologistModal(
-      BuildContext context, Psychologist psychologist) async {
+  Future<void> _openPsychologistModal(BuildContext context,
+      Psychologist psychologist, String? imageUrlView) async {
     var user = await userProfileService
         .fetchUserByPsychologistId(psychologist.id.toString());
     academicFormations = await academicFormationService
@@ -280,6 +302,18 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(
+                          // ignore: unnecessary_null_comparison
+                          child: user!.imageUrl != null
+                              ? Image.network(
+                                  imageUrlView!,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(
+                                  Icons.account_circle,
+                                  size: 150,
+                                ),
+                        ),
                         const Text(
                           'Nome',
                           style: TextStyle(
@@ -289,7 +323,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                           ),
                         ),
                         Text(
-                          user!.name,
+                          user.name,
                           style: const TextStyle(fontSize: 20),
                         ),
                         const SizedBox(height: 16.0),

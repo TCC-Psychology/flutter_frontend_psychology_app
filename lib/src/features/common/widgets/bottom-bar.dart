@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend_psychology_app/src/features/medical-appointment/screens/medical_appointment_client.dart';
+import 'package:flutter_frontend_psychology_app/src/features/medical-appointment/screens/medical_appointment_psychologist.dart';
 import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/menu/screens/menu-screen.dart';
 import 'package:flutter_frontend_psychology_app/src/features/notification/screens/notification_screen.dart';
@@ -52,9 +54,15 @@ class _BottomBarState extends State<BottomBar> {
           selectedIcon: Icon(Icons.assignment),
           label: 'Prontuários',
         ),
+        NavigationDestination(
+          icon: Icon(Icons.calendar_month_outlined),
+          selectedIcon: Icon(Icons.calendar_month),
+          label: 'Consultas',
+        ),
       ];
       userSpecificPages = [
         const MedicalRecordScreen(),
+        MedicalAppointmentPsychologistScreen()
       ];
     } else if (_userType == UserType.CLIENT) {
       userSpecificDestinations = const [
@@ -63,9 +71,15 @@ class _BottomBarState extends State<BottomBar> {
           selectedIcon: Icon(Icons.search),
           label: 'Buscar',
         ),
+        NavigationDestination(
+          icon: Icon(Icons.calendar_month_outlined),
+          selectedIcon: Icon(Icons.calendar_month),
+          label: 'Consultas',
+        ),
       ];
       userSpecificPages = [
-        PsychologistSearchScreen(),
+        const PsychologistSearchScreen(),
+        MedicalAppointmentClientScreen()
       ];
     } else {
       userSpecificDestinations = [];
@@ -87,7 +101,7 @@ class _BottomBarState extends State<BottomBar> {
 
     List<Widget> commonPages = [
       const NotificationScreen(),
-      MenuScreen(),
+      const MenuScreen(),
     ];
 
     List<NavigationDestination> destinations = [

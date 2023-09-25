@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/main.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+final UserProfileService userProfileService = UserProfileService();
 
 class Avatar extends StatelessWidget {
   const Avatar({super.key, required this.imageUrl, required this.onUpload});
@@ -60,6 +63,11 @@ class Avatar extends StatelessWidget {
                 imageUrl = Uri.parse(imageUrl).replace(queryParameters: {
                   't': DateTime.now().millisecondsSinceEpoch.toString()
                 }).toString();
+
+                var user = await userProfileService.fetchUserByUserId(userId);
+                user!.imageUrl = imageUrl;
+
+                await userProfileService.editUser(user, userId);
 
                 onUpload(imageUrl);
               } catch (e) {
