@@ -13,6 +13,12 @@ Psychologist _$PsychologistFromJson(Map<String, dynamic> json) => Psychologist(
       user: json['user'] == null
           ? null
           : UserProfile.fromJson(json['user'] as Map<String, dynamic>),
+      targetAudiences: (json['targetAudiences'] as List<dynamic>?)
+          ?.map((e) => TargetAudience.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      segmentOfActivities: (json['segmentOfActivities'] as List<dynamic>?)
+          ?.map((e) => SegmentOfActivity.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$PsychologistToJson(Psychologist instance) {
