@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/user/screens/avatar.dart';
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
@@ -34,6 +35,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
   Psychologist? psychologist;
   var userLoggedId = supabase.auth.currentUser!.id;
 
+  String? _imageUrl;
   String latitude = '';
   String longitude = '';
   List<RelationshipStatus> relationshipStatusList = [];
@@ -78,6 +80,20 @@ class _UserProfileEditState extends State<UserProfileEdit> {
       descriptionController.text = userProfile!.description ?? '';
       genderController.text = userProfile!.gender ?? '';
 
+      final userId = supabase.auth.currentUser!.id;
+      final imagePath = '/$userId/profile';
+      String? imageUrl =
+          supabase.storage.from('profiles').getPublicUrl(imagePath);
+
+      _imageUrl = Uri.parse(imageUrl).replace(queryParameters: {
+        't': DateTime.now().millisecondsSinceEpoch.toString()
+      }).toString();
+
+      if (userProfile!.imageUrl == null) {
+        imageUrl = null;
+        _imageUrl = null;
+      }
+
       if (client != null) {
         popularClient();
       } else {
@@ -90,6 +106,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
       EasyLoading.showError(
         'Erro inesperado, verifique sua conexão com a internet',
       );
+      print(e);
     } finally {
       EasyLoading.dismiss();
     }
@@ -150,6 +167,18 @@ class _UserProfileEditState extends State<UserProfileEdit> {
                   ),
                 ),
               ),
+            const SizedBox(height: 15),
+            Avatar(
+                imageUrl: _imageUrl,
+                onUpload: (imageUrl) async {
+                  setState(() {
+                    _imageUrl = imageUrl;
+                  });
+                  final userId = supabase.auth.currentUser!.id;
+                  await supabase
+                      .from('profiles')
+                      .update({'avatar_url': imageUrl}).eq('id', userId);
+                }),
             const SizedBox(height: 15),
             TextFormField(
               controller: nameController,

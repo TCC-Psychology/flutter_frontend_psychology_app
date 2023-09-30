@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/common/widgets/bottom-bar.dart';
-import 'package:flutter_frontend_psychology_app/src/features/medical-record/screens/medical_record_screen.dart';
-import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/psychologist_search_screen.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_models.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/style/input_decoration.dart';

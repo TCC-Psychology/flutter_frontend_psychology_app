@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appointment_service.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/triage_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:intl/intl.dart';
@@ -11,6 +12,7 @@ import '../../../models/medical_appointment_model.dart';
 import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import 'medical_appointment_triage_show.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MedicalAppointmentClientScreen extends StatefulWidget {
   @override
@@ -23,6 +25,7 @@ class _MedicalAppointmentClientScreenState
   ClientService clientService = ClientService();
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
+  PsychologistService psychologistService = PsychologistService();
   UserProfileService userProfileService = UserProfileService();
   TriageService triageService = TriageService();
   List<MedicalAppointment> medicalAppointments = [];
@@ -243,7 +246,10 @@ class _MedicalAppointmentClientScreenState
     return "$hour:${dateTime.minute.toString().padLeft(2, '0')} $period";
   }
 
-  void onTapCardAppointment(MedicalAppointment appointment) {
+  Future<void> onTapCardAppointment(MedicalAppointment appointment) async {
+    var user = await userProfileService
+        .fetchUserByPsychologistId(appointment.psychologistId.toString());
+    // ignore: use_build_context_synchronously
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -266,7 +272,13 @@ class _MedicalAppointmentClientScreenState
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      if (user!.latitude != "" && user.longitude != "") {
+                        openGoogleMaps(user.latitude!, user.longitude!);
+                      } else {
+                        EasyLoading.showInfo(
+                            'O psicologo não cadastrou uma localização',
+                            duration: const Duration(seconds: 3));
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.pinkAccent),
@@ -348,5 +360,17 @@ class _MedicalAppointmentClientScreenState
     } finally {
       EasyLoading.dismiss();
     }
+  }
+
+  void openGoogleMaps(String latitude, String longitude) async {
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    final uri = Uri.parse(url);
+
+    await launchUrl(uri).catchError((e) {
+      EasyLoading.showError(
+        'Erro inesperado, verifique sua conexão com a internet',
+      );
+    });
   }
 }

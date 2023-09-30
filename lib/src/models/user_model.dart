@@ -16,7 +16,7 @@ class UserProfile {
   final String phone;
 
   final DateTime? birthDate;
-  final String? imageUrl;
+  String? imageUrl;
   final String? city;
   final String? latitude;
   final String? longitude;
