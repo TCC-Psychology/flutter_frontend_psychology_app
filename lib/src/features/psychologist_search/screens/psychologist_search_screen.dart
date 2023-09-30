@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/psychologist_search/screens/filters/psychologist_filter_screen.dart';
+import 'package:flutter_frontend_psychology_app/src/features/tag/services/tag_service.dart';
 
 import 'package:flutter_frontend_psychology_app/src/models/psychologist_model.dart';
+import 'package:flutter_frontend_psychology_app/src/models/target_audience_model.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/academic_formation_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/style/input_decoration.dart';
 
@@ -44,6 +47,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
 
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
+
+  TagService tagService = TagService();
 
   @override
   void initState() {
@@ -263,14 +268,18 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
       context: context,
       builder: (BuildContext context) {
         return DefaultTabController(
-          length: 3,
+          length: 4,
           child: Scaffold(
             appBar: AppBar(
               bottom: const TabBar(
                 tabs: [
                   Tab(icon: Icon(Icons.person), text: 'Perfil'),
                   Tab(icon: Icon(Icons.location_on), text: 'Localização'),
-                  Tab(icon: Icon(Icons.tag), text: 'Formações'),
+                  Tab(
+                    icon: FaIcon(FontAwesomeIcons.graduationCap),
+                    text: 'Formações',
+                  ),
+                  Tab(icon: Icon(Icons.tag), text: 'Tags'),
                 ],
               ),
               actions: [
@@ -491,6 +500,44 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                         ),
                       );
                     }).toList(),
+                  ),
+                ),
+                SingleChildScrollView(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Público Alvo',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (psychologist.targetAudiences == null ||
+                          psychologist.targetAudiences!.isEmpty)
+                        const Text('Nenhum dado encontrado.')
+                      else
+                        ...psychologist.targetAudiences!
+                            .map((e) => Text(e.title + "."))
+                            .toList(),
+                      const Text(
+                        'Segmentos',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (psychologist.segmentOfActivities == null ||
+                          psychologist.segmentOfActivities!.isEmpty)
+                        const Text('Nenhum dado encontrado.')
+                      else
+                        ...psychologist.segmentOfActivities!
+                            .map((e) => Text(e.title + "."))
+                            .toList(),
+                    ],
                   ),
                 )
               ],
