@@ -3,12 +3,15 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/common/widgets/bottom-bar.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_models.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/auth/auth_service.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/style/input_decoration.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/utils/input_formatter_util.dart.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/utils/user_type.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/validators/auth_validator.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+
+import '../../../shared/services/auth/secure_storage_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -41,6 +44,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
   UserType userType = UserType.CLIENT;
+
+  SecureStorageService secureStorageService = SecureStorageService();
+  UserProfileService userProfileService = UserProfileService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

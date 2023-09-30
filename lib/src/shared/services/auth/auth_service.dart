@@ -102,11 +102,6 @@ class AuthService {
       return "Erro de registro!";
     }
 
-    final currentUser = await userProfileService.fetchUserByUserId(
-      userId,
-    );
-    await _storageService.storeCurrentUser(currentUser);
-
     final dataInsertionResult = await _insertUserDataToDatabase(
       userId,
       data.email,
@@ -116,6 +111,11 @@ class AuthService {
       data.birthDate,
       data.userType,
     );
+
+    final currentUser = await userProfileService.fetchUserByUserId(
+      userId,
+    );
+    await _storageService.storeCurrentUser(currentUser);
 
     if (dataInsertionResult == null) {
       return "Erro na criação do usuario no banco de dados";
