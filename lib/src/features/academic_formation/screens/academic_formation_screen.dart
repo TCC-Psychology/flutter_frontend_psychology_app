@@ -55,52 +55,54 @@ class _AcademicFormationScreenState extends State<AcademicFormationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Center(
-                  child: Text(
-                    "Visualizar Formações",
-                    style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const AcademicFormationsCreateScreen()),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.purple,
-                      size: 32,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-                if (academicFormationList.isNotEmpty)
-                  _buildShowAcademicFormations(),
-                if (academicFormationList.isEmpty)
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   const Center(
                     child: Text(
-                      'Não possui formação acadêmica',
-                      style: TextStyle(color: Colors.purple, fontSize: 16),
+                      "Visualizar Formações",
+                      style: TextStyle(
+                        color: Colors.purple,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  )
-              ],
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const AcademicFormationsCreateScreen()),
+                        );
+                      },
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.purple,
+                        size: 32,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  if (academicFormationList.isNotEmpty)
+                    _buildShowAcademicFormations(),
+                  if (academicFormationList.isEmpty)
+                    const Center(
+                      child: Text(
+                        'Não possui formação acadêmica',
+                        style: TextStyle(color: Colors.purple, fontSize: 16),
+                      ),
+                    )
+                ],
+              ),
             ),
           ),
         ),
