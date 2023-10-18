@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/notification/services/notification_service.dart';
+import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart';
+import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart'
+    as models;
+import 'package:intl/intl.dart';
 import '../../../models/medical_appointment_model.dart';
 import '../../../shared/services/client_service.dart';
 import '../../../shared/services/medical_appointment_service.dart';
@@ -25,6 +30,7 @@ class MedicalAppointmentCreate extends StatefulWidget {
 }
 
 class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
+  NotificationService notificationService = NotificationService();
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
   ClientService clientService = ClientService();
@@ -244,6 +250,15 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
 
         await medicalAppointmentService.editMedicalAppointment(
             medicalAppointment, widget.appointmentId!);
+
+        String formattedDate =
+            DateFormat('dd/MM/yyyy HH:mm').format(medicalAppointment.date);
+        models.Notification notification = models.Notification(
+            description:
+                "Sua consulta foi remarcada para o dia $formattedDate");
+        await notificationService.createNotificacaoForClient(
+            notification, medicalAppointment.clientId!.toString());
+
         // ignore: use_build_context_synchronously
         Navigator.push(
           context,
@@ -253,6 +268,14 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
       } else {
         var appointmentCreated = await medicalAppointmentService
             .createMedicalAppointment(medicalAppointment);
+
+        String formattedDate =
+            DateFormat('dd/MM/yyyy HH:mm').format(medicalAppointment.date);
+        models.Notification notification = models.Notification(
+            description:
+                "Há uma nova consulta no dia $formattedDate marcado com você.");
+        await notificationService.createNotificacaoForPsychologist(
+            notification, medicalAppointment.psychologistId!.toString());
 
         if (appointmentCreated == null) {
           throw Error();
