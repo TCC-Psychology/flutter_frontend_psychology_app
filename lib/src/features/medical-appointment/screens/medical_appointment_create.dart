@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_frontend_psychology_app/src/features/notification/services/notification_service.dart';
-import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart';
 import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart'
     as models;
 import 'package:intl/intl.dart';
