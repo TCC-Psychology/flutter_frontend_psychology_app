@@ -466,6 +466,7 @@ class _UserProfileEditState extends State<UserProfileEdit> {
 
   Future<void> handleGetLocation() async {
     try {
+      EasyLoading.show(status: 'Buscando localização...');
       await Permission.location.request();
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
@@ -478,6 +479,8 @@ class _UserProfileEditState extends State<UserProfileEdit> {
       EasyLoading.showError(
         'Erro inesperado, verifique suas permissões de localização',
       );
+    } finally {
+      EasyLoading.dismiss();
     }
   }
 }

@@ -67,7 +67,7 @@ class _MedicalAppointmentPsychologistScreenState
           return b.date.hour.compareTo(a.date.hour);
         }
       });
-
+      clients = [];
       await loadClients();
       setState(() {});
     } catch (e) {
