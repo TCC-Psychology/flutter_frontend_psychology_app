@@ -313,7 +313,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                       children: [
                         SizedBox(
                           // ignore: unnecessary_null_comparison
-                          child: user!.imageUrl != null
+                          child: user!.imageUrl != null || user.imageUrl != ""
                               ? Image.network(
                                   imageUrlView!,
                                   fit: BoxFit.cover,

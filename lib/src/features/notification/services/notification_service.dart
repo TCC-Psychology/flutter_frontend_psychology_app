@@ -55,4 +55,34 @@ class NotificationService {
       );
     }
   }
+
+  Future<void> createNotificacaoForClient(
+      Notification notification, String clientId) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$uri/notifications/createForClient/$clientId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(notification.toJson()),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> createNotificacaoForPsychologist(
+      Notification notification, String psychologistId) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$uri/notifications/createForPsychologist/$psychologistId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(notification.toJson()),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
 }

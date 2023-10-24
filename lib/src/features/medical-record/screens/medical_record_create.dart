@@ -748,31 +748,42 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
           const SizedBox(width: 15),
           ElevatedButton(
             onPressed: () async {
-              var client = await clientService
-                  .fetchClientByUserId(userTypeClientSearched!.id!.toString());
+              try {
+                EasyLoading.show(status: 'Carregando...');
+                var client = await clientService.fetchClientByUserId(
+                    userTypeClientSearched!.id!.toString());
 
-              MedicalAppointment medicalAppointment = MedicalAppointment(
-                  date: DateTime.now(),
-                  status: AppointmentStatus.confirmed,
-                  appointmentType: AppointmentType.presencial,
-                  clientId: client!.id!,
-                  psychologistId: psychologist!.id);
+                MedicalAppointment medicalAppointment = MedicalAppointment(
+                    date: DateTime.now()
+                        .toUtc()
+                        .subtract(const Duration(hours: 3)),
+                    status: AppointmentStatus.confirmed,
+                    appointmentType: AppointmentType.presencial,
+                    clientId: client!.id!,
+                    psychologistId: psychologist!.id);
 
-              var id = await medicalAppointmentService
-                  .createMedicalAppointment(medicalAppointment);
+                var id = await medicalAppointmentService
+                    .createMedicalAppointment(medicalAppointment);
 
-              // ignore: unrelated_type_equality_checks
-              if (id == 1) {
-                Navigator.of(_dialogKey.currentContext!).pop();
-                userTypeClientSearched = null;
-                EasyLoading.showSuccess(
-                  'Paciente relacionado!',
+                // ignore: unrelated_type_equality_checks
+                if (id == 1) {
+                  Navigator.of(_dialogKey.currentContext!).pop();
+                  userTypeClientSearched = null;
+                  EasyLoading.showSuccess(
+                    'Paciente relacionado!',
+                  );
+                }
+
+                loadPageUtilities();
+
+                setState(() {});
+              } catch (e) {
+                EasyLoading.showError(
+                  'Erro inesperado, verifique sua conexão com a internet',
                 );
+              } finally {
+                EasyLoading.dismiss();
               }
-
-              loadPageUtilities();
-
-              setState(() {});
             },
             child: const Text('Relacionar'),
           ),
@@ -853,7 +864,7 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
       var psychologist = await psychologistService
           .fetchPsychologistByUserId(psychologistLogged);
       MedicalAppointment medicalAppointment = MedicalAppointment(
-          date: DateTime.now().toUtc(),
+          date: DateTime.now().toUtc().subtract(const Duration(hours: 3)),
           status: AppointmentStatus.confirmed,
           appointmentType: AppointmentType.presencial,
           clientId: clientCreated.id,

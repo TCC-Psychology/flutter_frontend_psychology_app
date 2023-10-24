@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/notification/services/notification_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appointment_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/triage_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
 import 'package:intl/intl.dart';
-
+import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart'
+    as models;
 import '../../../../main.dart';
 import '../../../models/client_model.dart';
 import '../../../models/medical_appointment_model.dart';
@@ -22,6 +24,7 @@ class MedicalAppointmentClientScreen extends StatefulWidget {
 
 class _MedicalAppointmentClientScreenState
     extends State<MedicalAppointmentClientScreen> {
+  NotificationService notificationService = NotificationService();
   ClientService clientService = ClientService();
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
@@ -350,6 +353,18 @@ class _MedicalAppointmentClientScreenState
 
       await medicalAppointmentService.editMedicalAppointment(
           medicalAppointment, appointment.id.toString());
+
+      var user = await userProfileService
+          .fetchUserByClientId(medicalAppointment.clientId.toString());
+      var userName = user!.name;
+      String formattedDate =
+          DateFormat('dd/MM/yyyy HH:mm').format(medicalAppointment.date);
+      models.Notification notification = models.Notification(
+          description:
+              "O cliente $userName cancelou a consulta do dia $formattedDate");
+      await notificationService.createNotificacaoForPsychologist(
+          notification, medicalAppointment.psychologistId!.toString());
+
       await fetchMedicalAppointments();
       // ignore: use_build_context_synchronously
       Navigator.pop(context);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_frontend_psychology_app/src/features/notification/services/notification_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appointment_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
@@ -12,6 +13,8 @@ import '../../../shared/services/client_service.dart';
 import '../../../shared/services/triage_service.dart';
 import 'medical_appointment_create.dart';
 import 'medical_appointment_triage_show.dart';
+import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart'
+    as models;
 
 class MedicalAppointmentPsychologistScreen extends StatefulWidget {
   @override
@@ -21,6 +24,7 @@ class MedicalAppointmentPsychologistScreen extends StatefulWidget {
 
 class _MedicalAppointmentPsychologistScreenState
     extends State<MedicalAppointmentPsychologistScreen> {
+  NotificationService notificationService = NotificationService();
   PsychologistService psychologistService = PsychologistService();
   MedicalAppointmentService medicalAppointmentService =
       MedicalAppointmentService();
@@ -63,7 +67,7 @@ class _MedicalAppointmentPsychologistScreenState
           return b.date.hour.compareTo(a.date.hour);
         }
       });
-
+      clients = [];
       await loadClients();
       setState(() {});
     } catch (e) {
@@ -373,6 +377,18 @@ class _MedicalAppointmentPsychologistScreenState
 
       await medicalAppointmentService.editMedicalAppointment(
           medicalAppointment, appointment.id.toString());
+
+      var user = await userProfileService.fetchUserByPsychologistId(
+          medicalAppointment.psychologistId.toString());
+      var userName = user!.name;
+      String formattedDate =
+          DateFormat('dd/MM/yyyy HH:mm').format(medicalAppointment.date);
+      models.Notification notification = models.Notification(
+          description:
+              "Sua consulta do dia $formattedDate foi cancelada pelo Dr.$userName");
+      await notificationService.createNotificacaoForClient(
+          notification, medicalAppointment.clientId!.toString());
+
       await fetchMedicalAppointments();
       Navigator.pop(context);
     } catch (e) {
@@ -397,6 +413,18 @@ class _MedicalAppointmentPsychologistScreenState
 
       await medicalAppointmentService.editMedicalAppointment(
           medicalAppointment, appointment.id.toString());
+
+      var user = await userProfileService.fetchUserByPsychologistId(
+          medicalAppointment.psychologistId.toString());
+      var userName = user!.name;
+      String formattedDate =
+          DateFormat('dd/MM/yyyy HH:mm').format(medicalAppointment.date);
+      models.Notification notification = models.Notification(
+          description:
+              "Sua consulta do dia $formattedDate foi confirmada pelo Dr.$userName");
+      await notificationService.createNotificacaoForClient(
+          notification, medicalAppointment.clientId!.toString());
+
       await fetchMedicalAppointments();
       Navigator.pop(context);
     } catch (e) {
