@@ -31,67 +31,79 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Form(
-            key: _key,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'Login to Your Account',
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 70),
-                TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) => AuthValidator.validateEmail(value),
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  validator: (value) => AuthValidator.validatePassword(value),
-                ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: handleLogin,
-                  child: const Text('Login'),
-                ),
-                if (loginErrorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Form(
+              key: _key,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 70),
+                  const Center(
                     child: Text(
-                      loginErrorMessage!,
-                      style: const TextStyle(color: Colors.red),
+                      "PsicoLink",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => RegisterScreen(),
+                  Center(
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      height: 200,
+                      width: 200,
                     ),
                   ),
-                  child: Text("Registre-se"),
-                ),
-              ],
+                  const SizedBox(height: 70),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.email),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) => AuthValidator.validateEmail(value),
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock),
+                    ),
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    validator: (value) => AuthValidator.validatePassword(value),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: handleLogin,
+                    child: const Text('Login'),
+                  ),
+                  if (loginErrorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        loginErrorMessage!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => RegisterScreen(),
+                      ),
+                    ),
+                    child: Text("Registre-se"),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
