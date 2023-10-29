@@ -4,6 +4,7 @@ import 'package:flutter_frontend_psychology_app/src/features/notification/servic
 import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appointment_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/utils/input_formatter_util.dart.dart';
 import 'package:intl/intl.dart';
 import '../../../../main.dart';
 import '../../../models/medical_appointment_model.dart';
@@ -15,6 +16,7 @@ import 'medical_appointment_create.dart';
 import 'medical_appointment_triage_show.dart';
 import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart'
     as models;
+import 'package:url_launcher/url_launcher.dart';
 
 class MedicalAppointmentPsychologistScreen extends StatefulWidget {
   @override
@@ -249,7 +251,17 @@ class _MedicalAppointmentPsychologistScreenState
     return "$hour:${dateTime.minute.toString().padLeft(2, '0')} $period";
   }
 
-  void onTapCardAppointment(MedicalAppointment appointment) {
+  Future<void> onTapCardAppointment(MedicalAppointment appointment) async {
+    var userClient = await userProfileService
+        .fetchUserByClientId(appointment.clientId.toString());
+    var _imageUrl = null;
+    if (userClient!.imageUrl != null) {
+      _imageUrl = Uri.parse(userClient.imageUrl!).replace(queryParameters: {
+        't': DateTime.now().millisecondsSinceEpoch.toString()
+      }).toString();
+    }
+
+    // ignore: use_build_context_synchronously
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -354,9 +366,50 @@ class _MedicalAppointmentPsychologistScreenState
                       "Triagem",
                       style: TextStyle(color: Colors.white),
                     ),
-                  )
+                  ),
                 ],
               ),
+              const Center(
+                child: Text(
+                  "Informações do paciente",
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: SizedBox(
+                  width: 100, // Largura desejada
+                  height: 100, // Altura desejada
+                  child: userClient.imageUrl != null
+                      ? Image.network(
+                          _imageUrl!,
+                          fit: BoxFit.cover,
+                        )
+                      : const Icon(
+                          Icons.account_circle,
+                          size: 48.0,
+                        ),
+                ),
+              ),
+              // Display psychologist details and photo
+              Text(
+                "Nome: ${userClient.name}",
+                style: const TextStyle(fontSize: 16),
+              ),
+              Text(
+                "CPF: ${userClient.cpf}",
+                style: const TextStyle(fontSize: 16),
+              ),
+              GestureDetector(
+                onTap: () {
+                  final phoneNumber = userClient.phone;
+                  openWhatsApp(phoneNumber);
+                },
+                child: Text(
+                  "Telefone: ${InputFormatterUtil.formatPhoneNumber(userClient.phone)}",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              )
             ],
           ),
         );
@@ -447,5 +500,15 @@ class _MedicalAppointmentPsychologistScreenState
                 appointmentId: appointmentId.toString(),
               )),
     );
+  }
+
+  void openWhatsApp(String phoneNumber) async {
+    String url = 'https://wa.me/$phoneNumber';
+    Uri uri = Uri.parse(url); // Converte a string do URL em um objeto Uri
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Não foi possível abrir o WhatsApp.';
+    }
   }
 }
