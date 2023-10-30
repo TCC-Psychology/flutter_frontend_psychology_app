@@ -5,6 +5,7 @@ import 'package:flutter_frontend_psychology_app/src/shared/services/medical_appo
 import 'package:flutter_frontend_psychology_app/src/shared/services/psychologist_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/triage_service.dart';
 import 'package:flutter_frontend_psychology_app/src/shared/services/user.service.dart';
+import 'package:flutter_frontend_psychology_app/src/shared/utils/input_formatter_util.dart.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_frontend_psychology_app/src/models/notification_model.dart'
     as models;
@@ -14,6 +15,7 @@ import '../../../models/medical_appointment_model.dart';
 import '../../../models/user_model.dart';
 import '../../../shared/services/client_service.dart';
 import 'medical_appointment_triage_show.dart';
+// ignore: depend_on_referenced_packages
 import 'package:url_launcher/url_launcher.dart';
 
 class MedicalAppointmentClientScreen extends StatefulWidget {
@@ -252,88 +254,144 @@ class _MedicalAppointmentClientScreenState
   Future<void> onTapCardAppointment(MedicalAppointment appointment) async {
     var user = await userProfileService
         .fetchUserByPsychologistId(appointment.psychologistId.toString());
+    var psychologist = await psychologistService
+        .fetchPsychologistById(appointment.psychologistId.toString());
+    var _imageUrl = null;
+    if (user!.imageUrl != null) {
+      _imageUrl = Uri.parse(user.imageUrl!).replace(queryParameters: {
+        't': DateTime.now().millisecondsSinceEpoch.toString()
+      }).toString();
+    }
+
     // ignore: use_build_context_synchronously
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "O que deseja?",
-                style: TextStyle(
+        return SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "O que deseja?",
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.purple),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (user!.latitude != "" && user.longitude != "") {
-                        openGoogleMaps(user.latitude!, user.longitude!);
-                      } else {
-                        EasyLoading.showInfo(
-                            'O psicologo não cadastrou uma localização',
-                            duration: const Duration(seconds: 3));
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pinkAccent),
-                    child: const Text(
-                      "Localização",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    color: Colors.purple,
                   ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      cancelAppointment(appointment);
-                    },
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    child: const Text(
-                      "Cancelar",
-                      style: TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (user!.latitude != "" && user.longitude != "") {
+                          openGoogleMaps(user.latitude!, user.longitude!);
+                        } else {
+                          EasyLoading.showInfo(
+                              'O psicologo não cadastrou uma localização',
+                              duration: const Duration(seconds: 3));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.pinkAccent,
+                      ),
+                      child: const Text(
+                        "Localização",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      var client = await clientService
-                          .fetchClientById(appointment.clientId.toString());
-                      var user = await userProfileService
-                          .fetchUserByClientId(client!.id!.toString());
-                      var triage = await triageService
-                          .fetchTriageById(appointment.id.toString());
-                      if (triage != null) {
-                        // ignore: use_build_context_synchronously
-                        ShowTriage.show(context, user!, client, triage);
-                      } else {
-                        await EasyLoading.showInfo('Consulta sem triagem!',
-                            duration: const Duration(seconds: 3));
-                      }
-                    },
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    child: const Text(
-                      "Triagem",
-                      style: TextStyle(color: Colors.white),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        cancelAppointment(appointment);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      child: const Text(
+                        "Cancelar",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  )
-                ],
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        var client = await clientService
+                            .fetchClientById(appointment.clientId.toString());
+                        var user = await userProfileService
+                            .fetchUserByClientId(client!.id!.toString());
+                        var triage = await triageService
+                            .fetchTriageById(appointment.id.toString());
+                        if (triage != null) {
+                          ShowTriage.show(context, user!, client, triage);
+                        } else {
+                          await EasyLoading.showInfo('Consulta sem triagem!',
+                              duration: const Duration(seconds: 3));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      child: const Text(
+                        "Triagem",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Center(
+                  child: Text(
+                    "Informações do psicologo",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: SizedBox(
+                    width: 100, // Largura desejada
+                    height: 100, // Altura desejada
+                    child: user.imageUrl != null
+                        ? Image.network(
+                            _imageUrl!,
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(
+                            Icons.account_circle,
+                            size: 48.0,
+                          ),
+                  ),
+                ),
+                // Display psychologist details and photo
+                Text(
+                  "Nome: ${user!.name}",
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Text(
+                  "CRM: ${psychologist!.certificationNumber ?? 'N/A'}",
+                  style: const TextStyle(fontSize: 16),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    final phoneNumber = user.phone;
+                    openWhatsApp(phoneNumber);
+                  },
+                  child: Text(
+                    "Telefone: ${InputFormatterUtil.formatPhoneNumber(user.phone)}",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },
@@ -387,5 +445,15 @@ class _MedicalAppointmentClientScreenState
         'Erro inesperado, verifique sua conexão com a internet',
       );
     });
+  }
+
+  void openWhatsApp(String phoneNumber) async {
+    String url = 'https://wa.me/$phoneNumber';
+    Uri uri = Uri.parse(url); // Converte a string do URL em um objeto Uri
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Não foi possível abrir o WhatsApp.';
+    }
   }
 }
