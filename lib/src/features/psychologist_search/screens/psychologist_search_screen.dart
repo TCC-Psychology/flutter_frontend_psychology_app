@@ -189,11 +189,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                   ),
                 ),
                 if (filteredPsychologists.isNotEmpty)
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: filteredPsychologists.length,
-                    itemBuilder: (context, index) {
-                      Psychologist psychologist = filteredPsychologists[index];
+                  Column(
+                    children: filteredPsychologists.map((psychologist) {
                       UserProfile user = psychologist.user!;
                       String userId = user.id!;
 
@@ -247,7 +244,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                           ),
                         ),
                       );
-                    },
+                    }).toList(),
                   ),
               ],
             ),
