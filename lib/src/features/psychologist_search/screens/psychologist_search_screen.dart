@@ -313,7 +313,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                       children: [
                         SizedBox(
                           // ignore: unnecessary_null_comparison
-                          child: user!.imageUrl != null || user.imageUrl != ""
+                          child: user!.imageUrl != null
                               ? Image.network(
                                   imageUrlView!,
                                   fit: BoxFit.cover,
@@ -372,7 +372,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'CEP',
+                          'CEP:',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -385,7 +385,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          'Cidade',
+                          'Cidade:',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
