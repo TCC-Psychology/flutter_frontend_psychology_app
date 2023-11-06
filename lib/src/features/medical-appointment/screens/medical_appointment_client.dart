@@ -377,7 +377,7 @@ class _MedicalAppointmentClientScreenState
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  "CRM: ${psychologist!.certificationNumber ?? 'N/A'}",
+                  "CRP: ${psychologist!.certificationNumber ?? 'N/A'}",
                   style: const TextStyle(fontSize: 16),
                 ),
                 GestureDetector(

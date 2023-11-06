@@ -395,19 +395,19 @@ class _UserProfileEditState extends State<UserProfileEdit> {
       String gender = genderController.text.trim();
 
       UserProfile userProfileEdited = UserProfile(
-        name: name,
-        cpf: cpf,
-        phone: phone,
-        birthDate: DateTime.tryParse(birthDate)?.toUtc(),
-        city: city,
-        state: state,
-        cep: cep,
-        description: description,
-        gender: gender,
-        userType: userProfile!.userType,
-        latitude: latitude,
-        longitude: longitude,
-      );
+          name: name,
+          cpf: cpf,
+          phone: phone,
+          birthDate: DateTime.tryParse(birthDate)?.toUtc(),
+          city: city,
+          state: state,
+          cep: cep,
+          description: description,
+          gender: gender,
+          userType: userProfile!.userType,
+          latitude: latitude,
+          longitude: longitude,
+          imageUrl: _imageUrl);
 
       await userProfileService.editUser(userProfileEdited, userProfile!.id!);
 
