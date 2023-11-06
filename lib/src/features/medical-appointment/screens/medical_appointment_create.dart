@@ -41,12 +41,25 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
   DateTime? _selectedTime;
   DateTime initValueCaleder = DateTime.now().weekday == DateTime.saturday ||
           DateTime.now().weekday == DateTime.sunday
-      ? DateTime.now().subtract(Duration(days: 2))
+      ? DateTime.now().add(const Duration(days: 2))
       : DateTime.now();
+  int currentWeekday = DateTime.now().weekday;
 
   @override
   void initState() {
     super.initState();
+
+    if (currentWeekday >= 1 && currentWeekday <= 5) {
+      // Adicionar 1 dia para domingo, segunda, terça, quarta e quinta
+      initValueCaleder = DateTime.now().add(const Duration(days: 1));
+    } else if (currentWeekday == 6) {
+      // Adicionar 3 dias para sexta
+      initValueCaleder = DateTime.now().add(const Duration(days: 3));
+    } else {
+      // Adicionar 2 dias para sábado
+      initValueCaleder = DateTime.now().add(const Duration(days: 2));
+    }
+
     loadPageUtilities();
   }
 
@@ -236,7 +249,8 @@ class _MedicalAppointmentCreateState extends State<MedicalAppointmentCreate> {
         _selectedTime!.hour,
         _selectedTime!.minute,
       );
-
+      medicalAppointDate =
+          medicalAppointDate.subtract(const Duration(hours: 3));
       MedicalAppointment medicalAppointment = MedicalAppointment(
           date: medicalAppointDate.toUtc(),
           status: AppointmentStatus.pending,

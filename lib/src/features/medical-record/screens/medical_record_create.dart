@@ -833,7 +833,6 @@ class _MedicalRecordCreateFormState extends State<MedicalRecordCreateForm> {
         name: _name,
         cpf: _cpf,
         birthDate: _birthDate?.toUtc(),
-        imageUrl: '',
         city: _city,
         state: _state,
         cep: _cep,

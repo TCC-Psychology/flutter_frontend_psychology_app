@@ -21,8 +21,9 @@ Future<void> main() async {
     ..userInteractions = false;
 
   await Supabase.initialize(
-    url: dotenv.get("SUPABASE_URL"),
-    anonKey: dotenv.get("SUPABASE_ANON_KEY"),
+    url: "https://iigpnpvwhwazzanjwojg.supabase.co",
+    anonKey:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpZ3BucHZ3aHdhenphbmp3b2pnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTU1ODgzOTgsImV4cCI6MjAxMTE2NDM5OH0.LyEhdiO4hLDWxyL7dLbJKR-CcofGDx_TkRwh6KomKTk",
     authFlowType: AuthFlowType.pkce,
   );
 

@@ -189,11 +189,8 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                   ),
                 ),
                 if (filteredPsychologists.isNotEmpty)
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: filteredPsychologists.length,
-                    itemBuilder: (context, index) {
-                      Psychologist psychologist = filteredPsychologists[index];
+                  Column(
+                    children: filteredPsychologists.map((psychologist) {
                       UserProfile user = psychologist.user!;
                       String userId = user.id!;
 
@@ -247,7 +244,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                           ),
                         ),
                       );
-                    },
+                    }).toList(),
                   ),
               ],
             ),
@@ -313,7 +310,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                       children: [
                         SizedBox(
                           // ignore: unnecessary_null_comparison
-                          child: user!.imageUrl != null || user.imageUrl != ""
+                          child: user!.imageUrl != null
                               ? Image.network(
                                   imageUrlView!,
                                   fit: BoxFit.cover,
@@ -372,7 +369,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'CEP',
+                          'CEP:',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -385,7 +382,7 @@ class _PsychologistSearchScreenState extends State<PsychologistSearchScreen> {
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          'Cidade',
+                          'Cidade:',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

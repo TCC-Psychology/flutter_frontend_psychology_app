@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-String uri = 'http://10.0.2.2:3000';
+String uri = 'https://psychology-app-backend.onrender.com';
 //use http://10.0.2.2:3000 for android emulator
 //use http://localhost:3000 for browser
 String CONTENT_TYPE = 'application/json; charset=UTF-8';
